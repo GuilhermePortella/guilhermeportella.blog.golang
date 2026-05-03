@@ -1,0 +1,14 @@
+package httptransport
+
+import "context"
+
+type requestIDKey struct{}
+
+func withRequestID(ctx context.Context, requestID string) context.Context {
+	return context.WithValue(ctx, requestIDKey{}, requestID)
+}
+
+func getRequestID(ctx context.Context) string {
+	requestID, _ := ctx.Value(requestIDKey{}).(string)
+	return requestID
+}

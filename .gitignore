@@ -1,0 +1,20 @@
+.DS_Store
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Build outputs
+/bin/
+/dist/
+/tmp/
+*.test
+
+# Coverage and profiling
+coverage.out
+coverage.html
+*.prof
+
+# Logs
+*.log
