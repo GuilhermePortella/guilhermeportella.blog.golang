@@ -27,7 +27,14 @@ func run() error {
 	}
 
 	log := logger.New(cfg.App.Environment, cfg.App.Debug)
-	handler := httptransport.NewRouter(log)
+	handler, err := httptransport.NewRouter(httptransport.RouterOptions{
+		StaticDir:    cfg.Paths.StaticDir,
+		TemplatesDir: cfg.Paths.TemplatesDir,
+	}, log)
+	if err != nil {
+		return fmt.Errorf("build router: %w", err)
+	}
+
 	srv := server.New(cfg.HTTP, handler, log)
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
