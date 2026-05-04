@@ -1,0 +1,153 @@
+{{define "home"}}{{template "base" .}}{{end}}
+
+{{define "content"}}
+<div class="home-page" aria-label="Página inicial">
+  <section class="home-hero" aria-labelledby="home-title">
+    <div class="home-shell home-hero__grid">
+      <div class="home-hero__intro">
+        <p class="eyebrow">{{.Hero.Eyebrow}}</p>
+        <h1 id="home-title">{{.Hero.Title}}</h1>
+        <p class="home-hero__text">{{.Hero.Description}}</p>
+
+        <div class="home-actions" aria-label="Ações principais">
+          <a class="button button--primary" href="{{.Hero.PrimaryAction.URL}}">{{.Hero.PrimaryAction.Label}}</a>
+          <a class="button button--secondary" href="{{.Hero.SecondaryAction.URL}}">{{.Hero.SecondaryAction.Label}}</a>
+        </div>
+
+        {{if .Hero.Tags}}
+        <ul class="home-tags" aria-label="Temas técnicos deste blog">
+          {{range .Hero.Tags}}
+          <li>{{.}}</li>
+          {{end}}
+        </ul>
+        {{end}}
+      </div>
+
+      <div class="home-hero__aside">
+        <article id="mapa" class="quick-map" aria-labelledby="quick-map-title">
+          <p class="eyebrow">{{.QuickMap.Eyebrow}}</p>
+          <h2 id="quick-map-title">{{.QuickMap.Title}}</h2>
+          <p>{{.QuickMap.Description}}</p>
+
+          <div class="quick-map__items">
+            {{range .QuickMap.Items}}
+            <div class="quick-map__item">
+              <span class="quick-map__dot" aria-hidden="true"></span>
+              <div>
+                <h3>{{.Title}}</h3>
+                <p>{{.Description}}</p>
+                <a href="{{.URL}}">Acessar -&gt;</a>
+              </div>
+            </div>
+            {{end}}
+          </div>
+        </article>
+
+        {{if .HeroCards}}
+        <div class="hero-card-grid">
+          {{range .HeroCards}}
+          <a class="hero-card" href="{{.URL}}">
+            <h3>{{.Title}}</h3>
+            <p>{{.Description}}</p>
+            <span class="hero-card__action">Abrir -&gt;</span>
+          </a>
+          {{end}}
+        </div>
+        {{end}}
+      </div>
+    </div>
+  </section>
+
+  <section id="rotas" class="home-section home-section--routes" aria-labelledby="routes-title">
+    <div class="home-shell home-shell--section">
+      <div class="section-heading section-heading--split">
+        <div>
+          <p class="eyebrow">navegação</p>
+          <h2 id="routes-title">Áreas técnicas</h2>
+          <p>Acesse os principais conteúdos técnicos do site.</p>
+        </div>
+        <a class="section-link" href="{{.Hero.RoutesActionURL}}">{{.Hero.RoutesActionLabel}}</a>
+      </div>
+
+      {{if .Shortcuts}}
+      <div class="shortcut-grid">
+        {{range .Shortcuts}}
+        <a class="shortcut-card" href="{{.URL}}">
+          <span class="shortcut-card__tag">{{.Tag}}</span>
+          <h3>{{.Title}}</h3>
+          <p>{{.Description}}</p>
+          <span class="shortcut-card__action">Abrir <span aria-hidden="true">-&gt;</span></span>
+        </a>
+        {{end}}
+      </div>
+      {{end}}
+    </div>
+  </section>
+
+  <section id="cadernos" class="home-section home-section--articles" aria-labelledby="recent-title">
+    <div class="home-shell home-shell--section">
+      <div class="section-heading section-heading--border">
+        <div>
+          <p class="eyebrow">artigos recentes</p>
+          <h2 id="recent-title">Publicações recentes</h2>
+        </div>
+        <a class="section-link" href="/cadernos">Ver todos -&gt;</a>
+      </div>
+
+      {{if .RecentArticles}}
+      <ul class="article-grid">
+        {{range .RecentArticles}}
+        <li>
+          <article class="article-card">
+            <a class="article-card__link" href="/cadernos/{{.Slug}}">
+              <h3><span>{{.Title}}</span></h3>
+              <div class="article-card__meta">
+                <time>{{.PublishedAt}}</time>
+                {{if .Tags}}
+                <span>
+                  {{range $index, $tag := .Tags}}{{if $index}} / {{end}}{{$tag}}{{end}}
+                </span>
+                {{end}}
+              </div>
+              {{with .Excerpt}}
+              <p>{{.}}</p>
+              {{end}}
+              <span class="article-card__action">Ler artigo -&gt;</span>
+            </a>
+          </article>
+        </li>
+        {{end}}
+      </ul>
+      {{else}}
+      <p class="empty-state">Ainda não publiquei nenhum artigo técnico.</p>
+      {{end}}
+    </div>
+  </section>
+
+  <section id="perguntas" class="home-faq" aria-labelledby="faq-title">
+    <div class="home-shell home-shell--section">
+      <div class="section-heading section-heading--center">
+        <p class="eyebrow">perguntas frequentes</p>
+        <h2 id="faq-title">Sobre este espaço técnico</h2>
+        <p>Respostas curtas para entender o foco e a proposta do conteúdo.</p>
+      </div>
+
+      {{if .FAQs}}
+      <div class="faq-grid">
+        {{range .FAQs}}
+        <details class="faq-card">
+          <summary>{{.Question}}</summary>
+          <div class="faq-card__content">
+            <p>{{.Answer}}</p>
+            {{if .LinkURL}}
+            <a href="{{.LinkURL}}">{{.LinkLabel}} -&gt;</a>
+            {{end}}
+          </div>
+        </details>
+        {{end}}
+      </div>
+      {{end}}
+    </div>
+  </section>
+</div>
+{{end}}
