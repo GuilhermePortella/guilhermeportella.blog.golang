@@ -1,0 +1,30 @@
+{{define "base"}}
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{{.Description}}">
+    {{with .CanonicalURL}}<link rel="canonical" href="{{.}}">{{end}}
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="{{.SiteName}}">
+    <meta property="og:title" content="{{.Title}}">
+    <meta property="og:description" content="{{.Description}}">
+    {{with .CanonicalURL}}<meta property="og:url" content="{{.}}">{{end}}
+    {{with .OpenGraphImage}}<meta property="og:image" content="{{.}}">{{end}}
+    {{with .TwitterCard}}<meta name="twitter:card" content="{{.}}">{{end}}
+    <meta name="twitter:title" content="{{.Title}}">
+    <meta name="twitter:description" content="{{.Description}}">
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+    <script src="/static/js/site.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
+    <main id="conteudo" class="site-main">
+      {{template "content" .}}
+      {{template "site-footer" .}}
+    </main>
+  </body>
+</html>
+{{end}}
