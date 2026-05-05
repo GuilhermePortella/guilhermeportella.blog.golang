@@ -84,14 +84,14 @@
     </div>
   </section>
 
-  <section id="cadernos" class="home-section home-section--articles" aria-labelledby="recent-title">
+  <section id="blog" class="home-section home-section--articles" aria-labelledby="recent-title">
     <div class="home-shell home-shell--section">
       <div class="section-heading section-heading--border">
         <div>
           <p class="eyebrow">artigos recentes</p>
           <h2 id="recent-title">Publicações recentes</h2>
         </div>
-        <a class="section-link" href="/cadernos">Ver todos -&gt;</a>
+        <a class="section-link" href="/blog">Ver todos -&gt;</a>
       </div>
 
       {{if .RecentArticles}}
@@ -99,7 +99,7 @@
         {{range .RecentArticles}}
         <li>
           <article class="article-card">
-            <a class="article-card__link" href="/cadernos/{{.Slug}}">
+            <a class="article-card__link" href="/blog/{{.Slug}}">
               <h3><span>{{.Title}}</span></h3>
               <div class="article-card__meta">
                 <time>{{.PublishedAt}}</time>

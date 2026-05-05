@@ -3,6 +3,7 @@ package httptransport
 import (
 	"log/slog"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -15,7 +16,7 @@ type homePageData struct {
 	SiteName       string
 	CurrentYear    int
 
-	Navigation     []homeNavLink
+	Navigation     []siteNavLink
 	Hero           homeHero
 	QuickMap       homeQuickMap
 	HeroCards      []homeLinkCard
@@ -24,9 +25,10 @@ type homePageData struct {
 	FAQs           []homeFAQ
 }
 
-type homeNavLink struct {
-	Label string
-	URL   string
+type siteNavLink struct {
+	Label  string
+	URL    string
+	Active bool
 }
 
 type homeHero struct {
@@ -88,7 +90,7 @@ type homeFAQ struct {
 
 func homeHandler(renderer *Renderer, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		data := newHomePageData(time.Now())
+		data := newHomePageData(time.Now(), r.URL.Path)
 
 		if err := renderer.Render(w, "home", data); err != nil {
 			logger.Error("render home page", "error", err, "request_id", getRequestID(r.Context()))
@@ -97,7 +99,7 @@ func homeHandler(renderer *Renderer, logger *slog.Logger) http.HandlerFunc {
 	}
 }
 
-func newHomePageData(now time.Time) homePageData {
+func newHomePageData(now time.Time, currentPath string) homePageData {
 	return homePageData{
 		Title:        "Guilherme Portella",
 		Description:  "Artigos técnicos sobre backend, arquitetura, Go, APIs e engenharia de software.",
@@ -105,18 +107,14 @@ func newHomePageData(now time.Time) homePageData {
 		TwitterCard:  "summary_large_image",
 		SiteName:     "Guilherme Portella",
 		CurrentYear:  now.Year(),
-		Navigation: []homeNavLink{
-			{Label: "Artigos", URL: "#cadernos"},
-			{Label: "Projetos", URL: "/curiosidades"},
-			{Label: "Notas técnicas", URL: "/notas"},
-		},
+		Navigation:   newSiteNavigation(currentPath),
 		Hero: homeHero{
 			Eyebrow:     "blog técnico",
 			Title:       "Engenharia de software, backend e arquitetura em notas práticas.",
 			Description: "Um espaço para organizar estudos, decisões técnicas e experiências reais com desenvolvimento de software.",
 			PrimaryAction: homeAction{
 				Label: "Ler artigos ->",
-				URL:   "#cadernos",
+				URL:   "#blog",
 			},
 			SecondaryAction: homeAction{
 				Label: "Ver projetos ->",
@@ -130,7 +128,7 @@ func newHomePageData(now time.Time) homePageData {
 				"boas práticas",
 			},
 			RoutesActionLabel: "Ir para os artigos recentes ->",
-			RoutesActionURL:   "#cadernos",
+			RoutesActionURL:   "#blog",
 		},
 		QuickMap: homeQuickMap{
 			Eyebrow:     "guia técnico",
@@ -145,7 +143,7 @@ func newHomePageData(now time.Time) homePageData {
 				{
 					Title:       "Artigos",
 					Description: "Conteúdos mais completos sobre engenharia e backend.",
-					URL:         "#cadernos",
+					URL:         "#blog",
 				},
 				{
 					Title:       "Projetos",
@@ -158,7 +156,7 @@ func newHomePageData(now time.Time) homePageData {
 			{
 				Title:       "Laboratório técnico",
 				Description: "Experimentos, estudos de caso e decisões de implementação.",
-				URL:         "#cadernos",
+				URL:         "#blog",
 			},
 			{
 				Title:       "Referências práticas",
@@ -171,7 +169,7 @@ func newHomePageData(now time.Time) homePageData {
 				Tag:         "artigos",
 				Title:       "Artigos técnicos",
 				Description: "Textos objetivos sobre backend, arquitetura, Go e construção de sistemas.",
-				URL:         "#cadernos",
+				URL:         "#blog",
 			},
 			{
 				Tag:         "projetos",
@@ -243,6 +241,33 @@ func newHomePageData(now time.Time) homePageData {
 			},
 		},
 	}
+}
+
+func newSiteNavigation(currentPath string) []siteNavLink {
+	links := []siteNavLink{
+		{Label: "Início", URL: "/"},
+		{Label: "blog", URL: "/blog"},
+		{Label: "Sobre", URL: "/about"},
+		{Label: "Curiosidades", URL: "/curiosidades"},
+		{Label: "Notas", URL: "/notas"},
+	}
+
+	pathname := normalizeSitePath(currentPath)
+	for index := range links {
+		clean := normalizeSitePath(links[index].URL)
+		links[index].Active = pathname == clean || (clean != "/" && strings.HasPrefix(pathname, clean))
+	}
+
+	return links
+}
+
+func normalizeSitePath(path string) string {
+	clean := strings.TrimRight(path, "/")
+	if clean == "" {
+		return "/"
+	}
+
+	return clean
 }
 
 func formatDatePTBR(date time.Time) string {

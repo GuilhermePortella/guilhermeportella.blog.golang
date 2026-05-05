@@ -1,12 +1,17 @@
 {{define "site-header"}}
-<header class="site-header">
-  <a class="brand" href="/" aria-label="Página inicial">Guilherme Portella</a>
-  {{if .Navigation}}
-  <nav class="site-nav" aria-label="Navegação principal">
-    {{range .Navigation}}
-    <a href="{{.URL}}">{{.Label}}</a>
+<nav class="site-nav sticky-top" aria-label="Primary">
+  <div class="container inner">
+    <a class="site-brand" href="/" aria-label="Página inicial">{{.SiteName}}</a>
+
+    {{if .Navigation}}
+    <ul class="site-links" role="list">
+      {{range .Navigation}}
+      <li>
+        <a href="{{.URL}}"{{if .Active}} class="active" aria-current="page"{{end}}>{{.Label}}</a>
+      </li>
+      {{end}}
+    </ul>
     {{end}}
-  </nav>
-  {{end}}
-</header>
+  </div>
+</nav>
 {{end}}

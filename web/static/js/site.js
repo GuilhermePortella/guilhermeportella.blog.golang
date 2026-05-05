@@ -1,20 +1,411 @@
 (() => {
-  const footer = document.querySelector("[data-footer-secret]");
+  function setupFooterSecret() {
+    const footer = document.querySelector("[data-footer-secret]");
 
-  if (!footer || window.location.pathname !== "/") {
-    return;
-  }
-
-  let lastActivation = 0;
-
-  footer.addEventListener("pointerup", () => {
-    const now = Date.now();
-
-    if (now - lastActivation <= 1400) {
-      window.location.assign("/convite");
+    if (!footer || window.location.pathname !== "/") {
       return;
     }
 
-    lastActivation = now;
-  });
+    let lastActivation = 0;
+
+    footer.addEventListener("pointerup", () => {
+      const now = Date.now();
+
+      if (now - lastActivation <= 1400) {
+        window.location.assign("/convite");
+        return;
+      }
+
+      lastActivation = now;
+    });
+  }
+
+  function setupBlogBrowser() {
+    const browser = document.querySelector("[data-blog-browser]");
+
+    if (!browser) {
+      return;
+    }
+
+    setupBlogSearch(browser);
+    setupBlogFilters(browser);
+  }
+
+  function setupNotesWall() {
+    const wall = document.querySelector("[data-notes-wall]");
+
+    if (!wall) {
+      return;
+    }
+
+    const cards = Array.from(wall.querySelectorAll("[data-note-card]"));
+    const filterButtons = Array.from(wall.querySelectorAll("[data-note-filter]"));
+    const countLabel = wall.querySelector("[data-notes-count-label]");
+    const emptyState = wall.querySelector("[data-notes-empty]");
+    const pagination = wall.querySelector("[data-notes-pagination]");
+    const perPage = Number.parseInt(wall.dataset.notesPerPage || "21", 10) || 21;
+
+    if (cards.length === 0 || filterButtons.length === 0) {
+      return;
+    }
+
+    const state = {
+      tag: "all",
+      page: 1,
+    };
+
+    const filteredCards = () => {
+      if (state.tag === "all") {
+        return cards;
+      }
+      return cards.filter((card) => card.dataset.tag === state.tag);
+    };
+
+    const setActiveFilter = () => {
+      for (const button of filterButtons) {
+        const active = button.dataset.noteFilter === state.tag;
+        button.classList.toggle("is-active", active);
+        if (active) {
+          button.setAttribute("aria-current", "true");
+        } else {
+          button.removeAttribute("aria-current");
+        }
+      }
+    };
+
+    const renderPagination = (totalPages) => {
+      if (!pagination) {
+        return;
+      }
+
+      pagination.textContent = "";
+      if (totalPages <= 1) {
+        return;
+      }
+
+      const addButton = (label, page, options = {}) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = label;
+        button.disabled = Boolean(options.disabled);
+        button.classList.toggle("is-active", Boolean(options.active));
+        if (options.active) {
+          button.setAttribute("aria-current", "page");
+        }
+        button.addEventListener("click", () => {
+          state.page = page;
+          render();
+        });
+        pagination.append(button);
+      };
+
+      addButton("Anterior", Math.max(1, state.page - 1), { disabled: state.page === 1 });
+      for (let page = 1; page <= totalPages; page += 1) {
+        addButton(String(page), page, { active: page === state.page });
+      }
+      addButton("Próxima", Math.min(totalPages, state.page + 1), { disabled: state.page === totalPages });
+    };
+
+    const render = () => {
+      const visible = filteredCards();
+      const totalPages = Math.max(1, Math.ceil(visible.length / perPage));
+      state.page = Math.min(Math.max(state.page, 1), totalPages);
+
+      const start = (state.page - 1) * perPage;
+      const pageCards = new Set(visible.slice(start, start + perPage));
+
+      for (const card of cards) {
+        card.hidden = !pageCards.has(card);
+      }
+
+      if (countLabel) {
+        countLabel.textContent = `Mostrando ${visible.length} de ${cards.length} bilhetes.`;
+      }
+
+      if (emptyState) {
+        emptyState.hidden = visible.length !== 0;
+      }
+
+      setActiveFilter();
+      renderPagination(totalPages);
+    };
+
+    for (const button of filterButtons) {
+      button.addEventListener("click", () => {
+        state.tag = button.dataset.noteFilter || "all";
+        state.page = 1;
+        render();
+      });
+    }
+
+    render();
+  }
+
+  function setupArticleTOC() {
+    const tocRoots = Array.from(document.querySelectorAll("[data-article-toc]"));
+
+    if (tocRoots.length === 0) {
+      return;
+    }
+
+    const firstTarget = tocRoots[0].dataset.target;
+    const article = firstTarget ? document.querySelector(firstTarget) : null;
+    if (!article) {
+      return;
+    }
+
+    const headings = Array.from(article.querySelectorAll("h2, h3")).filter((heading) => heading.id);
+    if (headings.length === 0) {
+      return;
+    }
+
+    const links = [];
+    for (const root of tocRoots) {
+      const nav = root.querySelector("nav");
+      if (!nav) {
+        continue;
+      }
+
+      const list = document.createElement("ul");
+      for (const heading of headings) {
+        const item = document.createElement("li");
+        const link = document.createElement("a");
+        link.href = `#${heading.id}`;
+        link.textContent = heading.textContent.trim();
+        link.dataset.level = heading.tagName === "H2" ? "2" : "3";
+        item.append(link);
+        list.append(item);
+        links.push(link);
+      }
+      nav.append(list);
+    }
+
+    const setActive = (id) => {
+      for (const link of links) {
+        link.classList.toggle("is-active", link.hash === `#${id}`);
+      }
+    };
+
+    if (!("IntersectionObserver" in window)) {
+      setActive(headings[0].id);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setActive(entry.target.id);
+          }
+        }
+      },
+      { rootMargin: "0px 0px -70% 0px", threshold: 0.1 },
+    );
+
+    for (const heading of headings) {
+      observer.observe(heading);
+    }
+    setActive(headings[0].id);
+  }
+
+  function setupBlogSearch(browser) {
+    const form = browser.querySelector("[data-blog-search-form]");
+    const input = browser.querySelector("[data-blog-search-input]");
+    const results = browser.querySelector("[data-blog-search-results]");
+    const cards = Array.from(browser.querySelectorAll("[data-blog-card]"));
+
+    if (!form || !input || !results) {
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    input.value = params.get("q") || "";
+
+    const normalize = (value) => value.toLocaleLowerCase("pt-BR");
+
+    const renderSearch = () => {
+      const query = input.value.trim();
+      results.textContent = "";
+
+      if (!query) {
+        results.hidden = true;
+        return;
+      }
+
+      const needle = normalize(query);
+      const matches = cards
+        .filter((card) => normalize(card.dataset.search || card.textContent || "").includes(needle))
+        .slice(0, 10);
+
+      if (matches.length === 0) {
+        const empty = document.createElement("p");
+        empty.textContent = `Nenhum resultado para "${query}".`;
+        results.append(empty);
+      } else {
+        const list = document.createElement("ul");
+        for (const card of matches) {
+          const item = document.createElement("li");
+          const link = document.createElement("a");
+          link.href = card.dataset.url || card.getAttribute("href") || "#";
+          link.textContent = card.dataset.title || card.textContent.trim();
+          item.append(link);
+          list.append(item);
+        }
+        results.append(list);
+      }
+
+      results.hidden = false;
+    };
+
+    input.addEventListener("input", renderSearch);
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const nextParams = new URLSearchParams(window.location.search);
+      const query = input.value.trim();
+      if (query) {
+        nextParams.set("q", query);
+      } else {
+        nextParams.delete("q");
+      }
+
+      const search = nextParams.toString();
+      const nextURL = `${window.location.pathname}${search ? `?${search}` : ""}${window.location.hash}`;
+      window.history.replaceState(null, "", nextURL);
+      renderSearch();
+    });
+
+    window.addEventListener("popstate", () => {
+      const nextParams = new URLSearchParams(window.location.search);
+      input.value = nextParams.get("q") || "";
+      renderSearch();
+    });
+
+    renderSearch();
+  }
+
+  function setupBlogFilters(browser) {
+    const groups = Array.from(browser.querySelectorAll("[data-blog-group]"));
+    const allButton = browser.querySelector("[data-blog-filter-all]");
+    const yearButton = browser.querySelector("[data-blog-filter-year]");
+    const yearSelect = browser.querySelector("[data-blog-year-select]");
+    const monthButtons = Array.from(browser.querySelectorAll("[data-blog-filter-month]"));
+    const activeLabel = browser.querySelector("[data-blog-active-label]");
+    const emptyFilter = browser.querySelector("[data-blog-empty-filter]");
+
+    if (!allButton || !yearButton || !yearSelect) {
+      return;
+    }
+
+    const state = {
+      mode: "all",
+      year: yearSelect.value || "",
+      monthId: "",
+    };
+
+    const setActive = (element, active) => {
+      if (!element) {
+        return;
+      }
+
+      element.classList.toggle("is-active", active);
+      if (active) {
+        element.setAttribute("aria-current", "true");
+      } else {
+        element.removeAttribute("aria-current");
+      }
+    };
+
+    const currentMonthLabel = () => {
+      const activeMonth = monthButtons.find((button) => button.dataset.monthId === state.monthId);
+      return activeMonth?.dataset.label || "Filtro ativo";
+    };
+
+    const updateMonthButtons = () => {
+      for (const button of monthButtons) {
+        button.hidden = button.dataset.year !== state.year;
+      }
+    };
+
+    const applyFilter = () => {
+      let visibleGroups = 0;
+
+      for (const group of groups) {
+        let visible = true;
+
+        if (state.mode === "year") {
+          visible = group.dataset.year === state.year;
+        } else if (state.mode === "month") {
+          visible = group.dataset.monthId === state.monthId;
+        }
+
+        group.hidden = !visible;
+        if (visible) {
+          visibleGroups += 1;
+        }
+      }
+
+      if (emptyFilter) {
+        emptyFilter.hidden = visibleGroups !== 0;
+      }
+
+      if (activeLabel) {
+        if (state.mode === "all") {
+          activeLabel.textContent = "Mostrando todos os textos";
+        } else if (state.mode === "year") {
+          activeLabel.textContent = `Ano ${state.year}`;
+        } else {
+          activeLabel.textContent = currentMonthLabel();
+        }
+      }
+
+      setActive(allButton, state.mode === "all");
+      setActive(yearButton, state.mode === "year");
+
+      for (const button of monthButtons) {
+        setActive(button, state.mode === "month" && button.dataset.monthId === state.monthId);
+      }
+
+      updateMonthButtons();
+    };
+
+    allButton.addEventListener("click", () => {
+      state.mode = "all";
+      state.year = yearSelect.value || state.year;
+      state.monthId = "";
+      applyFilter();
+    });
+
+    yearButton.addEventListener("click", () => {
+      state.mode = "year";
+      state.year = yearSelect.value || state.year;
+      state.monthId = "";
+      applyFilter();
+    });
+
+    yearSelect.addEventListener("change", () => {
+      state.mode = "year";
+      state.year = yearSelect.value;
+      state.monthId = "";
+      applyFilter();
+    });
+
+    for (const button of monthButtons) {
+      button.addEventListener("click", () => {
+        state.mode = "month";
+        state.year = button.dataset.year || state.year;
+        state.monthId = button.dataset.monthId || "";
+        yearSelect.value = state.year;
+        applyFilter();
+      });
+    }
+
+    applyFilter();
+  }
+
+  setupFooterSecret();
+  setupBlogBrowser();
+  setupNotesWall();
+  setupArticleTOC();
 })();
