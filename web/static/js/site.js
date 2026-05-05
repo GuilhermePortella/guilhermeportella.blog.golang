@@ -1,4 +1,13 @@
 (() => {
+  function setHidden(element, hidden) {
+    if (!element) {
+      return;
+    }
+
+    element.hidden = hidden;
+    element.classList.toggle("is-hidden", hidden);
+  }
+
   function setupFooterSecret() {
     const footer = document.querySelector("[data-footer-secret]");
 
@@ -115,7 +124,7 @@
       const pageCards = new Set(visible.slice(start, start + perPage));
 
       for (const card of cards) {
-        card.hidden = !pageCards.has(card);
+        setHidden(card, !pageCards.has(card));
       }
 
       if (countLabel) {
@@ -123,7 +132,7 @@
       }
 
       if (emptyState) {
-        emptyState.hidden = visible.length !== 0;
+        setHidden(emptyState, visible.length !== 0);
       }
 
       setActiveFilter();
@@ -221,14 +230,18 @@
     const params = new URLSearchParams(window.location.search);
     input.value = params.get("q") || "";
 
-    const normalize = (value) => value.toLocaleLowerCase("pt-BR");
+    const normalize = (value) =>
+      value
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLocaleLowerCase("pt-BR");
 
     const renderSearch = () => {
       const query = input.value.trim();
       results.textContent = "";
 
       if (!query) {
-        results.hidden = true;
+        setHidden(results, true);
         return;
       }
 
@@ -254,7 +267,7 @@
         results.append(list);
       }
 
-      results.hidden = false;
+      setHidden(results, false);
     };
 
     input.addEventListener("input", renderSearch);
@@ -324,7 +337,7 @@
 
     const updateMonthButtons = () => {
       for (const button of monthButtons) {
-        button.hidden = button.dataset.year !== state.year;
+        setHidden(button, button.dataset.year !== state.year);
       }
     };
 
@@ -340,14 +353,14 @@
           visible = group.dataset.monthId === state.monthId;
         }
 
-        group.hidden = !visible;
+        setHidden(group, !visible);
         if (visible) {
           visibleGroups += 1;
         }
       }
 
       if (emptyFilter) {
-        emptyFilter.hidden = visibleGroups !== 0;
+        setHidden(emptyFilter, visibleGroups !== 0);
       }
 
       if (activeLabel) {

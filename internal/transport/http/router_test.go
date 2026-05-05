@@ -43,7 +43,7 @@ func TestNewRouterHome(t *testing.T) {
 		}
 	}
 
-	if !strings.Contains(body, `<script src="/static/js/site.js" defer></script>`) {
+	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260505-filters" defer></script>`) {
 		t.Fatalf("body does not contain footer script")
 	}
 
