@@ -47,8 +47,311 @@ func TestNewRouterHome(t *testing.T) {
 		t.Fatalf("body does not contain footer script")
 	}
 
+	if !strings.Contains(body, `<nav class="site-nav sticky-top" aria-label="Primary">`) {
+		t.Fatalf("body does not contain site navigation")
+	}
+
+	if !strings.Contains(body, `<a class="site-brand" href="/" aria-label="Página inicial">Guilherme Portella</a>`) {
+		t.Fatalf("body does not contain site brand")
+	}
+
+	if !strings.Contains(body, `<a href="/" class="active" aria-current="page">Início</a>`) {
+		t.Fatalf("body does not mark home navigation link as active")
+	}
+
 	if strings.Contains(body, "HomeAboutSection") {
 		t.Fatalf("body contains old analysis content")
+	}
+}
+
+func TestNewSiteNavigationActiveRoutes(t *testing.T) {
+	tests := []struct {
+		name       string
+		path       string
+		wantActive string
+	}{
+		{name: "home", path: "/", wantActive: "Início"},
+		{name: "blog", path: "/blog", wantActive: "blog"},
+		{name: "blog slug", path: "/blog/um-post", wantActive: "blog"},
+		{name: "trailing slash", path: "/curiosidades/", wantActive: "Curiosidades"},
+		{name: "notes", path: "/notas", wantActive: "Notas"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			var gotActive []string
+			for _, link := range newSiteNavigation(test.path) {
+				if link.Active {
+					gotActive = append(gotActive, link.Label)
+				}
+			}
+
+			if len(gotActive) != 1 || gotActive[0] != test.wantActive {
+				t.Fatalf("active links = %v, want [%s]", gotActive, test.wantActive)
+			}
+		})
+	}
+}
+
+func TestNewRouterBlog(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/blog", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+
+	body := recorder.Body.String()
+	for _, expected := range []string{
+		`<div class="blog-page" aria-label="Blog">`,
+		`<a href="/blog" class="active" aria-current="page">blog</a>`,
+		"Textos longos sobre engenharia, arquitetura e decisões que merecem ficar.",
+		"Ir para curiosidades -&gt;",
+		`data-blog-browser`,
+		"Encontrar textos",
+		"Filtro de ano e meses",
+		"2026 - Maio",
+		"2026 - Abril",
+		"Estruturando um serviço Go para crescer com segurança",
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("body does not contain %q", expected)
+		}
+	}
+
+	if strings.Contains(body, "/articles") {
+		t.Fatalf("body contains old articles route")
+	}
+
+	if strings.Contains(body, "Ir para referências") {
+		t.Fatalf("body contains old references label")
+	}
+}
+
+func TestPrepareBlogArticlesSearchTextExcludesTags(t *testing.T) {
+	articles := prepareBlogArticles([]blogArticle{
+		{
+			Title:       "Titulo simples",
+			Summary:     "Resumo curto",
+			Content:     "Conteudo do artigo",
+			PublishedAt: "2026-05-04",
+			Tags:        []string{"tag-apenas-metadado"},
+		},
+	})
+
+	if len(articles) != 1 {
+		t.Fatalf("len(articles) = %d, want 1", len(articles))
+	}
+
+	if strings.Contains(articles[0].SearchText, "tag-apenas-metadado") {
+		t.Fatalf("SearchText = %q, want tags excluded", articles[0].SearchText)
+	}
+
+	for _, expected := range []string{"Titulo simples", "Resumo curto", "Conteudo do artigo"} {
+		if !strings.Contains(articles[0].SearchText, expected) {
+			t.Fatalf("SearchText = %q, want %q", articles[0].SearchText, expected)
+		}
+	}
+}
+
+func TestNewRouterBlogTrailingSlash(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/blog/", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+}
+
+func TestNewRouterNotes(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/notas", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+
+	body := recorder.Body.String()
+	for _, expected := range []string{
+		`<div class="notes-page" aria-label="Notas">`,
+		`<a href="/notas" class="active" aria-current="page">Notas</a>`,
+		`data-notes-wall`,
+		`data-notes-per-page="21"`,
+		`data-note-filter="all"`,
+		`Parede inteira`,
+		`data-note-filter="Go"`,
+		`data-note-filter="nota"`,
+		`Primeira nota da parede`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("body does not contain %q", expected)
+		}
+	}
+
+	for _, unwanted := range []string{
+		`data-blog-search-input`,
+		`Buscar por título`,
+	} {
+		if strings.Contains(body, unwanted) {
+			t.Fatalf("body contains unwanted notes search UI %q", unwanted)
+		}
+	}
+}
+
+func TestNewRouterNotesTrailingSlash(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/notas/", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+}
+
+func TestLoadNotesTagFallbackAndSort(t *testing.T) {
+	notes, err := loadNotes(filepath.Join("..", "..", "..", "content", "notes"))
+	if err != nil {
+		t.Fatalf("loadNotes() error = %v", err)
+	}
+
+	if len(notes) == 0 {
+		t.Fatal("len(notes) = 0, want notes")
+	}
+
+	if notes[0].Title != "Primeira nota da parede" {
+		t.Fatalf("notes[0].Title = %q, want Primeira nota da parede", notes[0].Title)
+	}
+
+	var foundFallback bool
+	for _, note := range notes {
+		if note.Tag == "nota" {
+			foundFallback = true
+			break
+		}
+	}
+	if !foundFallback {
+		t.Fatal("notes do not include fallback tag nota")
+	}
+
+	stats := noteTagStats(notes)
+	if len(stats) == 0 || stats[0].Tag != "arquitetura" {
+		t.Fatalf("stats = %#v, want first tag arquitetura", stats)
+	}
+}
+
+func TestNewRouterBlogArticle(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/blog/um-comeco-sem-pressa", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+
+	body := recorder.Body.String()
+	for _, expected := range []string{
+		`<article class="article-page" aria-labelledby="article-title">`,
+		`<a href="/blog" class="active" aria-current="page">blog</a>`,
+		`<h1 id="article-title">Estruturando um serviço Go para crescer com segurança</h1>`,
+		`<h2 id="um-comeco-que-nao-precisa-correr">Um começo que não precisa correr</h2>`,
+		`data-article-toc`,
+		`application/ld+json`,
+		"1 min de leitura",
+		"Voltar para blog -&gt;",
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("body does not contain %q", expected)
+		}
+	}
+}
+
+func TestNewRouterBlogArticleFrontmatterSlug(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/blog/separando-camadas", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+
+	if body := recorder.Body.String(); !strings.Contains(body, `<h1 id="article-title">Separando domínio, transporte e infraestrutura</h1>`) {
+		t.Fatalf("body does not contain article matched by frontmatter slug")
+	}
+}
+
+func TestNewRouterBlogArticleNotFound(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/blog/nao-existe", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusNotFound {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusNotFound)
+	}
+}
+
+func TestMarkdownArticleLookupAndConversion(t *testing.T) {
+	article, err := getMarkdownArticleBySlug(filepath.Join("..", "..", "..", "content", "articles"), "Um Começo sem Pressa")
+	if err != nil {
+		t.Fatalf("getMarkdownArticleBySlug() error = %v", err)
+	}
+
+	if article.Slug != "um-comeco-sem-pressa" {
+		t.Fatalf("Slug = %q, want um-comeco-sem-pressa", article.Slug)
+	}
+
+	if !strings.Contains(string(article.HTML), `<h2 id="um-comeco-que-nao-precisa-correr">`) {
+		t.Fatalf("HTML does not contain heading id")
+	}
+
+	if !strings.Contains(stripMarkdown(article.Content), "Um começo que não precisa correr") {
+		t.Fatalf("stripMarkdown() did not preserve searchable text")
+	}
+}
+
+func TestGroupBlogArticlesByMonth(t *testing.T) {
+	articles := prepareBlogArticles([]blogArticle{
+		{Title: "Old", Slug: "old", PublishedAt: "2025-12-03"},
+		{Title: "Recent", Slug: "recent", PublishedAt: "2026-05-03"},
+		{Title: "Same month", Slug: "same-month", PublishedAt: "2026-05-01"},
+		{Title: "Middle", Slug: "middle", PublishedAt: "2026-04-29"},
+	})
+
+	groups := groupBlogArticlesByMonth(articles)
+	if len(groups) != 3 {
+		t.Fatalf("len(groups) = %d, want 3", len(groups))
+	}
+
+	if groups[0].ID != "2026-05" || groups[0].Label != "2026 - Maio" {
+		t.Fatalf("groups[0] = %#v, want 2026-05 / 2026 - Maio", groups[0])
+	}
+
+	if len(groups[0].Items) != 2 {
+		t.Fatalf("len(groups[0].Items) = %d, want 2", len(groups[0].Items))
+	}
+
+	if groups[1].ID != "2026-04" || groups[2].ID != "2025-12" {
+		t.Fatalf("group order = %s, %s, %s; want 2026-05, 2026-04, 2025-12", groups[0].ID, groups[1].ID, groups[2].ID)
+	}
+
+	if articles[0].DateLabel != "3 de maio de 2026" {
+		t.Fatalf("DateLabel = %q, want 3 de maio de 2026", articles[0].DateLabel)
 	}
 }
 
@@ -95,6 +398,8 @@ func newTestRouter(t *testing.T) http.Handler {
 	handler, err := NewRouter(RouterOptions{
 		StaticDir:    filepath.Join(root, "web", "static"),
 		TemplatesDir: filepath.Join(root, "web", "templates"),
+		ContentDir:   filepath.Join(root, "content", "articles"),
+		NotesDir:     filepath.Join(root, "content", "notes"),
 	}, testLogger())
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)

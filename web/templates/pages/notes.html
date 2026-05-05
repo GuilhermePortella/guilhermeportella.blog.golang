@@ -1,0 +1,98 @@
+{{define "notes"}}{{template "base" .}}{{end}}
+
+{{define "content"}}
+<div class="notes-page" aria-label="Notas">
+  <section class="blog-hero notes-hero" aria-labelledby="notes-title">
+    <div class="blog-hero__orb blog-hero__orb--warm" aria-hidden="true"></div>
+    <div class="blog-hero__orb blog-hero__orb--cool" aria-hidden="true"></div>
+
+    <div class="blog-shell blog-hero__grid">
+      <div class="blog-hero__intro">
+        <p class="eyebrow eyebrow--wide">{{.Hero.Eyebrow}}</p>
+        <h1 id="notes-title">{{.Hero.Title}}</h1>
+        <p class="blog-hero__text">{{.Hero.Description}}</p>
+
+        <div class="blog-actions" aria-label="Ações principais">
+          <a class="button button--primary" href="/blog">Ler blog -&gt;</a>
+          <a class="button button--secondary" href="/curiosidades">Ir para curiosidades -&gt;</a>
+        </div>
+      </div>
+
+      <div class="blog-hero__aside">
+        <article class="blog-guide-card" aria-labelledby="notes-guide-title">
+          <p class="eyebrow eyebrow--spaced">{{.Hero.Guide.Eyebrow}}</p>
+          <h2 id="notes-guide-title">{{.Hero.Guide.Title}}</h2>
+          <p>{{.Hero.Guide.Description}}</p>
+
+          {{if .Hero.Guide.Items}}
+          <ul>
+            {{range .Hero.Guide.Items}}
+            <li>
+              <span aria-hidden="true"></span>
+              <span>{{.}}</span>
+            </li>
+            {{end}}
+          </ul>
+          {{end}}
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="notes-board" data-notes-wall data-notes-per-page="{{.PerPage}}" aria-labelledby="notes-board-title">
+    <div class="notes-board__intro">
+      <p class="eyebrow eyebrow--spaced">pinos</p>
+      <h2 id="notes-board-title">Parede de bilhetes</h2>
+      <p>Escolha um pino para ver só as notas daquela parte da parede.</p>
+    </div>
+
+    {{if .Notes}}
+    <div class="notes-pins" aria-label="Filtrar notas por pino">
+      <button type="button" class="notes-pin is-active" data-note-filter="all" aria-current="true">
+        Parede inteira
+        <span>{{len .Notes}}</span>
+      </button>
+
+      {{range .TagStats}}
+      <button type="button" class="notes-pin" data-note-filter="{{.Tag}}">
+        {{.Tag}}
+        <span>{{.Count}}</span>
+      </button>
+      {{end}}
+    </div>
+
+    <p class="notes-count-label" data-notes-count-label>Mostrando {{len .Notes}} de {{len .Notes}} bilhetes.</p>
+
+    <div class="notes-wall" data-notes-list>
+      {{range .Notes}}
+      <article class="note-card" data-note-card data-tag="{{.Tag}}">
+        <div class="note-card__pin" aria-hidden="true"></div>
+
+        <div class="note-card__meta">
+          <span>{{.Tag}}</span>
+          {{if .Date}}
+          <time datetime="{{.Date}}">{{if .Label}}{{.Label}}{{else}}{{.DateLabel}}{{end}}</time>
+          {{else}}
+          <span>{{if .Label}}{{.Label}}{{else}}{{.DateLabel}}{{end}}</span>
+          {{end}}
+        </div>
+
+        {{if .Title}}
+        <h3>{{.Title}}</h3>
+        {{end}}
+
+        <div class="note-card__content">
+          {{.HTML}}
+        </div>
+      </article>
+      {{end}}
+    </div>
+
+    <p class="notes-empty" data-notes-empty hidden>Nenhuma nota para este pino.</p>
+    <nav class="notes-pagination" data-notes-pagination aria-label="Paginação de notas"></nav>
+    {{else}}
+    <p class="notes-empty">Ainda não publiquei notas por aqui.</p>
+    {{end}}
+  </section>
+</div>
+{{end}}
