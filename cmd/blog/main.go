@@ -30,6 +30,8 @@ func run() error {
 	handler, err := httptransport.NewRouter(httptransport.RouterOptions{
 		StaticDir:    cfg.Paths.StaticDir,
 		TemplatesDir: cfg.Paths.TemplatesDir,
+		ContentDir:   cfg.Paths.ContentDir,
+		NotesDir:     cfg.Paths.NotesDir,
 	}, log)
 	if err != nil {
 		return fmt.Errorf("build router: %w", err)
