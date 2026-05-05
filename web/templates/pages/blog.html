@@ -1,0 +1,175 @@
+{{define "blog"}}{{template "base" .}}{{end}}
+
+{{define "content"}}
+<div class="blog-page" aria-label="Blog">
+  <section class="blog-hero" aria-labelledby="blog-title">
+    <div class="blog-hero__orb blog-hero__orb--warm" aria-hidden="true"></div>
+    <div class="blog-hero__orb blog-hero__orb--cool" aria-hidden="true"></div>
+
+    <div class="blog-shell blog-hero__grid">
+      <div class="blog-hero__intro">
+        <p class="eyebrow eyebrow--wide">{{.Hero.Eyebrow}}</p>
+        <h1 id="blog-title">{{.Hero.Title}}</h1>
+        <p class="blog-hero__text">{{.Hero.Description}}</p>
+
+        <div class="blog-actions" aria-label="Ações principais">
+          <a class="button button--primary" href="{{.Hero.PrimaryAction.URL}}">{{.Hero.PrimaryAction.Label}}</a>
+          <a class="button button--secondary" href="{{.Hero.SecondaryAction.URL}}">{{.Hero.SecondaryAction.Label}}</a>
+        </div>
+
+        {{if .Hero.Tags}}
+        <ul class="blog-tags" aria-label="Temas deste blog">
+          {{range .Hero.Tags}}
+          <li>{{.}}</li>
+          {{end}}
+        </ul>
+        {{end}}
+      </div>
+
+      <div class="blog-hero__aside">
+        <article class="blog-guide-card" aria-labelledby="blog-guide-title">
+          <p class="eyebrow eyebrow--spaced">{{.Hero.Guide.Eyebrow}}</p>
+          <h2 id="blog-guide-title">{{.Hero.Guide.Title}}</h2>
+          <p>{{.Hero.Guide.Description}}</p>
+
+          {{if .Hero.Guide.Items}}
+          <ul>
+            {{range .Hero.Guide.Items}}
+            <li>
+              <span aria-hidden="true"></span>
+              <span>{{.}}</span>
+            </li>
+            {{end}}
+          </ul>
+          {{end}}
+        </article>
+
+        <aside class="blog-note-card">
+          <p class="eyebrow eyebrow--spaced">{{.Hero.Note.Eyebrow}}</p>
+          <p>{{.Hero.Note.Description}}</p>
+          {{if .Hero.Note.LinkURL}}
+          <a href="{{.Hero.Note.LinkURL}}">{{.Hero.Note.LinkLabel}}</a>
+          {{end}}
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="blog-browser" data-blog-browser aria-labelledby="blog-browser-title">
+    <div class="blog-browser__grid">
+      <div class="blog-tools">
+        <section class="blog-search" aria-labelledby="blog-search-title">
+          <div>
+            <p class="eyebrow eyebrow--spaced">busca</p>
+            <h2 id="blog-search-title">Encontrar textos</h2>
+            <p>Digite um título, tema ou palavra que você lembra.</p>
+          </div>
+
+          <form class="blog-search__form" data-blog-search-form>
+            <input
+              type="search"
+              name="q"
+              placeholder="Buscar por título, resumo ou conteúdo..."
+              aria-label="Buscar textos"
+              data-blog-search-input
+            >
+            <button type="submit">Buscar</button>
+          </form>
+
+          <div class="blog-search__results" data-blog-search-results hidden></div>
+        </section>
+
+        <nav class="blog-filter" aria-label="Filtro de ano e meses">
+          <div>
+            <p class="eyebrow eyebrow--spaced">filtros</p>
+            <p>Escolha todos, um ano inteiro ou um mês específico.</p>
+          </div>
+
+          <div class="blog-filter__controls">
+            <button type="button" class="blog-filter__button is-active" data-blog-filter-all{{if not .Years}} disabled{{end}}>Todos</button>
+
+            <label for="blog-year-select">Ano:</label>
+            <select id="blog-year-select" data-blog-year-select{{if not .Years}} disabled{{end}}>
+              {{range .Years}}
+              <option value="{{.}}">{{.}}</option>
+              {{end}}
+            </select>
+          </div>
+
+          {{if .Groups}}
+          <div class="blog-filter__months" data-blog-filter-months>
+            <button type="button" class="blog-filter__button" data-blog-filter-year>Todos do ano</button>
+            {{range .Groups}}
+            <button
+              type="button"
+              class="blog-filter__button"
+              data-blog-filter-month
+              data-year="{{.Key.Year}}"
+              data-month-id="{{.ID}}"
+              data-label="{{.Label}}"
+            >{{.MonthLabel}}</button>
+            {{end}}
+          </div>
+          {{end}}
+        </nav>
+
+        <p class="blog-active-label" data-blog-active-label>Mostrando todos os textos</p>
+      </div>
+
+      <aside class="blog-browser__aside">
+        <p class="eyebrow eyebrow--spaced">leitura</p>
+        <h2 id="blog-browser-title">Notas rápidas, quando o dia pede leveza</h2>
+        <p>As notas são bilhetes curtos. O blog guarda os textos com mais contexto.</p>
+        <a href="/notas">Ver notas -&gt;</a>
+      </aside>
+    </div>
+
+    {{if .Groups}}
+    <p class="blog-empty" data-blog-empty-filter hidden>Nenhum texto para este filtro.</p>
+    <section class="blog-groups" aria-label="Textos agrupados por mês">
+      {{range .Groups}}
+      <div class="blog-group" data-blog-group data-year="{{.Key.Year}}" data-month-id="{{.ID}}">
+        <div class="blog-group__heading">
+          <h2 id="{{.ID}}">{{.Label}}</h2>
+          <span>{{len .Items}} textos</span>
+        </div>
+
+        <ul class="blog-card-grid">
+          {{range .Items}}
+          <li>
+            <a
+              class="blog-card"
+              href="/blog/{{.Slug}}"
+              data-blog-card
+              data-title="{{.Title}}"
+              data-url="/blog/{{.Slug}}"
+              data-search="{{.SearchText}}"
+            >
+              <article>
+                <h3><span>{{.Title}}</span></h3>
+                <div class="blog-card__meta">
+                  <time datetime="{{.PublishedAt}}">{{.DateLabel}}</time>
+                  {{if .Tags}}
+                  <span>
+                    {{range $index, $tag := .Tags}}{{if $index}} / {{end}}{{$tag}}{{end}}
+                  </span>
+                  {{end}}
+                </div>
+                {{with .Summary}}
+                <p>{{.}}</p>
+                {{end}}
+                <span class="blog-card__action">Ler texto -&gt;</span>
+              </article>
+            </a>
+          </li>
+          {{end}}
+        </ul>
+      </div>
+      {{end}}
+    </section>
+    {{else}}
+    <p class="blog-empty">Nenhum texto publicado ainda.</p>
+    {{end}}
+  </section>
+</div>
+{{end}}

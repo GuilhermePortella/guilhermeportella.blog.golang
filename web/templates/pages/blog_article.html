@@ -1,0 +1,83 @@
+{{define "blog_article"}}{{template "base" .}}{{end}}
+
+{{define "content"}}
+<article class="article-page" aria-labelledby="article-title">
+  <section class="article-hero">
+    <div class="article-hero__orb article-hero__orb--warm" aria-hidden="true"></div>
+    <div class="article-hero__orb article-hero__orb--cool" aria-hidden="true"></div>
+
+    <div class="article-shell article-hero__inner">
+      <nav class="article-breadcrumbs" aria-label="Caminho">
+        <a href="/">inicio</a>
+        <span aria-hidden="true">/</span>
+        <a href="/blog">blog</a>
+      </nav>
+
+      <div class="article-hero__copy">
+        <p class="eyebrow eyebrow--wide">texto</p>
+        <h1 id="article-title">{{.Article.Title}}</h1>
+        {{with .Article.Summary}}
+        <p class="article-hero__summary">{{.}}</p>
+        {{end}}
+
+        <div class="article-meta">
+          <span>{{.Article.Author}}</span>
+          <span aria-hidden="true">/</span>
+          {{if .Article.DateAttr}}
+          <time datetime="{{.Article.DateAttr}}">{{.Article.DateLabel}}</time>
+          {{else}}
+          <span>{{.Article.DateLabel}}</span>
+          {{end}}
+          <span aria-hidden="true">/</span>
+          <span>{{.Article.ReadingMinutes}} min de leitura</span>
+        </div>
+
+        {{if .Article.Tags}}
+        <ul class="article-tags" aria-label="Temas do texto">
+          {{range .Article.Tags}}
+          <li>{{.}}</li>
+          {{end}}
+        </ul>
+        {{end}}
+      </div>
+    </div>
+  </section>
+
+  <section class="article-shell article-reading">
+    <details class="article-toc article-toc--mobile" data-article-toc data-target="#article-content">
+      <summary>Sumário</summary>
+      <nav aria-label="Sumário do texto"></nav>
+    </details>
+
+    <div class="article-layout">
+      <div id="article-content" class="article-content-card">
+        <div class="prose">
+          {{.Article.HTML}}
+        </div>
+      </div>
+
+      <aside class="article-aside">
+        <div class="article-toc article-toc--desktop" data-article-toc data-target="#article-content">
+          <div class="article-toc__title">Sumário</div>
+          <nav aria-label="Sumário do texto"></nav>
+        </div>
+
+        <div class="article-side-card">
+          <p class="eyebrow eyebrow--spaced">leitura</p>
+          <p>Se preferir frases curtas, veja as notas soltas do dia a dia.</p>
+          <a href="/notas">Ir para notas -&gt;</a>
+        </div>
+      </aside>
+    </div>
+
+    <div class="article-reading__links">
+      <a href="/blog">Voltar para blog -&gt;</a>
+      <a href="/notas">Ver notas soltas -&gt;</a>
+    </div>
+  </section>
+
+  {{if .Article.JSONLD}}
+  <script type="application/ld+json">{{.Article.JSONLD}}</script>
+  {{end}}
+</article>
+{{end}}
