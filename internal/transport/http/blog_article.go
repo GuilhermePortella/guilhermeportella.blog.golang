@@ -16,7 +16,10 @@ type blogArticlePageData struct {
 	Description    string
 	CanonicalURL   string
 	OpenGraphImage string
+	OpenGraphType  string
 	TwitterCard    string
+	Keywords       string
+	Locale         string
 	SiteName       string
 	CurrentYear    int
 
@@ -69,6 +72,7 @@ func newBlogArticlePageData(now time.Time, currentPath string, contentDir string
 	title := fallbackString(fm.SEO.Title, fm.Title)
 	description := fallbackString(fm.SEO.Description, fallbackString(fm.Summary, "Texto do blog."))
 	canonicalURL := fallbackString(fm.SEO.CanonicalURL, "https://guilhermeportella.github.io/blog/"+article.Slug)
+	locale := fallbackString(fm.SEO.Locale, "pt-BR")
 	parsed, hasDate := parseBlogDate(fm.PublishedAt)
 	dateLabel := "Sem data"
 	dateAttr := ""
@@ -90,14 +94,17 @@ func newBlogArticlePageData(now time.Time, currentPath string, contentDir string
 		HTML:           article.HTML,
 		ReadingMinutes: readingTimeFromHTML(article.HTML),
 	}
-	full.JSONLD = buildArticleJSONLD(full, description, canonicalURL, fm.SEO.Image)
+	full.JSONLD = buildArticleJSONLD(full, description, canonicalURL, fm.SEO.Image, fm.JSONLD)
 
 	return blogArticlePageData{
 		Title:          title,
 		Description:    description,
 		CanonicalURL:   canonicalURL,
 		OpenGraphImage: fm.SEO.Image,
+		OpenGraphType:  "article",
 		TwitterCard:    "summary_large_image",
+		Keywords:       strings.Join(fm.Keywords, ", "),
+		Locale:         locale,
 		SiteName:       "Guilherme Portella",
 		CurrentYear:    now.Year(),
 		Navigation:     newSiteNavigation(currentPath),
@@ -120,7 +127,15 @@ func readingTimeFromHTML(value template.HTML) int {
 	return minutes
 }
 
-func buildArticleJSONLD(article blogArticleFull, description string, canonicalURL string, image string) template.JS {
+func buildArticleJSONLD(article blogArticleFull, description string, canonicalURL string, image string, frontmatterJSONLD map[string]any) template.JS {
+	if len(frontmatterJSONLD) > 0 {
+		raw, err := json.Marshal(frontmatterJSONLD)
+		if err != nil {
+			return ""
+		}
+		return template.JS(raw)
+	}
+
 	data := map[string]any{
 		"@context":         "https://schema.org",
 		"@type":            "Article",

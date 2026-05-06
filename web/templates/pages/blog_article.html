@@ -1,5 +1,9 @@
 {{define "blog_article"}}{{template "base" .}}{{end}}
 
+{{define "head-extra"}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css">
+{{end}}
+
 {{define "content"}}
 <article class="article-page" aria-labelledby="article-title">
   <section class="article-hero">

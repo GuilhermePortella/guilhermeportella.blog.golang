@@ -217,6 +217,40 @@
     setActive(headings[0].id);
   }
 
+  function setupArticleCodeCopy() {
+    const article = document.querySelector("#article-content .prose");
+
+    if (!article || !navigator.clipboard) {
+      return;
+    }
+
+    const pres = Array.from(article.querySelectorAll("pre"));
+    for (const pre of pres) {
+      if (pre.querySelector('[data-copy="btn"]')) {
+        continue;
+      }
+
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.copy = "btn";
+      button.textContent = "Copiar";
+      pre.append(button);
+
+      button.addEventListener("click", async () => {
+        const code = pre.querySelector("code")?.textContent || "";
+        try {
+          await navigator.clipboard.writeText(code);
+          button.textContent = "Copiado!";
+        } catch {
+          button.textContent = "Falhou";
+        }
+        window.setTimeout(() => {
+          button.textContent = "Copiar";
+        }, 1500);
+      });
+    }
+  }
+
   function setupBlogSearch(browser) {
     const form = browser.querySelector("[data-blog-search-form]");
     const input = browser.querySelector("[data-blog-search-input]");
@@ -420,5 +454,6 @@
   setupFooterSecret();
   setupBlogBrowser();
   setupNotesWall();
+  setupArticleCodeCopy();
   setupArticleTOC();
 })();

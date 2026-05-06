@@ -1,6 +1,6 @@
 # Blog em Go
 
-Estrutura inicial para um site estilo blog em Go. A base usa apenas a biblioteca padrao, deixando o projeto simples de auditar e pronto para receber armazenamento, templates, renderizacao, autenticacao ou CMS depois.
+Estrutura inicial para um site estilo blog em Go. A base usa a biblioteca padrao para HTTP e templates, com dependencias pontuais para carregar YAML Front Matter, renderizar Markdown/GFM, sanitizar HTML e exibir formulas matematicas.
 
 ## Requisitos
 
@@ -64,6 +64,8 @@ tags:
 
 Texto do artigo.
 ```
+
+O corpo dos artigos aceita Markdown padrao, GFM, tabelas, quebras de linha, HTML controlado, imagens, video/audio, emojis via Twemoji e formulas com KaTeX (`$inline$` ou `$$bloco$$`). O HTML final passa por sanitizacao antes de ser renderizado, e os headings `h2`/`h3` recebem ids para alimentar o sumario da pagina.
 
 As notas curtas ficam em `content/notes/**/*.md`:
 
