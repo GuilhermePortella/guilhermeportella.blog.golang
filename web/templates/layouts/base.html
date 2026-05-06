@@ -5,19 +5,22 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="{{.Description}}">
+    {{with .Keywords}}<meta name="keywords" content="{{.}}">{{end}}
     {{with .CanonicalURL}}<link rel="canonical" href="{{.}}">{{end}}
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="{{if .OpenGraphType}}{{.OpenGraphType}}{{else}}website{{end}}">
     <meta property="og:site_name" content="{{.SiteName}}">
     <meta property="og:title" content="{{.Title}}">
     <meta property="og:description" content="{{.Description}}">
     {{with .CanonicalURL}}<meta property="og:url" content="{{.}}">{{end}}
     {{with .OpenGraphImage}}<meta property="og:image" content="{{.}}">{{end}}
+    {{with .Locale}}<meta property="og:locale" content="{{.}}">{{end}}
     {{with .TwitterCard}}<meta name="twitter:card" content="{{.}}">{{end}}
     <meta name="twitter:title" content="{{.Title}}">
     <meta name="twitter:description" content="{{.Description}}">
     <title>{{.Title}}</title>
-    <link rel="stylesheet" href="/static/css/main.css?v=20260505-filters">
-    <script src="/static/js/site.js?v=20260505-filters" defer></script>
+    <link rel="stylesheet" href="/static/css/main.css?v=20260505-markdown">
+    {{block "head-extra" .}}{{end}}
+    <script src="/static/js/site.js?v=20260505-markdown" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>

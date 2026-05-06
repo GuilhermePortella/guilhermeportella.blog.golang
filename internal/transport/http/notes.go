@@ -19,7 +19,10 @@ type notesPageData struct {
 	Description    string
 	CanonicalURL   string
 	OpenGraphImage string
+	OpenGraphType  string
 	TwitterCard    string
+	Keywords       string
+	Locale         string
 	SiteName       string
 	CurrentYear    int
 
