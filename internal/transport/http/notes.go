@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"log/slog"
 	"net/http"
-	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -135,7 +134,7 @@ func readNote(filePath string) (noteItem, error) {
 		return noteItem{}, err
 	}
 
-	data := parseFrontmatterFromFile(filePath)
+	data := article.FrontmatterData
 	date := stringFromFrontmatter(data, "date")
 	parsed, ok := parseBlogDate(date)
 	sortTime := time.Unix(0, 0).UTC()
@@ -165,23 +164,6 @@ func readNote(filePath string) (noteItem, error) {
 		HTML:      article.HTML,
 		SortTime:  sortTime,
 	}, nil
-}
-
-func parseFrontmatterFromFile(filePath string) map[string]any {
-	raw, err := readTextFile(filePath)
-	if err != nil {
-		return map[string]any{}
-	}
-	frontmatter, _ := splitFrontmatter(raw)
-	return parseFrontmatter(frontmatter)
-}
-
-func readTextFile(filePath string) (string, error) {
-	content, err := os.ReadFile(filePath)
-	if err != nil {
-		return "", err
-	}
-	return string(content), nil
 }
 
 func noteTagStats(notes []noteItem) []noteTagStat {

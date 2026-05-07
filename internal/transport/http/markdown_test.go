@@ -121,3 +121,28 @@ Texto.
 		t.Fatalf("JSONLD = %s, want frontmatter JSON-LD", data.Article.JSONLD)
 	}
 }
+
+func TestMarkdownArticleMalformedFrontmatterReturnsError(t *testing.T) {
+	contentDir := t.TempDir()
+	filePath := filepath.Join(contentDir, "quebrado.md")
+	raw := `---
+title: "Titulo sem fechar
+---
+
+Texto.
+`
+	if err := os.WriteFile(filePath, []byte(raw), 0o644); err != nil {
+		t.Fatalf("WriteFile() error = %v", err)
+	}
+
+	_, err := getMarkdownArticleBySlug(contentDir, "quebrado")
+	if err == nil {
+		t.Fatal("getMarkdownArticleBySlug() error = nil, want error")
+	}
+
+	for _, expected := range []string{"parse markdown frontmatter", filePath, "decode YAML"} {
+		if !strings.Contains(err.Error(), expected) {
+			t.Fatalf("error = %q, want it to contain %q", err.Error(), expected)
+		}
+	}
+}
