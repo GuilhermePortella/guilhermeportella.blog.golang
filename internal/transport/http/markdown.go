@@ -62,11 +62,12 @@ type articleSEO struct {
 }
 
 type markdownArticle struct {
-	Slug        string
-	Frontmatter articleFrontmatter
-	Content     string
-	HTML        template.HTML
-	SourcePath  string
+	Slug            string
+	Frontmatter     articleFrontmatter
+	FrontmatterData map[string]any
+	Content         string
+	HTML            template.HTML
+	SourcePath      string
 }
 
 func getAllMarkdownArticles(contentDir string) ([]markdownArticle, error) {
@@ -156,7 +157,12 @@ func readMarkdownArticle(filePath string) (markdownArticle, error) {
 	}
 
 	frontmatterRaw, content := splitFrontmatter(string(raw))
-	fm := normalizeArticleFrontmatter(parseFrontmatter(frontmatterRaw))
+	frontmatterData, err := parseFrontmatter(frontmatterRaw)
+	if err != nil {
+		return markdownArticle{}, fmt.Errorf("parse markdown frontmatter %q: %w", filePath, err)
+	}
+
+	fm := normalizeArticleFrontmatter(frontmatterData)
 	slug := normalizeSlug(fm.Slug)
 	if slug == "" {
 		slug = normalizeSlug(fileBase(filepath.Base(filePath)))
@@ -165,11 +171,12 @@ func readMarkdownArticle(filePath string) (markdownArticle, error) {
 	htmlContent := markdownToHTML(content)
 
 	return markdownArticle{
-		Slug:        slug,
-		Frontmatter: fm,
-		Content:     content,
-		HTML:        htmlContent,
-		SourcePath:  filePath,
+		Slug:            slug,
+		Frontmatter:     fm,
+		FrontmatterData: frontmatterData,
+		Content:         content,
+		HTML:            htmlContent,
+		SourcePath:      filePath,
 	}, nil
 }
 
@@ -188,17 +195,17 @@ func splitFrontmatter(raw string) (frontmatter string, content string) {
 	return rest[:index], rest[index+len("\n---\n"):]
 }
 
-func parseFrontmatter(raw string) map[string]any {
+func parseFrontmatter(raw string) (map[string]any, error) {
 	out := make(map[string]any)
 	if strings.TrimSpace(raw) == "" {
-		return out
+		return out, nil
 	}
 
 	if err := yaml.Unmarshal([]byte(raw), &out); err != nil {
-		return map[string]any{}
+		return nil, fmt.Errorf("decode YAML: %w", err)
 	}
 
-	return normalizeYAMLMap(out)
+	return normalizeYAMLMap(out), nil
 }
 
 func normalizeYAMLMap(data map[string]any) map[string]any {
