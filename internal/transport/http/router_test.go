@@ -43,6 +43,10 @@ func TestNewRouterHome(t *testing.T) {
 		}
 	}
 
+	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260507-about">`) {
+		t.Fatalf("body does not contain stylesheet")
+	}
+
 	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260505-markdown" defer></script>`) {
 		t.Fatalf("body does not contain footer script")
 	}
@@ -51,7 +55,7 @@ func TestNewRouterHome(t *testing.T) {
 		t.Fatalf("body does not contain site navigation")
 	}
 
-	if !strings.Contains(body, `<a class="site-brand" href="/" aria-label="Página inicial">Guilherme Portella</a>`) {
+	if !strings.Contains(body, `<a class="site-brand" href="/" aria-label="Página inicial">Zona de Exclusão</a>`) {
 		t.Fatalf("body does not contain site brand")
 	}
 
@@ -73,6 +77,8 @@ func TestNewSiteNavigationActiveRoutes(t *testing.T) {
 		{name: "home", path: "/", wantActive: "Início"},
 		{name: "blog", path: "/blog", wantActive: "blog"},
 		{name: "blog slug", path: "/blog/um-post", wantActive: "blog"},
+		{name: "articles alias", path: "/articles/", wantActive: "blog"},
+		{name: "about", path: "/about/", wantActive: "Sobre"},
 		{name: "trailing slash", path: "/curiosidades/", wantActive: "Curiosidades"},
 		{name: "notes", path: "/notas", wantActive: "Notas"},
 	}
@@ -166,6 +172,44 @@ func TestNewRouterBlogTrailingSlash(t *testing.T) {
 
 	if recorder.Code != http.StatusOK {
 		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+}
+
+func TestNewRouterAbout(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/about/", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+
+	body := recorder.Body.String()
+	for _, expected := range []string{
+		`<div class="about-page" aria-label="Sobre">`,
+		`<title>Sobre</title>`,
+		`<meta name="description" content="Perfil técnico de Guilherme Portella, com foco em carreira, engenharia de software e aprendizados de desenvolvimento web.">`,
+		`<link rel="canonical" href="/about/">`,
+		`<meta property="og:type" content="website">`,
+		`<meta property="og:locale" content="pt_BR">`,
+		`<meta name="twitter:card" content="summary_large_image">`,
+		`<a href="/about" class="active" aria-current="page">Sobre</a>`,
+		`<h1 id="about-title">Guilherme Portella em modo carreira.</h1>`,
+		`src="https://avatars.githubusercontent.com/u/59876059?v=4"`,
+		`Ler artigos técnicos -&gt;`,
+		`Pilares de trabalho`,
+		`Hábitos que deixam o código menos dramático`,
+		`guilhermeportella.dev@gmail.com`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("body does not contain %q", expected)
+		}
+	}
+
+	if strings.Contains(body, "<select") {
+		t.Fatalf("body contains unexpected select element")
 	}
 }
 
