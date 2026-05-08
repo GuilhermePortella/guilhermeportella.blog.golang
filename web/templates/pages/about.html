@@ -1,0 +1,100 @@
+{{define "about"}}{{template "base" .}}{{end}}
+
+{{define "content"}}
+<div class="about-page" aria-label="Sobre">
+  <section class="about-hero" aria-labelledby="about-title">
+    <div class="about-hero__orb about-hero__orb--warm" aria-hidden="true"></div>
+    <div class="about-hero__orb about-hero__orb--cool" aria-hidden="true"></div>
+
+    <div class="container about-hero__grid">
+      <div class="about-hero__intro">
+        <p class="about-eyebrow about-eyebrow--hero">perfil técnico</p>
+        <h1 id="about-title">Guilherme Portella em modo carreira.</h1>
+        <p class="about-hero__lead">Desenvolvedor focado em construir interfaces, APIs e sistemas web com clareza, consistência e uma quantidade saudável de desconfiança sobre código que "funciona na minha máquina".</p>
+        <p class="about-hero__note">Este espaço reúne estudos, decisões técnicas, experimentos e aprendizados de carreira. O objetivo é documentar como penso software: com pragmatismo, curiosidade e testes suficientes para dormir sem abrir o notebook às 23h.</p>
+
+        <div class="about-actions" aria-label="Ações principais">
+          <a class="about-pill about-pill--primary" href="/articles/">Ler artigos técnicos -&gt;</a>
+          <a class="about-pill about-pill--secondary" href="/curiosidades/">Ver curiosidades técnicas -&gt;</a>
+        </div>
+      </div>
+
+      <div class="about-hero__aside">
+        <article class="about-profile-card" aria-label="Perfil de Guilherme Portella">
+          <div class="about-profile-card__content">
+            <img
+              class="about-profile-card__image"
+              src="https://avatars.githubusercontent.com/u/59876059?v=4"
+              alt="Foto de Guilherme Portella"
+              width="220"
+              height="220"
+              loading="eager"
+              fetchpriority="high"
+              decoding="async"
+            >
+            <div class="about-profile-card__copy">
+              <h2>Guilherme Portella</h2>
+              <p>Desenvolvedor web, estudioso por esporte e caçador oficial de edge cases.</p>
+            </div>
+          </div>
+        </article>
+
+        <aside class="about-note-card">
+          <p class="about-eyebrow">nota técnica</p>
+          <p>Este lugar funciona como um changelog público de aprendizado: menos palco, mais terminal aberto, commits pequenos e aquela alegria discreta quando o bug finalmente assume a culpa.</p>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-section about-section--pillars" aria-labelledby="pillars-title">
+    <div class="about-section__header">
+      <div>
+        <p class="about-eyebrow">direção técnica</p>
+        <h2 id="pillars-title">Pilares de trabalho</h2>
+        <p>Os critérios que uso para escrever, estudar e tomar decisões de engenharia.</p>
+      </div>
+      <a class="about-section__link" href="/articles/">Ir para os artigos -&gt;</a>
+    </div>
+
+    <div class="about-pillar-grid">
+      {{range .Pillars}}
+      <article class="about-pillar-card">
+        <h3>{{.Title}}</h3>
+        <p>{{.Description}}</p>
+      </article>
+      {{end}}
+    </div>
+  </section>
+
+  <section class="about-section about-section--rituals" aria-labelledby="rituals-title">
+    <div class="about-ritual-card">
+      <div class="about-ritual-card__grid">
+        <div class="about-ritual-card__copy">
+          <p class="about-eyebrow">rotina de engenharia</p>
+          <h2 id="rituals-title">Hábitos que deixam o código menos dramático</h2>
+          <p>Processos simples para reduzir retrabalho, sustos em produção e reuniões que poderiam ser um diff.</p>
+        </div>
+
+        <ul class="about-ritual-list">
+          {{range .Rituals}}
+          <li>
+            <span aria-hidden="true"></span>
+            <span>{{.}}</span>
+          </li>
+          {{end}}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-section about-section--contact" aria-labelledby="contact-title">
+    <div class="about-contact-card">
+      <p class="about-eyebrow">contato</p>
+      <h2 id="contact-title">Vamos falar de tecnologia</h2>
+      <p>Para projetos, colaborações, oportunidades ou aquela conversa honesta sobre arquitetura antes que ela vire um incidente de sexta-feira.</p>
+      <a class="about-pill about-pill--email" href="mailto:guilhermeportella.dev@gmail.com">guilhermeportella.dev@gmail.com</a>
+    </div>
+  </section>
+</div>
+{{end}}
