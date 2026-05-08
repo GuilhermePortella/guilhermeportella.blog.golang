@@ -99,6 +99,8 @@ As decisoes arquiteturais ficam em `docs/adr/`.
 ## Rotas
 
 - `GET /`
+- `GET /about`
+- `GET /articles` (atalho para o arquivo de textos)
 - `GET /blog`
 - `GET /blog/{slug}`
 - `GET /notas`
