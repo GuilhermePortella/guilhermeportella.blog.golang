@@ -43,8 +43,12 @@ func TestNewRouterHome(t *testing.T) {
 		}
 	}
 
-	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260508-curiosidades">`) {
+	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260509-inter-display">`) {
 		t.Fatalf("body does not contain stylesheet")
+	}
+
+	if !strings.Contains(body, `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">`) {
+		t.Fatalf("body does not contain Google Fonts stylesheet")
 	}
 
 	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260505-markdown" defer></script>`) {

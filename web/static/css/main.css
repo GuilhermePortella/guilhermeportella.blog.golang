@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&display=swap");
-
 :root {
   color-scheme: light;
   --paper: #f8f1e7;
@@ -22,10 +20,13 @@
   --stone-200: #e7e5e4;
   --neutral-500: #737373;
   --muted: #6b7280;
+  --link: #2563eb;
   --link-hover: #1d4ed8;
   --accent: #f59e0b;
-  --font-sans: system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --font-serif: "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+  --font-sans: "Inter";
+  --font-serif: var(--font-sans);
+  --font-body: var(--font-sans), system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-display: var(--font-body);
   --shadow-route: 0 14px 35px rgb(15 23 42 / 8%);
   --shadow-map: 0 18px 45px rgb(15 23 42 / 10%);
   --shadow-article-hover: 0 18px 40px rgb(15 23 42 / 12%);
@@ -42,6 +43,7 @@
 }
 
 html {
+  font-family: var(--font-body);
   scroll-behavior: smooth;
 }
 
@@ -49,13 +51,25 @@ body {
   margin: 0;
   background: radial-gradient(circle at top, #e5e7eb 0, #f3f4f6 36%, #f9fafb 100%);
   color: #111827;
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
+  font-feature-settings: "liga" 1, "calt" 1;
+  font-optical-sizing: auto;
   line-height: 1.5;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 a {
-  color: inherit;
-  text-underline-offset: 0.2em;
+  color: var(--link);
+  text-decoration: none;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+a:hover {
+  color: var(--link-hover);
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 
 a:focus-visible,
@@ -63,6 +77,13 @@ button:focus-visible,
 summary:focus-visible {
   outline: 2px solid rgb(168 162 158 / 60%);
   outline-offset: 4px;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
 h1,
@@ -81,6 +102,13 @@ h2,
 h3,
 p {
   margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
 }
 
 .skip-link {
@@ -107,6 +135,10 @@ p {
   padding-right: 24px;
 }
 
+.font-display {
+  font-family: var(--font-display);
+}
+
 .site-nav {
   position: sticky;
   top: 0;
@@ -114,7 +146,10 @@ p {
   border-bottom: 1px solid rgba(229, 231, 235, 0.9);
   background: rgba(248, 250, 252, 0.9);
   color: #525252;
-  font: 400 15px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
   backdrop-filter: saturate(140%) blur(12px);
 }
 
@@ -272,10 +307,11 @@ p {
 
 #home-title {
   color: var(--stone-900);
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: 2.25rem;
-  font-weight: 600;
-  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.22;
 }
 
 .home-hero__text {
@@ -376,7 +412,7 @@ p {
 .quick-map h2 {
   margin-top: 0.5rem;
   color: var(--stone-900);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 1.125rem;
   font-weight: 600;
   line-height: 1.75rem;
@@ -414,7 +450,7 @@ p {
 
 .quick-map__item h3 {
   color: var(--stone-900);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.25rem;
@@ -462,7 +498,7 @@ p {
 
 .hero-card h3 {
   color: var(--stone-900);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 1rem;
   font-weight: 600;
   line-height: 1.5rem;
@@ -506,7 +542,7 @@ p {
 .section-heading--border h2,
 .section-heading--center h2 {
   color: var(--stone-900);
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 600;
   line-height: 2rem;
@@ -566,7 +602,7 @@ p {
 .shortcut-card h3 {
   margin-top: 0.5rem;
   color: var(--stone-900);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 1.25rem;
   font-weight: 600;
   line-height: 1.75rem;
@@ -646,7 +682,7 @@ p {
 
 .article-card h3 {
   color: var(--stone-900);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 1.125rem;
   font-weight: 600;
   line-height: 1.75rem;
@@ -772,10 +808,11 @@ p {
 #blog-title,
 #notes-title {
   color: var(--stone-900);
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: 2.25rem;
-  font-weight: 600;
-  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.22;
 }
 
 .blog-hero__text {
@@ -828,7 +865,7 @@ p {
 .blog-browser__aside h2 {
   margin-top: 0.75rem;
   color: var(--stone-900);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 1.125rem;
   font-weight: 600;
   line-height: 1.75rem;
@@ -1097,7 +1134,7 @@ p {
 
 .blog-group__heading h2 {
   color: var(--stone-900);
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: 1.5rem;
   font-weight: 600;
   line-height: 2rem;
@@ -1218,7 +1255,7 @@ p {
 .notes-board__intro h2 {
   margin-top: 0.5rem;
   color: var(--stone-900);
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: 1.75rem;
   font-weight: 600;
   line-height: 2.25rem;
@@ -1336,7 +1373,7 @@ p {
 .note-card h3 {
   margin-top: 0.75rem;
   color: var(--stone-900);
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 1rem;
   font-weight: 600;
   line-height: 1.5rem;
@@ -1488,9 +1525,10 @@ p {
 
 #article-title {
   color: var(--stone-900);
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: 2.25rem;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -0.035em;
   line-height: 1.2;
 }
 
@@ -2111,13 +2149,14 @@ img.emoji {
 #about-title,
 .about-section h2 {
   color: #1c1917;
-  font-family: "Fraunces", "Iowan Old Style", "Palatino Linotype", serif;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.035em;
 }
 
 #about-title {
   font-size: 36px;
-  line-height: 1.25;
+  line-height: 1.18;
 }
 
 .about-hero__lead {
@@ -2230,7 +2269,7 @@ img.emoji {
 
 .about-profile-card h2 {
   color: #1c1917;
-  font-family: var(--font-sans);
+  font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
   line-height: 20px;
@@ -2480,10 +2519,11 @@ img.emoji {
 
 #curiosity-title {
   color: #1c1917;
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: 36px;
-  font-weight: 600;
-  line-height: 1.08;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.18;
 }
 
 .curiosity-hero__lead {
@@ -2579,8 +2619,7 @@ img.emoji {
 
 .curiosity-map-card__item a,
 .curiosity-small-card a,
-.curiosity-section__link,
-.curiosity-playlist-card a {
+.curiosity-section__link {
   color: #1c1917;
   font-weight: 600;
   text-decoration: underline;
@@ -2654,7 +2693,7 @@ img.emoji {
 .curiosity-section__header h2,
 .curiosity-music__header h2 {
   color: #1c1917;
-  font-family: var(--font-serif);
+  font-family: var(--font-display);
   font-size: 28px;
   font-weight: 600;
   line-height: 36px;
@@ -2813,12 +2852,22 @@ img.emoji {
 .curiosity-music__header {
   display: grid;
   justify-items: center;
-  gap: 8px;
+  gap: 12px;
   text-align: center;
+}
+
+.curiosity-music__eyebrow {
+  font-weight: 400;
+}
+
+.curiosity-music__header h2 {
+  font-size: 24px;
+  line-height: 32px;
 }
 
 .curiosity-music__header p:not(.curiosity-eyebrow) {
   max-width: 672px;
+  line-height: 1.625;
 }
 
 .curiosity-song-grid {
@@ -2833,6 +2882,11 @@ img.emoji {
   background: rgb(255 255 255 / 95%);
   box-shadow: 0 1px 2px rgb(15 23 42 / 6%);
   padding: 16px;
+  transition: border-color 150ms ease;
+}
+
+.curiosity-song-card:hover {
+  border-color: #d8c4b5;
 }
 
 .curiosity-spotify-frame {
@@ -2850,8 +2904,14 @@ img.emoji {
   border-radius: 12px;
 }
 
+.curiosity-song-card__copy {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+  text-align: left;
+}
+
 .curiosity-song-card h3 {
-  margin-top: 14px;
   color: #1c1917;
   font-size: 14px;
   font-weight: 600;
@@ -2859,7 +2919,6 @@ img.emoji {
 }
 
 .curiosity-song-card__album {
-  margin-top: 4px;
   color: #78716c;
   font-size: 12px;
   line-height: 16px;
@@ -2867,11 +2926,10 @@ img.emoji {
   text-transform: uppercase;
 }
 
-.curiosity-song-card > p:not(.curiosity-song-card__album) {
-  margin-top: 8px;
+.curiosity-song-card__description {
   color: #57534e;
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.625;
 }
 
 .curiosity-playlist-grid {
@@ -2880,19 +2938,56 @@ img.emoji {
   margin-top: 40px;
 }
 
+.curiosity-playlist-card {
+  overflow: hidden;
+  border: 1px solid #e6d8cb;
+  border-radius: 16px;
+  background: #ffffff;
+}
+
 .curiosity-playlist-card iframe {
   display: block;
   width: 100%;
   height: 352px;
-  border: 1px solid #e6d8cb;
-  border-radius: 16px;
+  border: 0;
 }
 
-.curiosity-playlist-card a {
-  display: inline-flex;
-  margin-top: 12px;
+.curiosity-music__fallback {
+  margin-top: 16px;
+  color: #57534e;
   font-size: 14px;
   line-height: 20px;
+  text-align: center;
+}
+
+.curiosity-music__fallback-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.curiosity-music__fallback-links a {
+  border-radius: 2px;
+  color: var(--link);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.curiosity-music__fallback-links a:hover,
+.curiosity-music__fallback-links a:focus {
+  color: var(--link-hover);
+  text-decoration: none;
+}
+
+.curiosity-music__fallback-links a:focus-visible {
+  border-radius: 4px;
+  outline: 2px solid rgb(37 99 235 / 30%);
+  outline-offset: 4px;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -2951,6 +3046,14 @@ img.emoji {
     animation: fadeUp 0.85s ease-out both;
     animation-delay: 220ms;
   }
+
+  .curiosity-song-card {
+    transition: transform 150ms ease, border-color 150ms ease;
+  }
+
+  .curiosity-song-card:hover {
+    transform: translateY(-2px);
+  }
 }
 
 @media (min-width: 768px) {
@@ -2960,7 +3063,7 @@ img.emoji {
   }
 
   #about-title {
-    font-size: 60px;
+    font-size: 68px;
   }
 
   .about-pillar-grid {
@@ -2982,7 +3085,7 @@ img.emoji {
   }
 
   #curiosity-title {
-    font-size: 60px;
+    font-size: 68px;
   }
 
   .curiosity-shortcut-grid {
@@ -3017,7 +3120,7 @@ img.emoji {
   }
 
   .curiosity-music__wrapper {
-    padding: 24px;
+    padding: 20px;
   }
 }
 
@@ -3167,8 +3270,8 @@ img.emoji {
   #blog-title,
   #notes-title,
   #article-title {
-    font-size: 3.75rem;
-    line-height: 1.25;
+    font-size: 4.25rem;
+    line-height: 1.18;
   }
 
   .home-hero {

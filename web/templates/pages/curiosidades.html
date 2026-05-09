@@ -104,9 +104,13 @@
   <section id="musica" class="curiosity-music" aria-labelledby="curiosity-music-title">
     <div class="curiosity-music__wrapper">
       <div class="curiosity-music__header">
-        <p class="curiosity-eyebrow">músicas</p>
+        <p class="curiosity-eyebrow curiosity-music__eyebrow">musicas</p>
         <h2 id="curiosity-music-title">Minha trilha sonora pessoal</h2>
-        <p>Algumas faixas que ficam comigo por motivo nenhum e por todos os motivos ao mesmo tempo.</p>
+        <p>
+          A musica e uma parte importante da minha vida (da de quem nao e?).
+          <br>
+          Essas sao algumas das musicas que tenho ouvido bastante ultimamente; nao sao necessariamente as musicas da minha vida, mas tem significados profundos e relacao com o meu momento, e sao muito boas, entao curte essas pedradas tristes ai comigo.
+        </p>
       </div>
 
       <div class="curiosity-song-grid">
@@ -114,17 +118,22 @@
         <article class="curiosity-song-card">
           <div class="curiosity-spotify-frame">
             <iframe
-              title="{{.Artist}} - {{.Title}}"
+              title="{{.Artist}} - {{.Title}} - Spotify"
               src="{{.EmbedURL}}"
               width="100%"
               height="152"
+              style="border-radius: 12px;"
+              frameborder="0"
               allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              allowfullscreen
               loading="lazy">
             </iframe>
           </div>
-          <h3>{{.Artist}} - {{.Title}}</h3>
-          <p class="curiosity-song-card__album">{{.Album}}</p>
-          <p>{{.Description}}</p>
+          <div class="curiosity-song-card__copy">
+            <h3>{{.Artist}} - {{.Title}}</h3>
+            <p class="curiosity-song-card__album">{{.Album}}</p>
+            <p class="curiosity-song-card__description">{{.Description}}</p>
+          </div>
         </article>
         {{end}}
       </div>
@@ -134,14 +143,23 @@
         <article class="curiosity-playlist-card">
           <iframe
             title="{{.Title}}"
+            data-testid="embed-iframe"
             src="{{.EmbedURL}}"
             width="100%"
             height="352"
+            frameborder="0"
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            allowfullscreen
             loading="lazy">
           </iframe>
-          <a href="{{.SpotifyURL}}">{{.Title}}</a>
         </article>
+        {{end}}
+      </div>
+
+      <p class="curiosity-music__fallback">Caso algum player nao carregue, voce pode abrir direto no Spotify:</p>
+      <div class="curiosity-music__fallback-links">
+        {{range .Playlists}}
+        <a href="{{.SpotifyURL}}" target="_blank" rel="noopener noreferrer">{{.Label}}</a>
         {{end}}
       </div>
     </div>
