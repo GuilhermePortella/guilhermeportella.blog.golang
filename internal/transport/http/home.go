@@ -249,7 +249,7 @@ func newHomePageData(now time.Time, currentPath string) homePageData {
 func newSiteNavigation(currentPath string) []siteNavLink {
 	links := []siteNavLink{
 		{Label: "Início", URL: "/"},
-		{Label: "blog", URL: "/blog"},
+		{Label: "Cadernos", URL: "/blog"},
 		{Label: "Sobre", URL: "/about"},
 		{Label: "Curiosidades", URL: "/curiosidades"},
 		{Label: "Notas", URL: "/notas"},

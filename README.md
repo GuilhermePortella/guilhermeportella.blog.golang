@@ -103,6 +103,7 @@ As decisoes arquiteturais ficam em `docs/adr/`.
 - `GET /articles` (atalho para o arquivo de textos)
 - `GET /blog`
 - `GET /blog/{slug}`
+- `GET /curiosidades`
 - `GET /notas`
 - `GET /static/*`
 - `GET /healthz`
