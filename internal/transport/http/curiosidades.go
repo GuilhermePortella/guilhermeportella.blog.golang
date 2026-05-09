@@ -1,0 +1,265 @@
+package httptransport
+
+import (
+	"log/slog"
+	"net/http"
+	"time"
+)
+
+type curiosidadesPageData struct {
+	Title          string
+	Description    string
+	CanonicalURL   string
+	OpenGraphImage string
+	OpenGraphType  string
+	TwitterCard    string
+	Keywords       string
+	Locale         string
+	SiteName       string
+	CurrentYear    int
+
+	Navigation []siteNavLink
+	Tags       []string
+	QuickMap   []curiosidadesLinkCard
+	Shortcuts  []curiosidadesLinkCard
+	Collections []curiosidadesCollection
+	Songs      []curiosidadesSong
+	Playlists  []curiosidadesPlaylist
+}
+
+type curiosidadesLinkCard struct {
+	Title       string
+	Description string
+	URL         string
+}
+
+type curiosidadesCollection struct {
+	ID          string
+	Title       string
+	Description string
+	Theme       string
+	Items       []string
+}
+
+type curiosidadesSong struct {
+	Artist      string
+	Title       string
+	Album       string
+	Description string
+	EmbedURL    string
+	SpotifyURL  string
+}
+
+type curiosidadesPlaylist struct {
+	Title      string
+	EmbedURL   string
+	SpotifyURL string
+}
+
+func curiosidadesHandler(renderer *Renderer, logger *slog.Logger) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		data := newCuriosidadesPageData(time.Now(), r.URL.Path)
+
+		if err := renderer.Render(w, "curiosidades", data); err != nil {
+			logger.Error("render curiosidades page", "error", err, "request_id", getRequestID(r.Context()))
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+	}
+}
+
+func newCuriosidadesPageData(now time.Time, currentPath string) curiosidadesPageData {
+	quickMap := []curiosidadesLinkCard{
+		{
+			Title:       "Filmes",
+			Description: "Histórias que me acompanham há anos.",
+			URL:         "#filmes",
+		},
+		{
+			Title:       "Séries",
+			Description: "Roteiros longos para ver sem pressa.",
+			URL:         "#series",
+		},
+		{
+			Title:       "Jogos",
+			Description: "Experiências para mergulhar e desligar.",
+			URL:         "#jogos",
+		},
+		{
+			Title:       "Livros",
+			Description: "Páginas que me fazem voltar para mim.",
+			URL:         "#livros",
+		},
+	}
+
+	return curiosidadesPageData{
+		Title:         "Curiosidades",
+		Description:   "Inventário pessoal de filmes, séries, jogos, livros, músicas e tecnologia de Guilherme Portella.",
+		CanonicalURL:  "/curiosidades/",
+		OpenGraphType: "website",
+		TwitterCard:   "summary_large_image",
+		Keywords:      "curiosidades, filmes, séries, jogos, livros, músicas, tecnologia",
+		Locale:        "pt_BR",
+		SiteName:      "Guilherme Portella",
+		CurrentYear:   now.Year(),
+		Navigation:    newSiteNavigation(currentPath),
+		Tags: []string{
+			"filmes",
+			"séries",
+			"jogos",
+			"livros",
+			"músicas",
+			"tecnologia",
+		},
+		QuickMap: quickMap,
+		Shortcuts: []curiosidadesLinkCard{
+			quickMap[0],
+			quickMap[1],
+			quickMap[2],
+			quickMap[3],
+			{
+				Title:       "Músicas",
+				Description: "Trilha sonora que me deixa vivo.",
+				URL:         "#musica",
+			},
+			{
+				Title:       "Tecnologia",
+				Description: "Canais e leituras que sigo com carinho.",
+				URL:         "#tecnologia",
+			},
+		},
+		Collections: []curiosidadesCollection{
+			{
+				ID:          "filmes",
+				Title:       "Filmes",
+				Description: "Filmes que eu volto sempre que preciso de silêncio.",
+				Theme:       "filmes",
+				Items: []string{
+					"Interstellar (Nolan)",
+					"Gênio Indomável (Gus Van Sant)",
+					"Sociedade dos Poetas Mortos (Peter Weir)",
+					"O Silêncio dos Inocentes (Jonathan Demme)",
+					"O Poderoso Chefão (Coppola)",
+					"Brilho Eterno de uma Mente sem Lembranças (Michel Gondry)",
+					"Blade Runner 2049 (Denis Villeneuve)",
+				},
+			},
+			{
+				ID:          "series",
+				Title:       "Séries",
+				Description: "Roteiros longos para ver sem pressa.",
+				Theme:       "series",
+				Items: []string{
+					"Mr. Robot",
+					"Rick and Morty",
+					"Yellowstone",
+					"The Big Bang Theory",
+					"Breaking Bad",
+					"Fleabag",
+					"BoJack Horseman",
+					"Game of Thrones",
+					"The Walking Dead",
+					"Família Soprano",
+					"The Office",
+				},
+			},
+			{
+				ID:          "jogos",
+				Title:       "Jogos",
+				Description: "Experiências para mergulhar e desligar.",
+				Theme:       "jogos",
+				Items: []string{
+					"The Last of Us - Parte I",
+					"DEATH STRANDING 2: ON THE BEACH",
+					"GTA 5",
+					"The Last of Us - Parte II",
+					"Days Gone",
+					"God of War Ragnarok",
+					"Horizon Forbidden West",
+					"DEATH STRANDING",
+					"Cyberpunk 2077",
+					"Red Dead Redemption 2",
+					"Detroit: Become Human",
+				},
+			},
+			{
+				ID:          "livros",
+				Title:       "Livros",
+				Description: "Páginas que me fazem voltar para mim.",
+				Theme:       "livros",
+				Items: []string{
+					"A Metamorfose",
+					"O Nascimento da Tragédia",
+					"Drácula",
+					"O Grande Gatsby",
+					"Guerra e Paz",
+					"Os Irmãos Karamazov",
+					"Assim Falou Zaratustra",
+					"O Morro dos Ventos Uivantes",
+					"Noites Brancas",
+					"A Morte de Ivan Ilitch",
+					"Memórias do Subsolo",
+					"Crime e Castigo",
+					"1984",
+				},
+			},
+			{
+				ID:          "tecnologia",
+				Title:       "Tecnologia",
+				Description: "Canais e leituras que sigo com carinho.",
+				Theme:       "tecnologia",
+				Items: []string{
+					"YouTube: canais de programação e desenvolvimento",
+					"Podcasts de tecnologia e arquitetura de software",
+					"Documentação e artigos que me inspiram",
+					"Comunidades online de desenvolvimento",
+				},
+			},
+		},
+		Songs: []curiosidadesSong{
+			{
+				Artist:      "Elvis Presley",
+				Title:       "Can't Help Falling in Love",
+				Album:       "Blue Hawaii",
+				Description: "Uma calma antiga, dessas que parecem acender uma lâmpada baixa no fim do dia.",
+				EmbedURL:    "https://open.spotify.com/embed/track/44AyOl4qVkzS48vBsbNXaC?utm_source=generator",
+				SpotifyURL:  "https://open.spotify.com/track/44AyOl4qVkzS48vBsbNXaC",
+			},
+			{
+				Artist:      "Guns N'Roses",
+				Title:       "November Rain",
+				Album:       "Use Your Illusion I",
+				Description: "Grande, dramática e sem pedir desculpa por ocupar espaço.",
+				EmbedURL:    "https://open.spotify.com/embed/track/3YRCqOhFifThpSRFJ1VWFM?utm_source=generator",
+				SpotifyURL:  "https://open.spotify.com/track/3YRCqOhFifThpSRFJ1VWFM",
+			},
+			{
+				Artist:      "Heart",
+				Title:       "Alone",
+				Album:       "Bad Animals",
+				Description: "Voz aberta, refrão gigante e uma melancolia que chega de uma vez.",
+				EmbedURL:    "https://open.spotify.com/embed/track/54b8qPFqYqIndfdxiLApea?utm_source=generator",
+				SpotifyURL:  "https://open.spotify.com/track/54b8qPFqYqIndfdxiLApea",
+			},
+			{
+				Artist:      "Pearl Jam",
+				Title:       "Black",
+				Album:       "Ten",
+				Description: "Aquela tristeza bonita que não tenta resolver nada rápido.",
+				EmbedURL:    "https://open.spotify.com/embed/track/5Xak5fmy089t0FYmh3VJiY?utm_source=generator",
+				SpotifyURL:  "https://open.spotify.com/track/5Xak5fmy089t0FYmh3VJiY",
+			},
+		},
+		Playlists: []curiosidadesPlaylist{
+			{
+				Title:      "Playlist 1",
+				EmbedURL:   "https://open.spotify.com/embed/playlist/37i9dQZF1DWXRqgorJj26U?utm_source=generator",
+				SpotifyURL: "https://open.spotify.com/playlist/37i9dQZF1DWXRqgorJj26U",
+			},
+			{
+				Title:      "Playlist 2",
+				EmbedURL:   "https://open.spotify.com/embed/playlist/37i9dQZF1DX4UtSsGT1Sbe?utm_source=generator",
+				SpotifyURL: "https://open.spotify.com/playlist/37i9dQZF1DX4UtSsGT1Sbe",
+			},
+		},
+	}
+}
