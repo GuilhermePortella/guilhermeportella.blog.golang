@@ -43,11 +43,11 @@ func TestNewRouterHome(t *testing.T) {
 		}
 	}
 
-	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260509-inter-display">`) {
+	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260509-inter-soft">`) {
 		t.Fatalf("body does not contain stylesheet")
 	}
 
-	if !strings.Contains(body, `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">`) {
+	if !strings.Contains(body, `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">`) {
 		t.Fatalf("body does not contain Google Fonts stylesheet")
 	}
 

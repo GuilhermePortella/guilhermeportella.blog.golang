@@ -309,9 +309,9 @@ h4 {
   color: var(--stone-900);
   font-family: var(--font-display);
   font-size: 2.25rem;
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 1.22;
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  line-height: 1.24;
 }
 
 .home-hero__text {
@@ -810,9 +810,9 @@ h4 {
   color: var(--stone-900);
   font-family: var(--font-display);
   font-size: 2.25rem;
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 1.22;
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  line-height: 1.24;
 }
 
 .blog-hero__text {
@@ -1527,9 +1527,9 @@ h4 {
   color: var(--stone-900);
   font-family: var(--font-display);
   font-size: 2.25rem;
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  line-height: 1.22;
 }
 
 .article-hero__summary {
@@ -1725,7 +1725,7 @@ h4 {
   margin-top: 0;
   margin-bottom: 1.25rem;
   font-size: 2.25rem;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .prose h2 {
@@ -2150,13 +2150,13 @@ img.emoji {
 .about-section h2 {
   color: #1c1917;
   font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: -0.035em;
+  font-weight: 600;
+  letter-spacing: -0.018em;
 }
 
 #about-title {
   font-size: 36px;
-  line-height: 1.18;
+  line-height: 1.22;
 }
 
 .about-hero__lead {
@@ -2521,9 +2521,9 @@ img.emoji {
   color: #1c1917;
   font-family: var(--font-display);
   font-size: 36px;
-  font-weight: 700;
-  letter-spacing: -0.035em;
-  line-height: 1.18;
+  font-weight: 600;
+  letter-spacing: -0.018em;
+  line-height: 1.22;
 }
 
 .curiosity-hero__lead {
@@ -3063,7 +3063,7 @@ img.emoji {
   }
 
   #about-title {
-    font-size: 68px;
+    font-size: 64px;
   }
 
   .about-pillar-grid {
@@ -3085,7 +3085,7 @@ img.emoji {
   }
 
   #curiosity-title {
-    font-size: 68px;
+    font-size: 64px;
   }
 
   .curiosity-shortcut-grid {
@@ -3270,8 +3270,8 @@ img.emoji {
   #blog-title,
   #notes-title,
   #article-title {
-    font-size: 4.25rem;
-    line-height: 1.18;
+    font-size: 4rem;
+    line-height: 1.2;
   }
 
   .home-hero {
