@@ -43,7 +43,7 @@ func TestNewRouterHome(t *testing.T) {
 		}
 	}
 
-	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260507-about">`) {
+	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260508-curiosidades">`) {
 		t.Fatalf("body does not contain stylesheet")
 	}
 
@@ -75,9 +75,9 @@ func TestNewSiteNavigationActiveRoutes(t *testing.T) {
 		wantActive string
 	}{
 		{name: "home", path: "/", wantActive: "Início"},
-		{name: "blog", path: "/blog", wantActive: "blog"},
-		{name: "blog slug", path: "/blog/um-post", wantActive: "blog"},
-		{name: "articles alias", path: "/articles/", wantActive: "blog"},
+		{name: "blog", path: "/blog", wantActive: "Cadernos"},
+		{name: "blog slug", path: "/blog/um-post", wantActive: "Cadernos"},
+		{name: "articles alias", path: "/articles/", wantActive: "Cadernos"},
 		{name: "about", path: "/about/", wantActive: "Sobre"},
 		{name: "trailing slash", path: "/curiosidades/", wantActive: "Curiosidades"},
 		{name: "notes", path: "/notas", wantActive: "Notas"},
@@ -113,7 +113,7 @@ func TestNewRouterBlog(t *testing.T) {
 	body := recorder.Body.String()
 	for _, expected := range []string{
 		`<div class="blog-page" aria-label="Blog">`,
-		`<a href="/blog" class="active" aria-current="page">blog</a>`,
+		`<a href="/blog" class="active" aria-current="page">Cadernos</a>`,
 		"Textos longos sobre engenharia, arquitetura e decisões que merecem ficar.",
 		"Ir para curiosidades -&gt;",
 		`data-blog-browser`,
@@ -134,6 +134,46 @@ func TestNewRouterBlog(t *testing.T) {
 
 	if strings.Contains(body, "Ir para referências") {
 		t.Fatalf("body contains old references label")
+	}
+}
+
+func TestNewRouterCuriosidades(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/curiosidades/", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+
+	body := recorder.Body.String()
+	for _, expected := range []string{
+		`<div class="curiosity-page" aria-label="Curiosidades">`,
+		`<title>Curiosidades</title>`,
+		`<link rel="canonical" href="/curiosidades/">`,
+		`<a href="/curiosidades" class="active" aria-current="page">Curiosidades</a>`,
+		`<h1 id="curiosity-title">Um inventário de gostos para lembrar quem eu sou quando fecho o notebook.</h1>`,
+		`id="mapa"`,
+		`Ver a coleção completa -&gt;`,
+		`id="colecao"`,
+		`Interstellar (Nolan)`,
+		`DEATH STRANDING 2: ON THE BEACH`,
+		`YouTube: canais de programação e desenvolvimento`,
+		`https://open.spotify.com/embed/track/44AyOl4qVkzS48vBsbNXaC`,
+		`https://open.spotify.com/embed/track/3YRCqOhFifThpSRFJ1VWFM`,
+		`Minha trilha sonora pessoal`,
+		`Playlist 1`,
+		`Playlist 2`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("body does not contain %q", expected)
+		}
+	}
+
+	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "frame-src https://open.spotify.com") {
+		t.Fatalf("Content-Security-Policy = %q, want Spotify frame-src", got)
 	}
 }
 
@@ -308,7 +348,7 @@ func TestNewRouterBlogArticle(t *testing.T) {
 	body := recorder.Body.String()
 	for _, expected := range []string{
 		`<article class="article-page" aria-labelledby="article-title">`,
-		`<a href="/blog" class="active" aria-current="page">blog</a>`,
+		`<a href="/blog" class="active" aria-current="page">Cadernos</a>`,
 		`<h1 id="article-title">Estruturando um serviço Go para crescer com segurança</h1>`,
 		`<h2 id="um-comeco-que-nao-precisa-correr"><a href="#um-comeco-que-nao-precisa-correr" class="heading-anchor">Um começo que não precisa correr</a></h2>`,
 		`data-article-toc`,

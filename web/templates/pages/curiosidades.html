@@ -1,0 +1,150 @@
+{{define "curiosidades"}}{{template "base" .}}{{end}}
+
+{{define "content"}}
+<div class="curiosity-page" aria-label="Curiosidades">
+  <section class="curiosity-hero" aria-labelledby="curiosity-title">
+    <div class="curiosity-hero__blob curiosity-hero__blob--warm" aria-hidden="true"></div>
+    <div class="curiosity-hero__blob curiosity-hero__blob--cool" aria-hidden="true"></div>
+
+    <div class="container curiosity-hero__grid">
+      <div class="curiosity-hero__intro">
+        <p class="curiosity-eyebrow curiosity-eyebrow--hero">curiosidades</p>
+        <h1 id="curiosity-title">Um inventário de gostos para lembrar quem eu sou quando fecho o notebook.</h1>
+        <p class="curiosity-hero__lead">Sem pretensão, só uma coleção de filmes, livros, jogos e sons que caminham comigo.</p>
+
+        <ul class="curiosity-tags" aria-label="Temas desta página">
+          {{range .Tags}}
+          <li>{{.}}</li>
+          {{end}}
+        </ul>
+      </div>
+
+      <div class="curiosity-hero__aside">
+        <article class="curiosity-map-card" aria-labelledby="curiosity-map-title">
+          <p class="curiosity-eyebrow">mapa rápido</p>
+          <h2 id="curiosity-map-title">Por onde começar</h2>
+          <p>Um caminho curto para quem chegou agora.</p>
+
+          <div class="curiosity-map-card__items">
+            {{range .QuickMap}}
+            <div class="curiosity-map-card__item">
+              <span aria-hidden="true"></span>
+              <div>
+                <h3>{{.Title}}</h3>
+                <p>{{.Description}}</p>
+                <a href="{{.URL}}">Ir agora -&gt;</a>
+              </div>
+            </div>
+            {{end}}
+          </div>
+        </article>
+
+        <div class="curiosity-hero__small-grid">
+          <article class="curiosity-small-card">
+            <p class="curiosity-eyebrow">nota pessoal</p>
+            <p>Eu não atualizo essa lista por regra. Quando algo novo me toca, eu volto aqui e anoto.</p>
+          </article>
+
+          <article class="curiosity-small-card">
+            <p class="curiosity-eyebrow">atalho</p>
+            <p>Um diário mínimo que muda com o tempo: frases, código bonito, música e curiosidades.</p>
+            <a href="/estado-de-espirito/">Abrir estado de espírito -&gt;</a>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="mapa" class="curiosity-section curiosity-section--shortcuts" aria-labelledby="curiosity-shortcuts-title">
+    <div class="curiosity-section__header curiosity-section__header--split">
+      <div>
+        <p class="curiosity-eyebrow">atalhos</p>
+        <h2 id="curiosity-shortcuts-title">Caminhos rápidos</h2>
+        <p>Atalhos para explorar o que você quiser primeiro.</p>
+      </div>
+      <a class="curiosity-section__link" href="#colecao">Ver a coleção completa -&gt;</a>
+    </div>
+
+    <div class="curiosity-shortcut-grid">
+      {{range .Shortcuts}}
+      <a class="curiosity-shortcut-card" href="{{.URL}}">
+        <h3>{{.Title}}</h3>
+        <p>{{.Description}}</p>
+        <span>Ir agora -&gt;</span>
+      </a>
+      {{end}}
+    </div>
+  </section>
+
+  <section id="colecao" class="curiosity-section curiosity-section--collection" aria-labelledby="curiosity-collection-title">
+    <div class="curiosity-section__header">
+      <p class="curiosity-eyebrow">coleção</p>
+      <h2 id="curiosity-collection-title">Coisas que eu gosto</h2>
+      <p>Tudo organizado em pequenas listas, do meu jeito.</p>
+    </div>
+
+    <div class="curiosity-collection-grid">
+      {{range .Collections}}
+      <article id="{{.ID}}" class="curiosity-collection-card curiosity-collection-card--{{.Theme}}">
+        <h3>{{.Title}}</h3>
+        <p>{{.Description}}</p>
+        <ul>
+          {{range .Items}}
+          <li>
+            <span aria-hidden="true"></span>
+            <span>{{.}}</span>
+          </li>
+          {{end}}
+        </ul>
+      </article>
+      {{end}}
+    </div>
+  </section>
+
+  <section id="musica" class="curiosity-music" aria-labelledby="curiosity-music-title">
+    <div class="curiosity-music__wrapper">
+      <div class="curiosity-music__header">
+        <p class="curiosity-eyebrow">músicas</p>
+        <h2 id="curiosity-music-title">Minha trilha sonora pessoal</h2>
+        <p>Algumas faixas que ficam comigo por motivo nenhum e por todos os motivos ao mesmo tempo.</p>
+      </div>
+
+      <div class="curiosity-song-grid">
+        {{range .Songs}}
+        <article class="curiosity-song-card">
+          <div class="curiosity-spotify-frame">
+            <iframe
+              title="{{.Artist}} - {{.Title}}"
+              src="{{.EmbedURL}}"
+              width="100%"
+              height="152"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy">
+            </iframe>
+          </div>
+          <h3>{{.Artist}} - {{.Title}}</h3>
+          <p class="curiosity-song-card__album">{{.Album}}</p>
+          <p>{{.Description}}</p>
+        </article>
+        {{end}}
+      </div>
+
+      <div class="curiosity-playlist-grid" aria-label="Playlists">
+        {{range .Playlists}}
+        <article class="curiosity-playlist-card">
+          <iframe
+            title="{{.Title}}"
+            src="{{.EmbedURL}}"
+            width="100%"
+            height="352"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy">
+          </iframe>
+          <a href="{{.SpotifyURL}}">{{.Title}}</a>
+        </article>
+        {{end}}
+      </div>
+    </div>
+  </section>
+</div>
+{{end}}

@@ -18,13 +18,13 @@ type curiosidadesPageData struct {
 	SiteName       string
 	CurrentYear    int
 
-	Navigation []siteNavLink
-	Tags       []string
-	QuickMap   []curiosidadesLinkCard
-	Shortcuts  []curiosidadesLinkCard
+	Navigation  []siteNavLink
+	Tags        []string
+	QuickMap    []curiosidadesLinkCard
+	Shortcuts   []curiosidadesLinkCard
 	Collections []curiosidadesCollection
-	Songs      []curiosidadesSong
-	Playlists  []curiosidadesPlaylist
+	Songs       []curiosidadesSong
+	Playlists   []curiosidadesPlaylist
 }
 
 type curiosidadesLinkCard struct {
@@ -220,7 +220,7 @@ func newCuriosidadesPageData(now time.Time, currentPath string) curiosidadesPage
 				Artist:      "Elvis Presley",
 				Title:       "Can't Help Falling in Love",
 				Album:       "Blue Hawaii",
-				Description: "Uma calma antiga, dessas que parecem acender uma lâmpada baixa no fim do dia.",
+				Description: "Nessa música, Elvis, de forma primorosa fala sobre amor e paixão e entrega ao amor, onde a pessoa se rende completamente, mesmo que a razão mostre o contrário, descrevendo o amor profundo e compromisso total.",
 				EmbedURL:    "https://open.spotify.com/embed/track/44AyOl4qVkzS48vBsbNXaC?utm_source=generator",
 				SpotifyURL:  "https://open.spotify.com/track/44AyOl4qVkzS48vBsbNXaC",
 			},
@@ -228,7 +228,7 @@ func newCuriosidadesPageData(now time.Time, currentPath string) curiosidadesPage
 				Artist:      "Guns N'Roses",
 				Title:       "November Rain",
 				Album:       "Use Your Illusion I",
-				Description: "Grande, dramática e sem pedir desculpa por ocupar espaço.",
+				Description: "Além de ter um dos solos de guitarra mais bonitos e icônicos da história do rock, essa música fala sobre amor,perda, dor emocional e a luta para ter e manter a esperança em meio a tantas dificuldades, a dor de qualquer emocionado por aí haha.",
 				EmbedURL:    "https://open.spotify.com/embed/track/3YRCqOhFifThpSRFJ1VWFM?utm_source=generator",
 				SpotifyURL:  "https://open.spotify.com/track/3YRCqOhFifThpSRFJ1VWFM",
 			},
@@ -236,7 +236,7 @@ func newCuriosidadesPageData(now time.Time, currentPath string) curiosidadesPage
 				Artist:      "Heart",
 				Title:       "Alone",
 				Album:       "Bad Animals",
-				Description: "Voz aberta, refrão gigante e uma melancolia que chega de uma vez.",
+				Description: "Essa música fala sobre um amor não correspondido, desejo intenso de se aproximar de alguém que é especial mas sem saber como, por medo de rejeição ou pela certeza que nunca daria certo, mas o amor é real e existe no eu lírico da canção.",
 				EmbedURL:    "https://open.spotify.com/embed/track/54b8qPFqYqIndfdxiLApea?utm_source=generator",
 				SpotifyURL:  "https://open.spotify.com/track/54b8qPFqYqIndfdxiLApea",
 			},
@@ -244,7 +244,7 @@ func newCuriosidadesPageData(now time.Time, currentPath string) curiosidadesPage
 				Artist:      "Pearl Jam",
 				Title:       "Black",
 				Album:       "Ten",
-				Description: "Aquela tristeza bonita que não tenta resolver nada rápido.",
+				Description: "Nessa o Pearl Jam judiou, considera uma das mais tristes do rock, essa música fala sobre dor profunda, perda e luto, é um desabafo do Eddie Vedder sobre o relacionamento que chegou ao fim, deixando uma cicatriz eterna e a saudade da pessoa que ele amava. Um primeiro amor intenso que chegou ao fim e a dor de aceitar o fim. Mas às vezes penso que o que nunca aconteceu pode machucar mais do que algo que aconteceu mas acabou, mas enfim só uma ideia, curte o som aí.",
 				EmbedURL:    "https://open.spotify.com/embed/track/5Xak5fmy089t0FYmh3VJiY?utm_source=generator",
 				SpotifyURL:  "https://open.spotify.com/track/5Xak5fmy089t0FYmh3VJiY",
 			},
@@ -252,13 +252,13 @@ func newCuriosidadesPageData(now time.Time, currentPath string) curiosidadesPage
 		Playlists: []curiosidadesPlaylist{
 			{
 				Title:      "Playlist 1",
-				EmbedURL:   "https://open.spotify.com/embed/playlist/37i9dQZF1DWXRqgorJj26U?utm_source=generator",
-				SpotifyURL: "https://open.spotify.com/playlist/37i9dQZF1DWXRqgorJj26U",
+				EmbedURL:   "https://open.spotify.com/embed/playlist/25cIH9UZsoIYdLxLu3F2jw?utm_source=generator&theme=0",
+				SpotifyURL: "https://open.spotify.com/playlist/25cIH9UZsoIYdLxLu3F2jw",
 			},
 			{
 				Title:      "Playlist 2",
-				EmbedURL:   "https://open.spotify.com/embed/playlist/37i9dQZF1DX4UtSsGT1Sbe?utm_source=generator",
-				SpotifyURL: "https://open.spotify.com/playlist/37i9dQZF1DX4UtSsGT1Sbe",
+				EmbedURL:   "https://open.spotify.com/embed/playlist/3LuwLZF9DuqtT5n92wCmcU?utm_source=generator&theme=0",
+				SpotifyURL: "https://open.spotify.com/playlist/3LuwLZF9DuqtT5n92wCmcU",
 			},
 		},
 	}

@@ -2408,6 +2408,493 @@ img.emoji {
   margin: 12px auto 0;
 }
 
+.curiosity-page {
+  background: transparent;
+}
+
+.curiosity-hero {
+  position: relative;
+  overflow: hidden;
+  background: #f8f1e7;
+}
+
+.curiosity-hero__blob {
+  position: absolute;
+  z-index: 0;
+  border-radius: 9999px;
+  filter: blur(64px);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.curiosity-hero__blob--warm {
+  top: -96px;
+  right: 0;
+  width: 288px;
+  height: 288px;
+  background: #f3c9a4;
+}
+
+.curiosity-hero__blob--cool {
+  bottom: -128px;
+  left: 0;
+  width: 320px;
+  height: 320px;
+  background: #b7d5cf;
+}
+
+.curiosity-hero .container {
+  padding-right: 16px;
+  padding-left: 16px;
+}
+
+.curiosity-hero__grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 40px;
+  padding-top: 64px;
+  padding-bottom: 64px;
+}
+
+.curiosity-hero__intro {
+  display: grid;
+  gap: 24px;
+  min-width: 0;
+}
+
+.curiosity-eyebrow {
+  color: #78716c;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 16px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+}
+
+.curiosity-eyebrow--hero {
+  color: #57534e;
+  font-size: 10.4px;
+  letter-spacing: 0.45em;
+}
+
+#curiosity-title {
+  color: #1c1917;
+  font-family: var(--font-serif);
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1.08;
+}
+
+.curiosity-hero__lead {
+  max-width: 672px;
+  color: #44403c;
+  font-size: 18px;
+  line-height: 1.625;
+}
+
+.curiosity-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  color: #57534e;
+  font-size: 12px;
+  line-height: 16px;
+  list-style: none;
+}
+
+.curiosity-tags li {
+  border: 1px solid rgb(214 211 209 / 80%);
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 70%);
+  padding: 4px 12px;
+}
+
+.curiosity-hero__aside {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.curiosity-map-card {
+  border: 1px solid #e6d8cb;
+  border-radius: 24px;
+  background: rgb(255 255 255 / 90%);
+  box-shadow: 0 18px 45px rgb(15 23 42 / 10%);
+  padding: 24px;
+}
+
+.curiosity-map-card h2 {
+  margin-top: 12px;
+  color: #1c1917;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 28px;
+}
+
+.curiosity-map-card > p:not(.curiosity-eyebrow) {
+  margin-top: 8px;
+  color: #57534e;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.curiosity-map-card__items {
+  display: grid;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.curiosity-map-card__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.curiosity-map-card__item > span:first-child,
+.curiosity-collection-card li > span:first-child {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  margin-top: 8px;
+  border-radius: 9999px;
+  background: #c0845a;
+}
+
+.curiosity-map-card__item h3 {
+  color: #1c1917;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.curiosity-map-card__item p {
+  margin-top: 4px;
+  color: #57534e;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.curiosity-map-card__item a,
+.curiosity-small-card a,
+.curiosity-section__link,
+.curiosity-playlist-card a {
+  color: #1c1917;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.curiosity-map-card__item a {
+  display: inline-flex;
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.curiosity-hero__small-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.curiosity-small-card {
+  border: 1px solid #e6d8cb;
+  border-radius: 16px;
+  background: rgb(255 255 255 / 80%);
+  padding: 20px;
+}
+
+.curiosity-small-card > p:not(.curiosity-eyebrow) {
+  margin-top: 12px;
+  color: #44403c;
+  font-size: 14px;
+  line-height: 1.625;
+}
+
+.curiosity-small-card a {
+  display: inline-flex;
+  margin-top: 12px;
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.curiosity-section {
+  width: 100%;
+  max-width: 1120px;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 24px;
+  padding-left: 24px;
+}
+
+.curiosity-section--shortcuts {
+  padding-top: 56px;
+  padding-bottom: 56px;
+}
+
+.curiosity-section--collection {
+  padding-bottom: 64px;
+}
+
+.curiosity-section__header {
+  display: grid;
+  gap: 8px;
+}
+
+.curiosity-section__header--split {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.curiosity-section__header h2,
+.curiosity-music__header h2 {
+  color: #1c1917;
+  font-family: var(--font-serif);
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 36px;
+}
+
+.curiosity-section__header p:not(.curiosity-eyebrow),
+.curiosity-music__header p:not(.curiosity-eyebrow) {
+  color: #57534e;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.curiosity-section__link {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.curiosity-shortcut-grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.curiosity-shortcut-card {
+  display: block;
+  min-width: 0;
+  border: 1px solid #e6d8cb;
+  border-radius: 16px;
+  background: rgb(255 255 255 / 90%);
+  box-shadow: 0 1px 2px rgb(15 23 42 / 6%);
+  padding: 16px;
+  text-decoration: none;
+  transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.curiosity-shortcut-card:hover,
+.curiosity-shortcut-card:focus {
+  border-color: #cfb6a4;
+  box-shadow: 0 12px 30px rgb(15 23 42 / 8%);
+  transform: translateY(-4px);
+}
+
+.curiosity-shortcut-card h3 {
+  color: #1c1917;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 28px;
+}
+
+.curiosity-shortcut-card p {
+  margin-top: 8px;
+  color: #57534e;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.curiosity-shortcut-card span {
+  display: inline-flex;
+  margin-top: 16px;
+  color: #1c1917;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.curiosity-collection-grid {
+  display: grid;
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.curiosity-collection-card {
+  scroll-margin-top: 96px;
+  border: 1px solid;
+  border-radius: 24px;
+  box-shadow: 0 12px 30px rgb(15 23 42 / 8%);
+  padding: 24px;
+}
+
+.curiosity-collection-card--filmes {
+  border-color: #c0845a;
+  background: #fff5ec;
+}
+
+.curiosity-collection-card--series {
+  border-color: #7ea6a0;
+  background: #eef5f3;
+}
+
+.curiosity-collection-card--jogos {
+  border-color: #b59a6a;
+  background: #f6f0e4;
+}
+
+.curiosity-collection-card--livros {
+  border-color: #8c6a5f;
+  background: #f4ece9;
+}
+
+.curiosity-collection-card--tecnologia {
+  border-color: #6f8fa3;
+  background: #eef3f8;
+}
+
+.curiosity-collection-card h3 {
+  color: #1c1917;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 28px;
+}
+
+.curiosity-collection-card > p {
+  margin-top: 8px;
+  color: #57534e;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.curiosity-collection-card ul {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0;
+  color: #44403c;
+  font-size: 14px;
+  line-height: 1.5;
+  list-style: none;
+}
+
+.curiosity-collection-card li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.curiosity-music {
+  width: 100%;
+  max-width: 1024px;
+  margin-right: auto;
+  margin-left: auto;
+  padding-right: 24px;
+  padding-bottom: 64px;
+  padding-left: 24px;
+}
+
+.curiosity-music__wrapper {
+  border: 1px solid #e6d8cb;
+  border-radius: 24px;
+  background: rgb(255 255 255 / 90%);
+  box-shadow: 0 18px 45px rgb(15 23 42 / 8%);
+  padding: 32px;
+}
+
+.curiosity-music__header {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.curiosity-music__header p:not(.curiosity-eyebrow) {
+  max-width: 672px;
+}
+
+.curiosity-song-grid {
+  display: grid;
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.curiosity-song-card {
+  border: 1px solid #e6d8cb;
+  border-radius: 16px;
+  background: rgb(255 255 255 / 95%);
+  box-shadow: 0 1px 2px rgb(15 23 42 / 6%);
+  padding: 16px;
+}
+
+.curiosity-spotify-frame {
+  overflow: hidden;
+  border: 1px solid #efe4d9;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.curiosity-spotify-frame iframe {
+  display: block;
+  width: 100%;
+  height: 152px;
+  border: 0;
+  border-radius: 12px;
+}
+
+.curiosity-song-card h3 {
+  margin-top: 14px;
+  color: #1c1917;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.curiosity-song-card__album {
+  margin-top: 4px;
+  color: #78716c;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.curiosity-song-card > p:not(.curiosity-song-card__album) {
+  margin-top: 8px;
+  color: #57534e;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.curiosity-playlist-grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 40px;
+}
+
+.curiosity-playlist-card iframe {
+  display: block;
+  width: 100%;
+  height: 352px;
+  border: 1px solid #e6d8cb;
+  border-radius: 16px;
+}
+
+.curiosity-playlist-card a {
+  display: inline-flex;
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .about-hero__orb--warm {
     animation: floatSlow 18s ease-in-out infinite;
@@ -2431,6 +2918,39 @@ img.emoji {
     animation: fadeUp 0.85s ease-out both;
     animation-delay: 240ms;
   }
+
+  .curiosity-hero__blob--warm {
+    animation: floatSlow 18s ease-in-out infinite;
+  }
+
+  .curiosity-hero__blob--cool {
+    animation: floatSlow 22s ease-in-out infinite;
+  }
+
+  .curiosity-eyebrow--hero {
+    animation: fadeUp 0.7s ease-out both;
+    animation-delay: 40ms;
+  }
+
+  #curiosity-title {
+    animation: fadeUp 0.75s ease-out both;
+    animation-delay: 120ms;
+  }
+
+  .curiosity-hero__lead {
+    animation: fadeUp 0.8s ease-out both;
+    animation-delay: 200ms;
+  }
+
+  .curiosity-tags {
+    animation: fadeUp 0.85s ease-out both;
+    animation-delay: 260ms;
+  }
+
+  .curiosity-hero__aside {
+    animation: fadeUp 0.85s ease-out both;
+    animation-delay: 220ms;
+  }
 }
 
 @media (min-width: 768px) {
@@ -2450,11 +2970,40 @@ img.emoji {
   .about-ritual-card__grid {
     grid-template-columns: 0.9fr 1.1fr;
   }
+
+  .curiosity-hero .container {
+    padding-right: 24px;
+    padding-left: 24px;
+  }
+
+  .curiosity-hero__grid {
+    padding-top: 96px;
+    padding-bottom: 96px;
+  }
+
+  #curiosity-title {
+    font-size: 60px;
+  }
+
+  .curiosity-shortcut-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .curiosity-collection-grid,
+  .curiosity-song-grid,
+  .curiosity-playlist-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 1024px) {
   .about-hero__grid {
     grid-template-columns: 1.1fr 0.9fr;
+  }
+
+  .curiosity-hero__grid {
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: center;
   }
 }
 
@@ -2464,6 +3013,10 @@ img.emoji {
   }
 
   .about-ritual-card {
+    padding: 24px;
+  }
+
+  .curiosity-music__wrapper {
     padding: 24px;
   }
 }
