@@ -18,7 +18,7 @@ make build
 make export
 make ci
 ```
-
+ 
 Sem `make`, use os equivalentes com `go fmt ./...`, `go vet ./...`, `go test ./...`, `go run ./cmd/blog` e `go run ./cmd/export`.
 
 ## Estrutura
