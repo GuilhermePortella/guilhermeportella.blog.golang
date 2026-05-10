@@ -32,5 +32,5 @@ jobs:
         env:
           APP_ENV: test
           EXPORT_DIR: dist
-          SITE_BASE_PATH: ${{ vars.SITE_BASE_PATH || '' }}
+          SITE_BASE_PATH: ${{ vars.SITE_BASE_PATH || format('/{0}', github.event.repository.name) }}
         run: make ci

@@ -37,7 +37,7 @@ jobs:
         env:
           APP_ENV: production
           EXPORT_DIR: dist
-          SITE_BASE_PATH: ${{ vars.SITE_BASE_PATH || '' }}
+          SITE_BASE_PATH: ${{ vars.SITE_BASE_PATH || format('/{0}', github.event.repository.name) }}
         run: make ci
 
       - name: Upload GitHub Pages artifact
@@ -56,4 +56,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

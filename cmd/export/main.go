@@ -301,7 +301,7 @@ func rewriteRootRelativeURLs(body []byte, basePath string) ([]byte, error) {
 
 func shouldRewriteAttribute(node *html.Node, key string) bool {
 	switch key {
-	case "href", "src", "poster", "action":
+	case "href", "src", "poster", "action", "data-url":
 		return true
 	case "content":
 		return node.Data == "meta"
