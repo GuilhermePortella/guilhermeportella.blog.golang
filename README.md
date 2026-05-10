@@ -15,14 +15,17 @@ make vet
 make test
 make run
 make build
+make export
+make ci
 ```
 
-Sem `make`, use os equivalentes com `go fmt ./...`, `go vet ./...`, `go test ./...` e `go run ./cmd/blog`.
+Sem `make`, use os equivalentes com `go fmt ./...`, `go vet ./...`, `go test ./...`, `go run ./cmd/blog` e `go run ./cmd/export`.
 
 ## Estrutura
 
 ```text
 cmd/blog/                 ponto de entrada da aplicacao
+cmd/export/               gerador estatico para GitHub Pages
 internal/config/          leitura e validacao de configuracao
 internal/server/          servidor HTTP com timeouts e graceful shutdown
 internal/transport/http/  rotas, renderizacao, handlers e middlewares HTTP
@@ -88,6 +91,24 @@ Texto curto da nota.
 ## Configuracao
 
 Copie as variaveis de `.env.example` para o ambiente do processo quando necessario. O projeto nao carrega arquivos `.env` automaticamente para evitar dependencia externa no bootstrap.
+
+## Publicacao no GitHub Pages
+
+O GitHub Pages publica arquivos estaticos, entao o servidor Go nao roda em producao nesse modo. Para publicar, o comando abaixo renderiza as rotas HTML e copia os assets para `dist/`:
+
+```sh
+make export
+```
+
+O workflow `.github/workflows/pages.yml` valida o projeto, gera `dist/`, envia o artefato do Pages e publica quando houver push na branch `main`. O workflow `.github/workflows/ci.yml` roda as mesmas validacoes em `main`, `dev` e pull requests para `main`.
+
+Configuracoes iniciais sugeridas no repositorio:
+
+- Em Settings > Pages, selecione GitHub Actions como source.
+- Em Settings > Environments, mantenha o ambiente `github-pages` com as protecoes desejadas.
+- Se este site for publicado como User Pages ou com dominio proprio na raiz, deixe `SITE_BASE_PATH` vazio.
+- Se for publicado como Project Pages, configure a variavel do repositorio `SITE_BASE_PATH` com `/<nome-do-repositorio>`.
+- Mantenha segredos fora do repo; o deploy atual nao precisa de secrets.
 
 ## Arquitetura
 
