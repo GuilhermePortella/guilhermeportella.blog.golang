@@ -210,7 +210,7 @@ func newHomePageData(now time.Time, currentPath string) homePageData {
 			},
 			{
 				Title:       "Separando domínio, transporte e infraestrutura",
-				Slug:        "pequeno-inventario-de-maio",
+				Slug:        "separando-camadas",
 				Excerpt:     "Como manter regras de negócio protegidas enquanto a aplicação ganha rotas, templates e integrações.",
 				PublishedAt: formatDatePTBR(time.Date(2026, time.April, 29, 0, 0, 0, 0, time.UTC)),
 				Tags:        []string{"design", "backend"},
