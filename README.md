@@ -38,7 +38,7 @@ docs/adr/                 decisoes arquiteturais
 scripts/                  automacoes locais
 ```
 
-## Publicando conteudo
+## Publicando conteudo 
 
 Os artigos longos ficam em `content/articles/**/*.md`. A subpasta e livre, entao voce pode organizar por ano e mes:
 
