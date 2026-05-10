@@ -77,14 +77,14 @@ func TestRouteOutputPath(t *testing.T) {
 }
 
 func TestRewriteRootRelativeURLs(t *testing.T) {
-	raw := []byte(`<html><head><link rel="canonical" href="/blog"></head><body><a href="/">Home</a><img src="/static/img.png"><a href="#fim">Fim</a></body></html>`)
+	raw := []byte(`<html><head><link rel="canonical" href="/blog"></head><body><a href="/">Home</a><img src="/static/img.png"><a data-url="/blog/post" href="#fim">Fim</a></body></html>`)
 	got, err := rewriteRootRelativeURLs(raw, "/repo")
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	output := string(got)
-	for _, want := range []string{`href="/repo/blog"`, `href="/repo/"`, `src="/repo/static/img.png"`, `href="#fim"`} {
+	for _, want := range []string{`href="/repo/blog"`, `href="/repo/"`, `src="/repo/static/img.png"`, `data-url="/repo/blog/post"`, `href="#fim"`} {
 		if !strings.Contains(output, want) {
 			t.Fatalf("rewritten HTML does not contain %q: %s", want, output)
 		}

@@ -106,8 +106,8 @@ Configuracoes iniciais sugeridas no repositorio:
 
 - Em Settings > Pages, selecione GitHub Actions como source.
 - Em Settings > Environments, mantenha o ambiente `github-pages` com as protecoes desejadas.
-- Se este site for publicado como User Pages ou com dominio proprio na raiz, deixe `SITE_BASE_PATH` vazio.
-- Se for publicado como Project Pages, configure a variavel do repositorio `SITE_BASE_PATH` com `/<nome-do-repositorio>`.
+- Para Project Pages, o workflow assume automaticamente `/<nome-do-repositorio>` quando `SITE_BASE_PATH` nao estiver definido.
+- Se este site for publicado como User Pages ou com dominio proprio na raiz, configure a variavel do repositorio `SITE_BASE_PATH` como `/`.
 - Mantenha segredos fora do repo; o deploy atual nao precisa de secrets.
 
 ## Arquitetura
