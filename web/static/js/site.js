@@ -39,6 +39,120 @@
     pathLabel.textContent = window.location.pathname || "/";
   }
 
+  function setupSpotifyEmbeds() {
+    const embeds = Array.from(document.querySelectorAll("[data-spotify-embed]"));
+
+    if (embeds.length === 0) {
+      return;
+    }
+
+    const controllers = [];
+    let initialized = false;
+
+    const pauseOtherPlayers = (activeController) => {
+      for (const controller of controllers) {
+        if (controller === activeController) {
+          continue;
+        }
+
+        controller.pause();
+      }
+    };
+
+    const renderFallbackEmbeds = () => {
+      if (initialized) {
+        return;
+      }
+
+      initialized = true;
+
+      for (const embed of embeds) {
+        if (embed.querySelector("iframe")) {
+          continue;
+        }
+
+        const iframe = document.createElement("iframe");
+        iframe.title = embed.dataset.spotifyTitle || "Spotify";
+        iframe.src = embed.dataset.spotifySrc || spotifyEmbedURL(embed.dataset.spotifyResource || "");
+        iframe.width = "100%";
+        iframe.height = embed.dataset.spotifyHeight || "152";
+        iframe.frameBorder = "0";
+        iframe.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
+        iframe.allowFullscreen = true;
+        iframe.loading = "lazy";
+        embed.replaceChildren(iframe);
+      }
+    };
+
+    const createControllers = (IFrameAPI) => {
+      if (initialized) {
+        return;
+      }
+
+      initialized = true;
+
+      for (const embed of embeds) {
+        const uri = embed.dataset.spotifyResource;
+
+        if (!uri) {
+          continue;
+        }
+
+        IFrameAPI.createController(
+          embed,
+          {
+            uri,
+            width: "100%",
+            height: Number.parseInt(embed.dataset.spotifyHeight || "152", 10) || 152,
+          },
+          (controller) => {
+            controllers.push(controller);
+
+            controller.addListener("playback_started", () => {
+              pauseOtherPlayers(controller);
+            });
+
+            controller.addListener("playback_update", (event) => {
+              if (event?.data?.isPaused === false) {
+                pauseOtherPlayers(controller);
+              }
+            });
+          },
+        );
+      }
+    };
+
+    const previousReadyHandler = window.onSpotifyIframeApiReady;
+    window.onSpotifyIframeApiReady = (IFrameAPI) => {
+      if (typeof previousReadyHandler === "function") {
+        previousReadyHandler(IFrameAPI);
+      }
+
+      createControllers(IFrameAPI);
+    };
+
+    if (!document.querySelector('script[data-spotify-iframe-api="true"]')) {
+      const script = document.createElement("script");
+      script.src = "https://open.spotify.com/embed/iframe-api/v1";
+      script.async = true;
+      script.dataset.spotifyIframeApi = "true";
+      script.addEventListener("error", renderFallbackEmbeds, { once: true });
+      document.body.append(script);
+    }
+
+    window.setTimeout(renderFallbackEmbeds, 6000);
+  }
+
+  function spotifyEmbedURL(uri) {
+    const parts = uri.split(":");
+
+    if (parts.length < 3) {
+      return "";
+    }
+
+    return `https://open.spotify.com/embed/${parts[1]}/${parts[2]}?utm_source=generator&theme=0`;
+  }
+
   function setupBlogBrowser() {
     const browser = document.querySelector("[data-blog-browser]");
 
@@ -463,6 +577,7 @@
 
   setupFooterSecret();
   setupNotFoundPath();
+  setupSpotifyEmbeds();
   setupBlogBrowser();
   setupNotesWall();
   setupArticleCodeCopy();

@@ -46,6 +46,7 @@ type curiosidadesSong struct {
 	Title       string
 	Album       string
 	Description string
+	SpotifyURI  string
 	EmbedURL    string
 	SpotifyURL  string
 }
@@ -53,6 +54,7 @@ type curiosidadesSong struct {
 type curiosidadesPlaylist struct {
 	Title      string
 	Label      string
+	SpotifyURI string
 	EmbedURL   string
 	SpotifyURL string
 }
@@ -222,6 +224,7 @@ func newCuriosidadesPageData(now time.Time, currentPath string) curiosidadesPage
 				Title:       "Can't Help Falling in Love",
 				Album:       "Blue Hawaii",
 				Description: "Nessa musica, Elvis, de forma primorosa fala sobre amor e paixao e entrega ao amor, onde a pessoa se rende completamente, mesmo que a razao mostre o contrario, descrevendo o amor profundo e compromisso total.",
+				SpotifyURI:  "spotify:track:44AyOl4qVkzS48vBsbNXaC",
 				EmbedURL:    "https://open.spotify.com/embed/track/44AyOl4qVkzS48vBsbNXaC?utm_source=generator&theme=0",
 				SpotifyURL:  "https://open.spotify.com/track/44AyOl4qVkzS48vBsbNXaC",
 			},
@@ -230,6 +233,7 @@ func newCuriosidadesPageData(now time.Time, currentPath string) curiosidadesPage
 				Title:       "November Rain",
 				Album:       "Use Your Illusion I",
 				Description: "Alem de ter um dos solos de guitarra mais bonitos e iconicos da historia do rock, essa musica fala sobre amor, perda, dor emocional e a luta para ter e manter a esperanca em meio a tantas dificuldades, a dor de qualquer emocionado por ai haha.",
+				SpotifyURI:  "spotify:track:3YRCqOhFifThpSRFJ1VWFM",
 				EmbedURL:    "https://open.spotify.com/embed/track/3YRCqOhFifThpSRFJ1VWFM?utm_source=generator&theme=0",
 				SpotifyURL:  "https://open.spotify.com/track/3YRCqOhFifThpSRFJ1VWFM",
 			},
@@ -238,6 +242,7 @@ func newCuriosidadesPageData(now time.Time, currentPath string) curiosidadesPage
 				Title:       "Alone",
 				Album:       "Bad Animals",
 				Description: "Essa musica fala sobre um amor nao correspondido, desejo intenso de se aproximar de alguem que e especial mas sem saber como, por medo de rejeicao ou pela certeza que nunca daria certo, mas o amor e real e existe no eu lirico da cancao.",
+				SpotifyURI:  "spotify:track:54b8qPFqYqIndfdxiLApea",
 				EmbedURL:    "https://open.spotify.com/embed/track/54b8qPFqYqIndfdxiLApea?utm_source=generator&theme=0",
 				SpotifyURL:  "https://open.spotify.com/track/54b8qPFqYqIndfdxiLApea",
 			},
@@ -246,6 +251,7 @@ func newCuriosidadesPageData(now time.Time, currentPath string) curiosidadesPage
 				Title:       "Black",
 				Album:       "Ten",
 				Description: "Nessa o Pearl Jam judiou, considera uma das mais tristes do rock, essa musica fala sobre dor profunda, perda e luto, e um desabafo do Eddie Vedder sobre o relacionamento que chegou ao fim, deixando uma cicatriz eterna e a saudade da pessoa que ele amava. Um primeiro amor intenso que chegou ao fim e a dor de aceitar o fim. Mas as vezes penso que o que nunca aconteceu pode machucar mais do que algo que aconteceu mas acabou, mas enfim so uma ideia, curte o som ai.",
+				SpotifyURI:  "spotify:track:5Xak5fmy089t0FYmh3VJiY",
 				EmbedURL:    "https://open.spotify.com/embed/track/5Xak5fmy089t0FYmh3VJiY?utm_source=generator&theme=0",
 				SpotifyURL:  "https://open.spotify.com/track/5Xak5fmy089t0FYmh3VJiY",
 			},
@@ -254,12 +260,14 @@ func newCuriosidadesPageData(now time.Time, currentPath string) curiosidadesPage
 			{
 				Title:      "Playlist no Spotify - Guilherme Portella 01",
 				Label:      "Playlist 1",
+				SpotifyURI: "spotify:playlist:25cIH9UZsoIYdLxLu3F2jw",
 				EmbedURL:   "https://open.spotify.com/embed/playlist/25cIH9UZsoIYdLxLu3F2jw?utm_source=generator&theme=0",
 				SpotifyURL: "https://open.spotify.com/playlist/25cIH9UZsoIYdLxLu3F2jw",
 			},
 			{
 				Title:      "Playlist no Spotify - Guilherme Portella 02",
 				Label:      "Playlist 2",
+				SpotifyURI: "spotify:playlist:3LuwLZF9DuqtT5n92wCmcU",
 				EmbedURL:   "https://open.spotify.com/embed/playlist/3LuwLZF9DuqtT5n92wCmcU?utm_source=generator&theme=0",
 				SpotifyURL: "https://open.spotify.com/playlist/3LuwLZF9DuqtT5n92wCmcU",
 			},

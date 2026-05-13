@@ -51,7 +51,7 @@ func TestNewRouterHome(t *testing.T) {
 		t.Fatalf("body does not contain Google Fonts stylesheet")
 	}
 
-	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260512-404" defer></script>`) {
+	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260512-spotify" defer></script>`) {
 		t.Fatalf("body does not contain footer script")
 	}
 
@@ -165,8 +165,10 @@ func TestNewRouterCuriosidades(t *testing.T) {
 		`Interstellar (Nolan)`,
 		`DEATH STRANDING 2: ON THE BEACH`,
 		`YouTube: canais de programação e desenvolvimento`,
+		`data-spotify-resource="spotify:track:44AyOl4qVkzS48vBsbNXaC"`,
 		`https://open.spotify.com/embed/track/44AyOl4qVkzS48vBsbNXaC`,
 		`https://open.spotify.com/embed/track/3YRCqOhFifThpSRFJ1VWFM`,
+		`data-spotify-resource="spotify:playlist:25cIH9UZsoIYdLxLu3F2jw"`,
 		`Minha trilha sonora pessoal`,
 		`Playlist 1`,
 		`Playlist 2`,
@@ -178,6 +180,10 @@ func TestNewRouterCuriosidades(t *testing.T) {
 
 	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "frame-src https://open.spotify.com") {
 		t.Fatalf("Content-Security-Policy = %q, want Spotify frame-src", got)
+	}
+
+	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "script-src 'self' https://open.spotify.com") {
+		t.Fatalf("Content-Security-Policy = %q, want Spotify script-src", got)
 	}
 }
 
