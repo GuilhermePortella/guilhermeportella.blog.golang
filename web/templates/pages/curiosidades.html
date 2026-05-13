@@ -117,17 +117,24 @@
         {{range .Songs}}
         <article class="curiosity-song-card">
           <div class="curiosity-spotify-frame">
-            <iframe
-              title="{{.Artist}} - {{.Title}} - Spotify"
-              src="{{.EmbedURL}}"
-              width="100%"
-              height="152"
-              style="border-radius: 12px;"
-              frameborder="0"
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-              allowfullscreen
-              loading="lazy">
-            </iframe>
+            <div
+              data-spotify-embed
+              data-spotify-resource="{{.SpotifyURI}}"
+              data-spotify-src="{{.EmbedURL}}"
+              data-spotify-title="{{.Artist}} - {{.Title}} - Spotify"
+              data-spotify-height="152">
+            </div>
+            <noscript>
+              <iframe
+                title="{{.Artist}} - {{.Title}} - Spotify"
+                src="{{.EmbedURL}}"
+                width="100%"
+                height="152"
+                frameborder="0"
+                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                allowfullscreen>
+              </iframe>
+            </noscript>
           </div>
           <div class="curiosity-song-card__copy">
             <h3>{{.Artist}} - {{.Title}}</h3>
@@ -141,17 +148,24 @@
       <div class="curiosity-playlist-grid" aria-label="Playlists">
         {{range .Playlists}}
         <article class="curiosity-playlist-card">
-          <iframe
-            title="{{.Title}}"
-            data-testid="embed-iframe"
-            src="{{.EmbedURL}}"
-            width="100%"
-            height="352"
-            frameborder="0"
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            allowfullscreen
-            loading="lazy">
-          </iframe>
+          <div
+            data-spotify-embed
+            data-spotify-resource="{{.SpotifyURI}}"
+            data-spotify-src="{{.EmbedURL}}"
+            data-spotify-title="{{.Title}}"
+            data-spotify-height="352">
+          </div>
+          <noscript>
+            <iframe
+              title="{{.Title}}"
+              src="{{.EmbedURL}}"
+              width="100%"
+              height="352"
+              frameborder="0"
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              allowfullscreen>
+            </iframe>
+          </noscript>
         </article>
         {{end}}
       </div>

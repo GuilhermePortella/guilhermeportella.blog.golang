@@ -38,9 +38,12 @@ func NewRouter(options RouterOptions, logger *slog.Logger) (http.Handler, error)
 	mux.HandleFunc("GET /blog/{slug}/{$}", blogArticleHandler(renderer, logger, options.ContentDir))
 	mux.HandleFunc("GET /notas", notesHandler(renderer, logger, options.NotesDir))
 	mux.HandleFunc("GET /notas/{$}", notesHandler(renderer, logger, options.NotesDir))
+	mux.HandleFunc("GET /404", notFoundPreviewHandler(renderer, logger))
+	mux.HandleFunc("GET /404/{$}", notFoundPreviewHandler(renderer, logger))
 	mux.HandleFunc("GET /healthz", healthHandler)
 	mux.HandleFunc("GET /readyz", readyHandler)
 	mux.Handle("GET /static/", http.StripPrefix("/static/", http.FileServer(http.Dir(options.StaticDir))))
+	mux.HandleFunc("GET /", notFoundHandler(renderer, logger))
 
 	return chain(
 		mux,

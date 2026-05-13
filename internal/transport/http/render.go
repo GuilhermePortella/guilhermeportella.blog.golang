@@ -54,6 +54,10 @@ func NewRenderer(templatesDir string) (*Renderer, error) {
 }
 
 func (renderer *Renderer) Render(w http.ResponseWriter, name string, data any) error {
+	return renderer.RenderStatus(w, name, data, http.StatusOK)
+}
+
+func (renderer *Renderer) RenderStatus(w http.ResponseWriter, name string, data any, statusCode int) error {
 	templates, ok := renderer.templates[name]
 	if !ok {
 		return fmt.Errorf("template %q not found", name)
@@ -65,7 +69,7 @@ func (renderer *Renderer) Render(w http.ResponseWriter, name string, data any) e
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
+	w.WriteHeader(statusCode)
 	_, err := w.Write(buffer.Bytes())
 	return err
 }

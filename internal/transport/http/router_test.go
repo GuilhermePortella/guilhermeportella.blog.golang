@@ -43,7 +43,7 @@ func TestNewRouterHome(t *testing.T) {
 		}
 	}
 
-	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260509-inter-soft">`) {
+	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260512-404">`) {
 		t.Fatalf("body does not contain stylesheet")
 	}
 
@@ -51,7 +51,7 @@ func TestNewRouterHome(t *testing.T) {
 		t.Fatalf("body does not contain Google Fonts stylesheet")
 	}
 
-	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260505-markdown" defer></script>`) {
+	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260512-spotify" defer></script>`) {
 		t.Fatalf("body does not contain footer script")
 	}
 
@@ -59,7 +59,7 @@ func TestNewRouterHome(t *testing.T) {
 		t.Fatalf("body does not contain site navigation")
 	}
 
-	if !strings.Contains(body, `<a class="site-brand" href="/" aria-label="Página inicial">Zona de Exclusão</a>`) {
+	if !strings.Contains(body, `<a class="site-brand" href="/" aria-label="Página inicial">Guilherme Portella</a>`) {
 		t.Fatalf("body does not contain site brand")
 	}
 
@@ -165,8 +165,10 @@ func TestNewRouterCuriosidades(t *testing.T) {
 		`Interstellar (Nolan)`,
 		`DEATH STRANDING 2: ON THE BEACH`,
 		`YouTube: canais de programação e desenvolvimento`,
+		`data-spotify-resource="spotify:track:44AyOl4qVkzS48vBsbNXaC"`,
 		`https://open.spotify.com/embed/track/44AyOl4qVkzS48vBsbNXaC`,
 		`https://open.spotify.com/embed/track/3YRCqOhFifThpSRFJ1VWFM`,
+		`data-spotify-resource="spotify:playlist:25cIH9UZsoIYdLxLu3F2jw"`,
 		`Minha trilha sonora pessoal`,
 		`Playlist 1`,
 		`Playlist 2`,
@@ -178,6 +180,10 @@ func TestNewRouterCuriosidades(t *testing.T) {
 
 	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "frame-src https://open.spotify.com") {
 		t.Fatalf("Content-Security-Policy = %q, want Spotify frame-src", got)
+	}
+
+	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "script-src 'self' https://open.spotify.com") {
+		t.Fatalf("Content-Security-Policy = %q, want Spotify script-src", got)
 	}
 }
 
@@ -392,6 +398,17 @@ func TestNewRouterBlogArticleNotFound(t *testing.T) {
 	if recorder.Code != http.StatusNotFound {
 		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusNotFound)
 	}
+
+	body := recorder.Body.String()
+	for _, expected := range []string{
+		`<title>Página não encontrada</title>`,
+		`<h1 id="not-found-title">Esta página não existe.</h1>`,
+		`<code data-not-found-path>/blog/nao-existe</code>`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("body does not contain %q", expected)
+		}
+	}
 }
 
 func TestMarkdownArticleLookupAndConversion(t *testing.T) {
@@ -476,6 +493,40 @@ func TestNewRouterNotFound(t *testing.T) {
 
 	if recorder.Code != http.StatusNotFound {
 		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusNotFound)
+	}
+
+	if got := recorder.Header().Get("Content-Type"); got != "text/html; charset=utf-8" {
+		t.Fatalf("Content-Type = %q, want text/html; charset=utf-8", got)
+	}
+
+	body := recorder.Body.String()
+	for _, expected := range []string{
+		`<div class="not-found-page" aria-label="Página não encontrada">`,
+		`erro 404`,
+		`<h1 id="not-found-title">Esta página não existe.</h1>`,
+		`<code data-not-found-path>/missing</code>`,
+		`Voltar ao início -&gt;`,
+		`Ver artigos -&gt;`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("body does not contain %q", expected)
+		}
+	}
+}
+
+func TestNewRouterNotFoundPreview(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/404", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+
+	if body := recorder.Body.String(); !strings.Contains(body, `<code data-not-found-path>/404</code>`) {
+		t.Fatalf("body does not contain preview path")
 	}
 }
 

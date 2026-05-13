@@ -23,6 +23,7 @@ import (
 
 var staticPageRoutes = map[string]struct{}{
 	"/":             {},
+	"/404":          {},
 	"/about":        {},
 	"/articles":     {},
 	"/blog":         {},
@@ -260,6 +261,9 @@ func shouldExportRoute(route string) bool {
 func routeOutputPath(outputDir string, route string) string {
 	if route == "/" {
 		return filepath.Join(outputDir, "index.html")
+	}
+	if route == "/404" {
+		return filepath.Join(outputDir, "404.html")
 	}
 
 	parts := strings.Split(strings.TrimPrefix(path.Clean(route), "/"), "/")
