@@ -1,0 +1,33 @@
+{{define "not_found"}}{{template "base" .}}{{end}}
+
+{{define "content"}}
+<div class="not-found-page" aria-label="Página não encontrada">
+  <section class="not-found-hero" aria-labelledby="not-found-title">
+    <div class="container not-found-hero__grid">
+      <div class="not-found-hero__copy">
+        <p class="not-found-eyebrow">erro 404</p>
+        <h1 id="not-found-title">Esta página não existe.</h1>
+        <p class="not-found-hero__lead">O endereço <code data-not-found-path>{{.RequestPath}}</code> não foi encontrado ou mudou de lugar.</p>
+        <p class="not-found-hero__note">Pode ser um link antigo, um slug digitado com pressa ou só uma rota que ainda não ganhou casa por aqui.</p>
+
+        <div class="not-found-actions" aria-label="Ações para continuar navegando">
+          <a class="button button--primary" href="/">Voltar ao início -&gt;</a>
+          <a class="button button--secondary" href="/blog">Ver artigos -&gt;</a>
+        </div>
+      </div>
+
+      <div class="not-found-hero__visual" aria-hidden="true">
+        <div class="not-found-gif">
+          <div class="not-found-gif__screen">
+            <div class="not-found-gif__bar"></div>
+            <div class="not-found-gif__code">404</div>
+            <div class="not-found-gif__line not-found-gif__line--wide"></div>
+            <div class="not-found-gif__line not-found-gif__line--short"></div>
+          </div>
+          <div class="not-found-gif__shadow"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{{end}}

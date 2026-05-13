@@ -29,6 +29,16 @@
     });
   }
 
+  function setupNotFoundPath() {
+    const pathLabel = document.querySelector("[data-not-found-path]");
+
+    if (!pathLabel) {
+      return;
+    }
+
+    pathLabel.textContent = window.location.pathname || "/";
+  }
+
   function setupBlogBrowser() {
     const browser = document.querySelector("[data-blog-browser]");
 
@@ -452,6 +462,7 @@
   }
 
   setupFooterSecret();
+  setupNotFoundPath();
   setupBlogBrowser();
   setupNotesWall();
   setupArticleCodeCopy();
