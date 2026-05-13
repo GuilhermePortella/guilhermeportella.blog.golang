@@ -47,7 +47,7 @@ func blogArticleHandler(renderer *Renderer, logger *slog.Logger, contentDir stri
 		data, err := newBlogArticlePageData(time.Now(), r.URL.Path, contentDir, r.PathValue("slug"))
 		if err != nil {
 			if errors.Is(err, errMarkdownArticleNotFound) {
-				http.NotFound(w, r)
+				renderNotFoundPage(w, r, renderer, logger, http.StatusNotFound)
 				return
 			}
 			logger.Error("load blog article", "error", err, "request_id", getRequestID(r.Context()))
