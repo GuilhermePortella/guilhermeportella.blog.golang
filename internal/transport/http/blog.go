@@ -269,10 +269,6 @@ func parseBlogDate(raw string) (parsedBlogDate, bool) {
 		return parsedBlogDate{Date: date, DateOnly: true, Attr: raw}, true
 	}
 
-	if date, err := time.Parse(time.RFC3339, raw); err == nil {
-		return parsedBlogDate{Date: date, DateOnly: false, Attr: date.Format(time.RFC3339)}, true
-	}
-
 	if date, err := time.Parse(time.RFC3339Nano, raw); err == nil {
 		return parsedBlogDate{Date: date, DateOnly: false, Attr: date.Format(time.RFC3339Nano)}, true
 	}
