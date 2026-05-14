@@ -3,6 +3,7 @@ package httptransport
 import (
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -144,5 +145,83 @@ Texto.
 		if !strings.Contains(err.Error(), expected) {
 			t.Fatalf("error = %q, want it to contain %q", err.Error(), expected)
 		}
+	}
+}
+
+func TestFrontmatterValueHelpers(t *testing.T) {
+	dateOnly := time.Date(2026, 5, 4, 0, 0, 0, 0, time.UTC)
+	dateTime := time.Date(2026, 5, 4, 18, 20, 30, 0, time.FixedZone("BRT", -3*60*60))
+
+	if got := stringFromAny(dateOnly); got != "2026-05-04" {
+		t.Fatalf("stringFromAny(dateOnly) = %q, want 2026-05-04", got)
+	}
+	if got := stringFromAny(dateTime); got != "2026-05-04T18:20:30-03:00" {
+		t.Fatalf("stringFromAny(dateTime) = %q, want RFC3339 date", got)
+	}
+
+	data := map[string]any{
+		"tags":     []any{" Go ", "", 42},
+		"keywords": " arquitetura ",
+		"clean":    []string{" backend ", "", "Go"},
+	}
+
+	if got, want := stringSliceFromFrontmatter(data, "tags"), []string{"Go", "42"}; !slices.Equal(got, want) {
+		t.Fatalf("tags = %#v, want %#v", got, want)
+	}
+	if got, want := stringSliceFromFrontmatter(data, "keywords"), []string{"arquitetura"}; !slices.Equal(got, want) {
+		t.Fatalf("keywords = %#v, want %#v", got, want)
+	}
+	if got, want := stringSliceFromFrontmatter(data, "clean"), []string{"backend", "Go"}; !slices.Equal(got, want) {
+		t.Fatalf("clean = %#v, want %#v", got, want)
+	}
+}
+
+func TestNormalizeSlug(t *testing.T) {
+	tests := []struct {
+		raw  string
+		want string
+	}{
+		{raw: " Olá, mundo_em Go! ", want: "ola-mundo-em-go"},
+		{raw: "Café com açúcar", want: "cafe-com-acucar"},
+		{raw: "---", want: ""},
+	}
+
+	for _, test := range tests {
+		t.Run(test.raw, func(t *testing.T) {
+			if got := normalizeSlug(test.raw); got != test.want {
+				t.Fatalf("normalizeSlug(%q) = %q, want %q", test.raw, got, test.want)
+			}
+		})
+	}
+}
+
+func TestRewriteMarkdownAssetURL(t *testing.T) {
+	tests := []struct {
+		raw  string
+		want string
+	}{
+		{raw: "./img/capa.jpg", want: "/content/img/capa.jpg"},
+		{raw: "../img/capa.jpg", want: "/content/img/capa.jpg"},
+		{raw: "content/img/capa.jpg", want: "/content/img/capa.jpg"},
+		{raw: "/static/img/capa.jpg", want: "/static/img/capa.jpg"},
+		{raw: "https://example.com/capa.jpg", want: "https://example.com/capa.jpg"},
+		{raw: "data:image/svg+xml;base64,abc", want: "data:image/svg+xml;base64,abc"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.raw, func(t *testing.T) {
+			if got := rewriteMarkdownAssetURL(test.raw); got != test.want {
+				t.Fatalf("rewriteMarkdownAssetURL(%q) = %q, want %q", test.raw, got, test.want)
+			}
+		})
+	}
+}
+
+func TestRewriteSrcset(t *testing.T) {
+	raw := " ./cover.jpg 1x, ../cover@2x.jpg 2x, content/thumb.jpg 640w, /static/capa.jpg 1280w, https://cdn.example.com/capa.jpg 2x "
+	want := "/content/cover.jpg 1x, /content/cover@2x.jpg 2x, /content/thumb.jpg 640w, /static/capa.jpg 1280w, https://cdn.example.com/capa.jpg 2x"
+
+	if got := rewriteSrcset(raw); got != want {
+		t.Fatalf("rewriteSrcset() = %q, want %q", got, want)
 	}
 }
