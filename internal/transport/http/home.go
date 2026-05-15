@@ -121,7 +121,7 @@ func newHomePageData(now time.Time, currentPath string) homePageData {
 			},
 			SecondaryAction: homeAction{
 				Label: "Ver projetos",
-				URL:   "/curiosidades",
+				URL:   "/projetos",
 			},
 			Tags: []string{
 				"Go",
@@ -151,7 +151,7 @@ func newHomePageData(now time.Time, currentPath string) homePageData {
 				{
 					Title:       "Projetos",
 					Description: "Experimentos, referências e materiais de apoio.",
-					URL:         "/curiosidades",
+					URL:         "/projetos",
 				},
 			},
 		},
@@ -178,7 +178,7 @@ func newHomePageData(now time.Time, currentPath string) homePageData {
 				Tag:         "projetos",
 				Title:       "Projetos e referências",
 				Description: "Experimentos, ferramentas e materiais que apoiam o trabalho técnico.",
-				URL:         "/curiosidades",
+				URL:         "/projetos",
 			},
 			{
 				Tag:         "guia",
@@ -250,6 +250,7 @@ func newSiteNavigation(currentPath string) []siteNavLink {
 	links := []siteNavLink{
 		{Label: "Início", URL: "/"},
 		{Label: "Cadernos", URL: "/blog"},
+		{Label: "Projetos", URL: "/projetos"},
 		{Label: "Sobre", URL: "/about"},
 		{Label: "Curiosidades", URL: "/curiosidades"},
 		{Label: "Notas", URL: "/notas"},
@@ -258,6 +259,9 @@ func newSiteNavigation(currentPath string) []siteNavLink {
 	pathname := normalizeSitePath(currentPath)
 	if pathname == "/articles" || strings.HasPrefix(pathname, "/articles/") {
 		pathname = "/blog"
+	}
+	if pathname == "/projects" || strings.HasPrefix(pathname, "/projects/") {
+		pathname = "/projetos"
 	}
 	for index := range links {
 		clean := normalizeSitePath(links[index].URL)

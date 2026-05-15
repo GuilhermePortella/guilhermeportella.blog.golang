@@ -29,6 +29,8 @@ var staticPageRoutes = map[string]struct{}{
 	"/blog":         {},
 	"/curiosidades": {},
 	"/notas":        {},
+	"/projects":     {},
+	"/projetos":     {},
 }
 
 type exportOptions struct {

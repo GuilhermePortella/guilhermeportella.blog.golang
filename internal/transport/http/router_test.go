@@ -44,7 +44,7 @@ func TestNewRouterHome(t *testing.T) {
 		}
 	}
 
-	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260515-shortcuts">`) {
+	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260515-projects">`) {
 		t.Fatalf("body does not contain stylesheet")
 	}
 
@@ -56,7 +56,7 @@ func TestNewRouterHome(t *testing.T) {
 		t.Fatalf("body does not contain Google Fonts stylesheet")
 	}
 
-	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260512-spotify" defer></script>`) {
+	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260515-projects" defer></script>`) {
 		t.Fatalf("body does not contain footer script")
 	}
 
@@ -87,6 +87,8 @@ func TestNewSiteNavigationActiveRoutes(t *testing.T) {
 		{name: "blog", path: "/blog", wantActive: "Cadernos"},
 		{name: "blog slug", path: "/blog/um-post", wantActive: "Cadernos"},
 		{name: "articles alias", path: "/articles/", wantActive: "Cadernos"},
+		{name: "projects", path: "/projetos", wantActive: "Projetos"},
+		{name: "projects alias", path: "/projects/", wantActive: "Projetos"},
 		{name: "about", path: "/about/", wantActive: "Sobre"},
 		{name: "trailing slash", path: "/curiosidades/", wantActive: "Curiosidades"},
 		{name: "notes", path: "/notas", wantActive: "Notas"},
@@ -144,6 +146,64 @@ func TestNewRouterBlog(t *testing.T) {
 
 	if strings.Contains(body, "Ir para referências") {
 		t.Fatalf("body contains old references label")
+	}
+}
+
+func TestNewRouterProjetos(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/projetos", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+
+	body := recorder.Body.String()
+	for _, expected := range []string{
+		`<div class="projects-page" aria-label="Projetos">`,
+		`<title>Projetos</title>`,
+		`<link rel="canonical" href="/projetos/">`,
+		`<a href="/projetos" class="active" aria-current="page">Projetos</a>`,
+		`<h1 id="projects-title">Repositórios públicos, experimentos e ferramentas em construção.</h1>`,
+		`data-projects-catalog`,
+		`data-projects-url="https://api.github.com/users/guilhermeportella/repos?sort=pushed&amp;per_page=100"`,
+		`data-projects-page-size="9"`,
+		`Filtrar projetos por linguagem`,
+		`Atividade recente`,
+		`Abrir perfil`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("body does not contain %q", expected)
+		}
+	}
+
+	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "connect-src 'self' https://api.github.com") {
+		t.Fatalf("Content-Security-Policy = %q, want GitHub connect-src", got)
+	}
+}
+
+func TestNewRouterProjectsAlias(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/projects/", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+
+	body := recorder.Body.String()
+	for _, expected := range []string{
+		`<title>Projetos</title>`,
+		`<link rel="canonical" href="/projetos/">`,
+		`<a href="/projetos" class="active" aria-current="page">Projetos</a>`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("body does not contain %q", expected)
+		}
 	}
 }
 

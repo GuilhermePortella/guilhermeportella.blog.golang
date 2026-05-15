@@ -164,6 +164,290 @@
     setupBlogFilters(browser);
   }
 
+  function setupProjectsCatalog() {
+    const catalog = document.querySelector("[data-projects-catalog]");
+
+    if (!catalog) {
+      return;
+    }
+
+    const grid = catalog.querySelector("[data-projects-grid]");
+    const languageSelect = catalog.querySelector("[data-projects-language]");
+    const sortSelect = catalog.querySelector("[data-projects-sort]");
+    const countLabel = catalog.querySelector("[data-projects-count]");
+    const statusLabel = catalog.querySelector("[data-projects-status]");
+    const emptyState = catalog.querySelector("[data-projects-empty]");
+    const pagination = catalog.querySelector("[data-projects-pagination]");
+    const url = catalog.dataset.projectsUrl || "";
+    const pageSize = Number.parseInt(catalog.dataset.projectsPageSize || "9", 10) || 9;
+
+    if (!grid || !languageSelect || !sortSelect || !statusLabel || !pagination || !url) {
+      return;
+    }
+
+    const state = {
+      projects: [],
+      language: "all",
+      sort: "recent",
+      page: 1,
+      status: "loading",
+    };
+
+    const controller = new AbortController();
+    window.addEventListener("pagehide", () => controller.abort(), { once: true });
+
+    const normalizeProject = (repo) => ({
+      id: repo.id,
+      name: repo.name,
+      description: repo.description || "Sem descrição por enquanto.",
+      repoUrl: repo.html_url,
+      liveUrl: repo.homepage || "",
+      tags: repo.language ? [repo.language] : [],
+      language: repo.language || "",
+      stars: Number(repo.stargazers_count) || 0,
+      updatedAt: repo.pushed_at,
+      createdAt: repo.created_at,
+    });
+
+    const safeHTTPURL = (value) => {
+      if (!value) {
+        return "";
+      }
+
+      try {
+        const parsed = new URL(value);
+        return parsed.protocol === "http:" || parsed.protocol === "https:" ? parsed.href : "";
+      } catch {
+        return "";
+      }
+    };
+
+    const projectLanguages = () => {
+      const languages = new Set();
+      for (const project of state.projects) {
+        if (project.language) {
+          languages.add(project.language);
+        }
+      }
+      return Array.from(languages).sort((left, right) => left.localeCompare(right, "pt-BR"));
+    };
+
+    const renderLanguageOptions = () => {
+      const fragment = document.createDocumentFragment();
+      const all = document.createElement("option");
+      all.value = "all";
+      all.textContent = "Todas";
+      fragment.append(all);
+
+      for (const language of projectLanguages()) {
+        const option = document.createElement("option");
+        option.value = language;
+        option.textContent = language;
+        fragment.append(option);
+      }
+
+      languageSelect.replaceChildren(fragment);
+      languageSelect.value = state.language;
+    };
+
+    const filteredProjects = () => {
+      if (state.language === "all") {
+        return state.projects;
+      }
+      return state.projects.filter((project) => project.language === state.language);
+    };
+
+    const sortedProjects = () => {
+      const sorted = [...filteredProjects()];
+
+      switch (state.sort) {
+        case "stars-desc":
+          return sorted.sort((left, right) => right.stars - left.stars);
+        case "stars-asc":
+          return sorted.sort((left, right) => left.stars - right.stars);
+        case "name-desc":
+          return sorted.sort((left, right) => right.name.localeCompare(left.name, "pt-BR"));
+        case "name-asc":
+          return sorted.sort((left, right) => left.name.localeCompare(right.name, "pt-BR"));
+        case "created":
+          return sorted.sort((left, right) => Date.parse(right.createdAt) - Date.parse(left.createdAt));
+        case "recent":
+        default:
+          return sorted.sort((left, right) => Date.parse(right.updatedAt) - Date.parse(left.updatedAt));
+      }
+    };
+
+    const formatDate = (value) => {
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) {
+        return "Sem data";
+      }
+      return new Intl.DateTimeFormat("pt-BR", { dateStyle: "medium" }).format(date);
+    };
+
+    const appendProjectLink = (container, label, href) => {
+      const safeURL = safeHTTPURL(href);
+      if (!safeURL) {
+        return;
+      }
+
+      const link = document.createElement("a");
+      link.className = "arrow-shift";
+      link.href = safeURL;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.append(document.createTextNode(`${label} `));
+
+      const arrow = document.createElement("span");
+      arrow.className = "link-arrow";
+      arrow.setAttribute("aria-hidden", "true");
+      arrow.textContent = "->";
+      link.append(arrow);
+      container.append(link);
+    };
+
+    const projectCard = (project) => {
+      const card = document.createElement("article");
+      card.className = "project-card";
+
+      const title = document.createElement("h3");
+      title.textContent = project.name;
+
+      const meta = document.createElement("div");
+      meta.className = "project-card__meta";
+
+      const language = document.createElement("span");
+      language.className = "project-card__language";
+      language.textContent = project.language || "Sem linguagem";
+
+      const stars = document.createElement("span");
+      stars.textContent = `${project.stars} ${project.stars === 1 ? "estrela" : "estrelas"}`;
+
+      const updatedAt = document.createElement("span");
+      updatedAt.textContent = `push em ${formatDate(project.updatedAt)}`;
+
+      meta.append(language, stars, updatedAt);
+
+      const description = document.createElement("p");
+      description.textContent = project.description;
+
+      const links = document.createElement("div");
+      links.className = "project-card__links";
+      appendProjectLink(links, "Código", project.repoUrl);
+      appendProjectLink(links, "Demo", project.liveUrl);
+
+      card.append(title, meta, description, links);
+      return card;
+    };
+
+    const renderPagination = (totalPages) => {
+      pagination.textContent = "";
+      if (totalPages <= 1) {
+        return;
+      }
+
+      const addButton = (label, page, options = {}) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = label;
+        button.disabled = Boolean(options.disabled);
+        button.classList.toggle("is-active", Boolean(options.active));
+        if (options.active) {
+          button.setAttribute("aria-current", "page");
+        }
+        button.addEventListener("click", () => {
+          state.page = page;
+          render();
+        });
+        pagination.append(button);
+      };
+
+      addButton("Anterior", Math.max(1, state.page - 1), { disabled: state.page === 1 });
+      for (let page = 1; page <= totalPages; page += 1) {
+        addButton(String(page), page, { active: page === state.page });
+      }
+      addButton("Próxima", Math.min(totalPages, state.page + 1), { disabled: state.page === totalPages });
+    };
+
+    const render = () => {
+      if (state.status !== "success") {
+        return;
+      }
+
+      const projects = sortedProjects();
+      const totalPages = Math.max(1, Math.ceil(projects.length / pageSize));
+      state.page = Math.min(Math.max(state.page, 1), totalPages);
+
+      const start = (state.page - 1) * pageSize;
+      const currentProjects = projects.slice(start, start + pageSize);
+      const cards = currentProjects.map(projectCard);
+      grid.replaceChildren(...cards);
+
+      if (countLabel) {
+        countLabel.textContent = `Mostrando ${projects.length} de ${state.projects.length} projetos.`;
+      }
+
+      setHidden(emptyState, projects.length !== 0);
+      renderPagination(totalPages);
+    };
+
+    const setStatus = (status, message) => {
+      state.status = status;
+      statusLabel.textContent = message;
+      setHidden(statusLabel, status === "success");
+    };
+
+    languageSelect.addEventListener("change", () => {
+      state.language = languageSelect.value || "all";
+      state.page = 1;
+      render();
+    });
+
+    sortSelect.addEventListener("change", () => {
+      state.sort = sortSelect.value || "recent";
+      state.page = 1;
+      render();
+    });
+
+    const fetchProjects = async () => {
+      try {
+        const response = await fetch(url, {
+          signal: controller.signal,
+          headers: {
+            Accept: "application/vnd.github+json",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error("GitHub API request failed.");
+        }
+
+        const data = await response.json();
+        if (!Array.isArray(data)) {
+          throw new Error("GitHub API payload was not a list.");
+        }
+
+        state.projects = data
+          .map(normalizeProject)
+          .filter((project) => project.id && project.name && safeHTTPURL(project.repoUrl));
+        renderLanguageOptions();
+        setStatus("success", "");
+        render();
+      } catch (error) {
+        if (error?.name === "AbortError") {
+          return;
+        }
+
+        if (countLabel) {
+          countLabel.textContent = "Projetos indisponíveis.";
+        }
+        setStatus("error", "Não foi possível carregar os projetos agora.");
+      }
+    };
+
+    fetchProjects();
+  }
+
   function setupNotesWall() {
     const wall = document.querySelector("[data-notes-wall]");
 
@@ -579,6 +863,7 @@
   setupNotFoundPath();
   setupSpotifyEmbeds();
   setupBlogBrowser();
+  setupProjectsCatalog();
   setupNotesWall();
   setupArticleCodeCopy();
   setupArticleTOC();
