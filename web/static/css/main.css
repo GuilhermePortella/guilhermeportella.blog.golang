@@ -71,6 +71,16 @@ a:hover {
   text-decoration: none;
 }
 
+.link-arrow {
+  display: inline-block;
+  transition: transform 150ms ease;
+}
+
+.arrow-shift:hover .link-arrow,
+.arrow-shift:focus .link-arrow {
+  transform: translateX(0.25rem);
+}
+
 a:focus-visible,
 button:focus-visible,
 summary:focus-visible {
@@ -623,16 +633,6 @@ h4 {
   font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.25rem;
-}
-
-.shortcut-card__action span {
-  display: inline-block;
-  transition: transform 150ms ease;
-}
-
-.shortcut-card:hover .shortcut-card__action span,
-.shortcut-card:focus .shortcut-card__action span {
-  transform: translateX(0.25rem);
 }
 
 .home-section--articles {
@@ -2719,8 +2719,9 @@ img.emoji {
   line-height: 1.5;
 }
 
-.curiosity-shortcut-card span {
+.curiosity-shortcut-card > span {
   display: inline-flex;
+  align-items: center;
   margin-top: 16px;
   color: #1c1917;
   font-size: 14px;

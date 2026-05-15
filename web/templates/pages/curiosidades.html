@@ -32,7 +32,7 @@
               <div>
                 <h3>{{.Title}}</h3>
                 <p>{{.Description}}</p>
-                <a href="{{.URL}}">Ir agora -&gt;</a>
+                <a class="arrow-shift" href="{{.URL}}">Ir agora <span class="link-arrow" aria-hidden="true">-&gt;</span></a>
               </div>
             </div>
             {{end}}
@@ -48,7 +48,7 @@
           <article class="curiosity-small-card">
             <p class="curiosity-eyebrow">atalho</p>
             <p>Um diário mínimo que muda com o tempo: frases, código bonito, música e curiosidades.</p>
-            <a href="/estado-de-espirito/">Abrir estado de espírito -&gt;</a>
+            <a class="arrow-shift" href="/estado-de-espirito/">Abrir estado de espírito <span class="link-arrow" aria-hidden="true">-&gt;</span></a>
           </article>
         </div>
       </div>
@@ -62,15 +62,15 @@
         <h2 id="curiosity-shortcuts-title">Caminhos rápidos</h2>
         <p>Atalhos para explorar o que você quiser primeiro.</p>
       </div>
-      <a class="curiosity-section__link" href="#colecao">Ver a coleção completa -&gt;</a>
+      <a class="curiosity-section__link arrow-shift" href="#colecao">Ver a coleção completa <span class="link-arrow" aria-hidden="true">-&gt;</span></a>
     </div>
 
     <div class="curiosity-shortcut-grid">
       {{range .Shortcuts}}
-      <a class="curiosity-shortcut-card" href="{{.URL}}">
+      <a class="curiosity-shortcut-card arrow-shift" href="{{.URL}}">
         <h3>{{.Title}}</h3>
         <p>{{.Description}}</p>
-        <span>Ir agora -&gt;</span>
+        <span>Ir agora <span class="link-arrow" aria-hidden="true">-&gt;</span></span>
       </a>
       {{end}}
     </div>

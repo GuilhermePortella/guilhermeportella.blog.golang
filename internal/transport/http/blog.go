@@ -113,11 +113,11 @@ func newBlogPageData(now time.Time, currentPath string, contentDir string) (blog
 			Title:       "Textos longos sobre engenharia, arquitetura e decisões que merecem ficar.",
 			Description: "Aqui ficam artigos mais completos, estudos de implementação e registros técnicos escritos com calma.",
 			PrimaryAction: homeAction{
-				Label: "Ver notas técnicas ->",
+				Label: "Ver notas técnicas",
 				URL:   "/notas",
 			},
 			SecondaryAction: homeAction{
-				Label: "Ir para curiosidades ->",
+				Label: "Ir para curiosidades",
 				URL:   "/curiosidades",
 			},
 			Tags: []string{
@@ -140,7 +140,7 @@ func newBlogPageData(now time.Time, currentPath string, contentDir string) (blog
 			Note: blogInfoCard{
 				Eyebrow:     "nota pessoal",
 				Description: "Quando a ideia pede menos fôlego, ela aparece como nota curta em outra área.",
-				LinkLabel:   "Ir para notas ->",
+				LinkLabel:   "Ir para notas",
 				LinkURL:     "/notas",
 			},
 		},
