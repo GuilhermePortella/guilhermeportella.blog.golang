@@ -44,7 +44,7 @@ func TestNewRouterHome(t *testing.T) {
 		}
 	}
 
-	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260512-404">`) {
+	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260515-links">`) {
 		t.Fatalf("body does not contain stylesheet")
 	}
 
