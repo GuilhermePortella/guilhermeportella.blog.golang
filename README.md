@@ -4,7 +4,7 @@ Estrutura inicial para um site estilo blog em Go. A base usa a biblioteca padrao
 
 ## Requisitos
 
-- Go 1.26.2
+- Go 1.26.3
 - Make opcional, apenas para atalhos locais
 
 ## Comandos
@@ -127,6 +127,8 @@ As decisoes arquiteturais ficam em `docs/adr/`.
 - `GET /blog/{slug}`
 - `GET /curiosidades`
 - `GET /notas`
+- `GET /projects` (atalho para projetos)
+- `GET /projetos`
 - `GET /static/*`
 - `GET /healthz`
 - `GET /readyz`

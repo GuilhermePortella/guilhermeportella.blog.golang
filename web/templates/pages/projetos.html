@@ -1,0 +1,109 @@
+{{define "projetos"}}{{template "base" .}}{{end}}
+
+{{define "content"}}
+<div class="projects-page" aria-label="Projetos">
+  <section class="blog-hero projects-hero" aria-labelledby="projects-title">
+    <div class="blog-hero__orb blog-hero__orb--warm" aria-hidden="true"></div>
+    <div class="blog-hero__orb blog-hero__orb--cool" aria-hidden="true"></div>
+
+    <div class="blog-shell blog-hero__grid">
+      <div class="blog-hero__intro">
+        <p class="eyebrow eyebrow--wide">{{.Hero.Eyebrow}}</p>
+        <h1 id="projects-title">{{.Hero.Title}}</h1>
+        <p class="blog-hero__text">{{.Hero.Description}}</p>
+
+        {{if .Hero.Tags}}
+        <ul class="blog-tags" aria-label="Temas desta página">
+          {{range .Hero.Tags}}
+          <li>{{.}}</li>
+          {{end}}
+        </ul>
+        {{end}}
+      </div>
+
+      <div class="blog-hero__aside">
+        <article class="blog-guide-card" aria-labelledby="projects-guide-title">
+          <p class="eyebrow eyebrow--spaced">{{.Hero.Guide.Eyebrow}}</p>
+          <h2 id="projects-guide-title">{{.Hero.Guide.Title}}</h2>
+          <p>{{.Hero.Guide.Description}}</p>
+
+          {{if .Hero.Guide.Items}}
+          <ul>
+            {{range .Hero.Guide.Items}}
+            <li>
+              <span aria-hidden="true"></span>
+              <span>{{.}}</span>
+            </li>
+            {{end}}
+          </ul>
+          {{end}}
+        </article>
+
+        <aside class="blog-note-card">
+          <p class="eyebrow eyebrow--spaced">{{.Hero.Note.Eyebrow}}</p>
+          <p>{{.Hero.Note.Description}}</p>
+          {{if .Hero.Note.LinkURL}}
+          <a class="arrow-shift" href="{{.Hero.Note.LinkURL}}">{{.Hero.Note.LinkLabel}} <span class="link-arrow" aria-hidden="true">-&gt;</span></a>
+          {{end}}
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section
+    class="projects-browser"
+    data-projects-catalog
+    data-projects-url="https://api.github.com/users/guilhermeportella/repos?sort=pushed&amp;per_page=100"
+    data-projects-page-size="9"
+    aria-labelledby="projects-browser-title"
+  >
+    <div class="projects-browser__grid">
+      <section class="projects-controls" aria-labelledby="projects-browser-title">
+        <div>
+          <p class="eyebrow eyebrow--spaced">catálogo</p>
+          <h2 id="projects-browser-title">Explorar projetos</h2>
+          <p>Filtre por linguagem ou reorganize os repositórios carregados.</p>
+        </div>
+
+        <div class="projects-controls__fields">
+          <label>
+            <span>Linguagem</span>
+            <select data-projects-language aria-label="Filtrar projetos por linguagem">
+              <option value="all">Todas</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Ordenar</span>
+            <select data-projects-sort aria-label="Ordenar projetos">
+              <option value="recent">Atividade recente</option>
+              <option value="created">Criados recentemente</option>
+              <option value="stars-desc">Mais estrelas</option>
+              <option value="stars-asc">Menos estrelas</option>
+              <option value="name-asc">Nome A-Z</option>
+              <option value="name-desc">Nome Z-A</option>
+            </select>
+          </label>
+        </div>
+
+        <p class="projects-count-label" data-projects-count aria-live="polite">Carregando projetos...</p>
+      </section>
+
+      <aside class="blog-browser__aside projects-browser__aside">
+        <p class="eyebrow eyebrow--spaced">origem</p>
+        <h2>GitHub público</h2>
+        <p>Os cartões usam os repositórios públicos mais recentes disponíveis no perfil.</p>
+        <a class="arrow-shift" href="https://github.com/guilhermeportella" target="_blank" rel="noopener noreferrer">Abrir perfil <span class="link-arrow" aria-hidden="true">-&gt;</span></a>
+      </aside>
+    </div>
+
+    <div class="projects-status" data-projects-status role="status">Carregando projetos do GitHub...</div>
+    <p class="projects-empty" data-projects-empty hidden>Nenhum projeto encontrado para este filtro.</p>
+    <div class="projects-grid" data-projects-grid aria-live="polite"></div>
+    <nav class="projects-pagination" data-projects-pagination aria-label="Paginação de projetos"></nav>
+    <noscript>
+      <p class="projects-empty">Ative JavaScript para carregar os projetos públicos do GitHub.</p>
+    </noscript>
+  </section>
+</div>
+{{end}}
