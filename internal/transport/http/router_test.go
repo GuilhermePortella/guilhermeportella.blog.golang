@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -45,6 +46,10 @@ func TestNewRouterHome(t *testing.T) {
 
 	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260512-404">`) {
 		t.Fatalf("body does not contain stylesheet")
+	}
+
+	if !strings.Contains(body, `<meta http-equiv="Content-Security-Policy"`) || !strings.Contains(body, `<meta name="referrer" content="no-referrer">`) {
+		t.Fatalf("body does not contain static security metadata")
 	}
 
 	if !strings.Contains(body, `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">`) {
@@ -481,6 +486,43 @@ func TestNewRouterHealthz(t *testing.T) {
 
 	if got := recorder.Header().Get("X-Request-ID"); got == "" {
 		t.Fatal("X-Request-ID is empty")
+	}
+}
+
+func TestStaticFileServerBlocksDirectoryListingAndHiddenFiles(t *testing.T) {
+	staticDir := t.TempDir()
+	if err := os.Mkdir(filepath.Join(staticDir, "css"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(staticDir, "css", "main.css"), []byte("body{}"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(staticDir, ".env"), []byte("SECRET=value"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	handler := http.StripPrefix("/static/", newStaticFileServer(staticDir))
+	tests := []struct {
+		path string
+		want int
+	}{
+		{path: "/static/css/main.css", want: http.StatusOK},
+		{path: "/static/", want: http.StatusNotFound},
+		{path: "/static/css/", want: http.StatusNotFound},
+		{path: "/static/.env", want: http.StatusNotFound},
+	}
+
+	for _, test := range tests {
+		t.Run(test.path, func(t *testing.T) {
+			request := httptest.NewRequest(http.MethodGet, test.path, nil)
+			recorder := httptest.NewRecorder()
+
+			handler.ServeHTTP(recorder, request)
+
+			if recorder.Code != test.want {
+				t.Fatalf("status = %d, want %d", recorder.Code, test.want)
+			}
+		})
 	}
 }
 

@@ -47,6 +47,33 @@ func TestMarkdownToHTMLSupportsGFMAndControlledHTML(t *testing.T) {
 	}
 }
 
+func TestMarkdownToHTMLStripsUnsafeURLsAndHardensBlankTargets(t *testing.T) {
+	html := string(markdownToHTML(`
+[link ruim](javascript:alert(1))
+![imagem ruim](data:image/svg+xml;base64,PHN2ZyBvbmxvYWQ9YWxlcnQoMSk+)
+<img src="//example.com/tracker.png" alt="tracker">
+<a href="https://example.com" target="_blank">externo</a>
+<a href="https://example.org" target="_blank" rel="nofollow">rel existente</a>
+`))
+
+	for _, unwanted := range []string{"javascript:", "data:image", `src="//example.com/tracker.png"`} {
+		if strings.Contains(html, unwanted) {
+			t.Fatalf("HTML contains unsafe URL %q:\n%s", unwanted, html)
+		}
+	}
+
+	for _, expected := range []string{
+		`href="https://example.com"`,
+		`target="_blank"`,
+		`rel="noopener noreferrer"`,
+		`rel="nofollow noopener noreferrer"`,
+	} {
+		if !strings.Contains(html, expected) {
+			t.Fatalf("HTML does not contain hardened link fragment %q:\n%s", expected, html)
+		}
+	}
+}
+
 func TestMarkdownToHTMLSupportsKatexAndTwemoji(t *testing.T) {
 	html := string(markdownToHTML("A formula e $E = mc^2$ 🙂 e `🙂`.\n\n$$\n\\int_0^1 x^2\\,dx = \\frac{1}{3}\n$$\n\n$$a^2 + b^2 = c^2$$"))
 
@@ -205,7 +232,10 @@ func TestRewriteMarkdownAssetURL(t *testing.T) {
 		{raw: "content/img/capa.jpg", want: "/content/img/capa.jpg"},
 		{raw: "/static/img/capa.jpg", want: "/static/img/capa.jpg"},
 		{raw: "https://example.com/capa.jpg", want: "https://example.com/capa.jpg"},
-		{raw: "data:image/svg+xml;base64,abc", want: "data:image/svg+xml;base64,abc"},
+		{raw: "mailto:guilherme@example.com", want: "mailto:guilherme@example.com"},
+		{raw: "data:image/svg+xml;base64,abc", want: ""},
+		{raw: "javascript:alert(1)", want: ""},
+		{raw: "//example.com/capa.jpg", want: ""},
 	}
 
 	for _, test := range tests {
@@ -218,7 +248,7 @@ func TestRewriteMarkdownAssetURL(t *testing.T) {
 }
 
 func TestRewriteSrcset(t *testing.T) {
-	raw := " ./cover.jpg 1x, ../cover@2x.jpg 2x, content/thumb.jpg 640w, /static/capa.jpg 1280w, https://cdn.example.com/capa.jpg 2x "
+	raw := " ./cover.jpg 1x, ../cover@2x.jpg 2x, content/thumb.jpg 640w, /static/capa.jpg 1280w, https://cdn.example.com/capa.jpg 2x, javascript:alert(1) 3x "
 	want := "/content/cover.jpg 1x, /content/cover@2x.jpg 2x, /content/thumb.jpg 640w, /static/capa.jpg 1280w, https://cdn.example.com/capa.jpg 2x"
 
 	if got := rewriteSrcset(raw); got != want {

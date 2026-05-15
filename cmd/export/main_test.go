@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -115,5 +116,89 @@ func TestNormalizeBasePath(t *testing.T) {
 				t.Fatalf("normalizeBasePath(%q) = %q, want %q", test.raw, got, test.want)
 			}
 		})
+	}
+}
+
+func TestCleanOutputDirAcceptsSafeProjectPaths(t *testing.T) {
+	cwd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	projectRoot, err := findProjectRoot()
+	if err != nil {
+		t.Fatal(err)
+	}
+	relativeDist, err := filepath.Rel(cwd, filepath.Join(projectRoot, "dist"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	relativeTmpExport, err := filepath.Rel(cwd, filepath.Join(projectRoot, "tmp", "export"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []struct {
+		raw  string
+		want string
+	}{
+		{raw: relativeDist, want: filepath.Clean(relativeDist)},
+		{raw: relativeTmpExport, want: filepath.Clean(relativeTmpExport)},
+		{raw: filepath.Join(projectRoot, "dist-absolute"), want: filepath.Join(projectRoot, "dist-absolute")},
+	}
+
+	for _, test := range tests {
+		t.Run(test.raw, func(t *testing.T) {
+			got, err := cleanOutputDir(test.raw)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got != test.want {
+				t.Fatalf("cleanOutputDir(%q) = %q, want %q", test.raw, got, test.want)
+			}
+		})
+	}
+}
+
+func TestCleanOutputDirRejectsDangerousPaths(t *testing.T) {
+	projectRoot, err := findProjectRoot()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tests := []string{
+		"",
+		".",
+		"..",
+		filepath.Join("..", "dist"),
+		filepath.Dir(projectRoot),
+		".cache",
+		filepath.Join(projectRoot, ".github"),
+		filepath.Join(projectRoot, "content"),
+		filepath.Join(projectRoot, "web", "static"),
+	}
+
+	for _, raw := range tests {
+		t.Run(raw, func(t *testing.T) {
+			if got, err := cleanOutputDir(raw); err == nil {
+				t.Fatalf("cleanOutputDir(%q) = %q, want error", raw, got)
+			}
+		})
+	}
+}
+
+func TestCleanOutputDirRejectsExistingFile(t *testing.T) {
+	projectRoot, err := findProjectRoot()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	filePath := filepath.Join(projectRoot, "export-output-file-test")
+	if err := os.WriteFile(filePath, []byte("not a directory"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	defer os.Remove(filePath)
+
+	if got, err := cleanOutputDir(filePath); err == nil {
+		t.Fatalf("cleanOutputDir(%q) = %q, want error", filePath, got)
 	}
 }
