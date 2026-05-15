@@ -44,7 +44,7 @@ func TestNewRouterHome(t *testing.T) {
 		}
 	}
 
-	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260515-links">`) {
+	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260515-shortcuts">`) {
 		t.Fatalf("body does not contain stylesheet")
 	}
 
@@ -124,7 +124,8 @@ func TestNewRouterBlog(t *testing.T) {
 		`<div class="blog-page" aria-label="Blog">`,
 		`<a href="/blog" class="active" aria-current="page">Cadernos</a>`,
 		"Textos longos sobre engenharia, arquitetura e decisões que merecem ficar.",
-		"Ir para curiosidades -&gt;",
+		"Ir para curiosidades",
+		`class="link-arrow" aria-hidden="true">-&gt;</span>`,
 		`data-blog-browser`,
 		"Encontrar textos",
 		"Filtro de ano e meses",
@@ -165,7 +166,7 @@ func TestNewRouterCuriosidades(t *testing.T) {
 		`<a href="/curiosidades" class="active" aria-current="page">Curiosidades</a>`,
 		`<h1 id="curiosity-title">Um inventário de gostos para lembrar quem eu sou quando fecho o notebook.</h1>`,
 		`id="mapa"`,
-		`Ver a coleção completa -&gt;`,
+		`Ver a coleção completa`,
 		`id="colecao"`,
 		`Interstellar (Nolan)`,
 		`DEATH STRANDING 2: ON THE BEACH`,
@@ -253,7 +254,7 @@ func TestNewRouterAbout(t *testing.T) {
 		`<a href="/about" class="active" aria-current="page">Sobre</a>`,
 		`<h1 id="about-title">Guilherme Portella em modo carreira.</h1>`,
 		`src="https://avatars.githubusercontent.com/u/59876059?v=4"`,
-		`Ler artigos técnicos -&gt;`,
+		`Ler artigos técnicos`,
 		`Pilares de trabalho`,
 		`Hábitos que deixam o código menos dramático`,
 		`guilhermeportella.dev@gmail.com`,
@@ -369,7 +370,7 @@ func TestNewRouterBlogArticle(t *testing.T) {
 		`data-article-toc`,
 		`application/ld+json`,
 		"1 min de leitura",
-		"Voltar para blog -&gt;",
+		"Voltar para blog",
 	} {
 		if !strings.Contains(body, expected) {
 			t.Fatalf("body does not contain %q", expected)
@@ -547,8 +548,8 @@ func TestNewRouterNotFound(t *testing.T) {
 		`erro 404`,
 		`<h1 id="not-found-title">Esta página não existe.</h1>`,
 		`<code data-not-found-path>/missing</code>`,
-		`Voltar ao início -&gt;`,
-		`Ver artigos -&gt;`,
+		`Voltar ao início`,
+		`Ver artigos`,
 	} {
 		if !strings.Contains(body, expected) {
 			t.Fatalf("body does not contain %q", expected)

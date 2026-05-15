@@ -116,11 +116,11 @@ func newHomePageData(now time.Time, currentPath string) homePageData {
 			Title:       "Engenharia de software, backend e arquitetura em notas práticas.",
 			Description: "Um espaço para organizar estudos, decisões técnicas e experiências reais com desenvolvimento de software.",
 			PrimaryAction: homeAction{
-				Label: "Ler artigos ->",
+				Label: "Ler artigos",
 				URL:   "#blog",
 			},
 			SecondaryAction: homeAction{
-				Label: "Ver projetos ->",
+				Label: "Ver projetos",
 				URL:   "/curiosidades",
 			},
 			Tags: []string{
@@ -130,7 +130,7 @@ func newHomePageData(now time.Time, currentPath string) homePageData {
 				"APIs",
 				"boas práticas",
 			},
-			RoutesActionLabel: "Ir para os artigos recentes ->",
+			RoutesActionLabel: "Ir para os artigos recentes",
 			RoutesActionURL:   "#blog",
 		},
 		QuickMap: homeQuickMap{

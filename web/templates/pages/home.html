@@ -10,8 +10,8 @@
         <p class="home-hero__text">{{.Hero.Description}}</p>
 
         <div class="home-actions" aria-label="Ações principais">
-          <a class="button button--primary" href="{{.Hero.PrimaryAction.URL}}">{{.Hero.PrimaryAction.Label}}</a>
-          <a class="button button--secondary" href="{{.Hero.SecondaryAction.URL}}">{{.Hero.SecondaryAction.Label}}</a>
+          <a class="button button--primary arrow-shift" href="{{.Hero.PrimaryAction.URL}}">{{.Hero.PrimaryAction.Label}} <span class="link-arrow" aria-hidden="true">-&gt;</span></a>
+          <a class="button button--secondary arrow-shift" href="{{.Hero.SecondaryAction.URL}}">{{.Hero.SecondaryAction.Label}} <span class="link-arrow" aria-hidden="true">-&gt;</span></a>
         </div>
 
         {{if .Hero.Tags}}
@@ -36,7 +36,7 @@
               <div>
                 <h3>{{.Title}}</h3>
                 <p>{{.Description}}</p>
-                <a href="{{.URL}}">Acessar -&gt;</a>
+                <a class="arrow-shift" href="{{.URL}}">Acessar <span class="link-arrow" aria-hidden="true">-&gt;</span></a>
               </div>
             </div>
             {{end}}
@@ -46,10 +46,10 @@
         {{if .HeroCards}}
         <div class="hero-card-grid">
           {{range .HeroCards}}
-          <a class="hero-card" href="{{.URL}}">
+          <a class="hero-card arrow-shift" href="{{.URL}}">
             <h3>{{.Title}}</h3>
             <p>{{.Description}}</p>
-            <span class="hero-card__action">Abrir -&gt;</span>
+            <span class="hero-card__action">Abrir <span class="link-arrow" aria-hidden="true">-&gt;</span></span>
           </a>
           {{end}}
         </div>
@@ -66,17 +66,17 @@
           <h2 id="routes-title">Áreas técnicas</h2>
           <p>Acesse os principais conteúdos técnicos do site.</p>
         </div>
-        <a class="section-link" href="{{.Hero.RoutesActionURL}}">{{.Hero.RoutesActionLabel}}</a>
+        <a class="section-link arrow-shift" href="{{.Hero.RoutesActionURL}}">{{.Hero.RoutesActionLabel}} <span class="link-arrow" aria-hidden="true">-&gt;</span></a>
       </div>
 
       {{if .Shortcuts}}
       <div class="shortcut-grid">
         {{range .Shortcuts}}
-        <a class="shortcut-card" href="{{.URL}}">
+        <a class="shortcut-card arrow-shift" href="{{.URL}}">
           <span class="shortcut-card__tag">{{.Tag}}</span>
           <h3>{{.Title}}</h3>
           <p>{{.Description}}</p>
-          <span class="shortcut-card__action">Abrir <span aria-hidden="true">-&gt;</span></span>
+          <span class="shortcut-card__action">Abrir <span class="link-arrow" aria-hidden="true">-&gt;</span></span>
         </a>
         {{end}}
       </div>
@@ -91,7 +91,7 @@
           <p class="eyebrow">artigos recentes</p>
           <h2 id="recent-title">Publicações recentes</h2>
         </div>
-        <a class="section-link" href="/blog">Ver todos -&gt;</a>
+        <a class="section-link arrow-shift" href="/blog">Ver todos <span class="link-arrow" aria-hidden="true">-&gt;</span></a>
       </div>
 
       {{if .RecentArticles}}
@@ -99,7 +99,7 @@
         {{range .RecentArticles}}
         <li>
           <article class="article-card">
-            <a class="article-card__link" href="/blog/{{.Slug}}">
+            <a class="article-card__link arrow-shift" href="/blog/{{.Slug}}">
               <h3><span>{{.Title}}</span></h3>
               <div class="article-card__meta">
                 <time>{{.PublishedAt}}</time>
@@ -112,7 +112,7 @@
               {{with .Excerpt}}
               <p>{{.}}</p>
               {{end}}
-              <span class="article-card__action">Ler artigo -&gt;</span>
+              <span class="article-card__action">Ler artigo <span class="link-arrow" aria-hidden="true">-&gt;</span></span>
             </a>
           </article>
         </li>
@@ -140,7 +140,7 @@
           <div class="faq-card__content">
             <p>{{.Answer}}</p>
             {{if .LinkURL}}
-            <a href="{{.LinkURL}}">{{.LinkLabel}} -&gt;</a>
+            <a class="arrow-shift" href="{{.LinkURL}}">{{.LinkLabel}} <span class="link-arrow" aria-hidden="true">-&gt;</span></a>
             {{end}}
           </div>
         </details>
