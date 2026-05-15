@@ -7,6 +7,7 @@ import (
 	stdhtml "html"
 	"html/template"
 	"io/fs"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -446,6 +447,7 @@ func markdownToHTML(md string) template.HTML {
 	htmlContent = renderTwemoji(htmlContent)
 	htmlContent = autolinkHeadings(htmlContent)
 	htmlContent = sanitizeArticleHTML(htmlContent)
+	htmlContent = hardenArticleLinks(htmlContent)
 	htmlContent = renderKatex(htmlContent)
 
 	return template.HTML(htmlContent)
@@ -540,7 +542,6 @@ func sanitizeArticleHTML(raw string) string {
 	policy := bluemonday.UGCPolicy()
 	policy.AllowStandardURLs()
 	policy.AllowRelativeURLs(true)
-	policy.AllowDataURIImages()
 	policy.RequireNoFollowOnLinks(false)
 	policy.RequireNoFollowOnFullyQualifiedLinks(false)
 
@@ -553,7 +554,8 @@ func sanitizeArticleHTML(raw string) string {
 	)
 
 	policy.AllowAttrs("class", "id").Globally()
-	policy.AllowAttrs("href", "target", "rel", "class", "id").OnElements("a")
+	policy.AllowAttrs("href", "rel", "class", "id").OnElements("a")
+	policy.AllowAttrs("target").Matching(regexp.MustCompile(`(?i)^_(blank|self|parent|top)$`)).OnElements("a")
 	policy.AllowAttrs("data-katex-display").OnElements("div")
 	policy.AllowAttrs("colspan", "rowspan").Matching(bluemonday.Integer).OnElements("th", "td")
 	policy.AllowAttrs("scope").OnElements("th")
@@ -561,9 +563,29 @@ func sanitizeArticleHTML(raw string) string {
 	policy.AllowAttrs("src", "srcset", "type").OnElements("source")
 	policy.AllowAttrs("src", "controls", "poster", "width", "height", "class", "id").OnElements("video")
 	policy.AllowAttrs("src", "controls", "class", "id").OnElements("audio")
-	policy.AllowAttrs("type", "checked", "disabled", "class", "id").OnElements("input")
+	policy.AllowAttrs("type").Matching(regexp.MustCompile(`(?i)^checkbox$`)).OnElements("input")
+	policy.AllowAttrs("checked", "disabled", "class", "id").OnElements("input")
 
 	return policy.Sanitize(raw)
+}
+
+func hardenArticleLinks(raw string) string {
+	container, err := parseHTMLFragment(raw)
+	if err != nil {
+		return raw
+	}
+
+	walkHTML(container, func(node *nethtml.Node) {
+		if node.Type != nethtml.ElementNode || !strings.EqualFold(node.Data, "a") {
+			return
+		}
+		if !strings.EqualFold(attrValue(node, "target"), "_blank") {
+			return
+		}
+		setAttr(node, "rel", mergeRelTokens(attrValue(node, "rel"), "noopener", "noreferrer"))
+	})
+
+	return renderHTMLFragment(container)
 }
 
 func parseHTMLFragment(raw string) (*nethtml.Node, error) {
@@ -639,6 +661,9 @@ func rewriteSrcset(value string) string {
 			continue
 		}
 		url := rewriteMarkdownAssetURL(fields[0])
+		if url == "" {
+			continue
+		}
 		if len(fields) == 1 {
 			out = append(out, url)
 			continue
@@ -653,7 +678,26 @@ func rewriteMarkdownAssetURL(raw string) string {
 	if raw == "" {
 		return raw
 	}
-	if strings.HasPrefix(raw, "/") || strings.HasPrefix(raw, "http://") || strings.HasPrefix(raw, "https://") || strings.HasPrefix(raw, "data:") {
+
+	if hasUnsafeURLBytes(raw) || strings.HasPrefix(raw, "//") {
+		return ""
+	}
+
+	parsed, err := url.Parse(raw)
+	if err != nil {
+		return ""
+	}
+
+	if parsed.Scheme != "" {
+		switch strings.ToLower(parsed.Scheme) {
+		case "http", "https", "mailto":
+			return raw
+		default:
+			return ""
+		}
+	}
+
+	if strings.HasPrefix(raw, "/") {
 		return raw
 	}
 	if strings.HasPrefix(raw, "./") {
@@ -669,6 +713,15 @@ func rewriteMarkdownAssetURL(raw string) string {
 		return "/" + raw
 	}
 	return "/content/" + raw
+}
+
+func hasUnsafeURLBytes(value string) bool {
+	for _, r := range value {
+		if r <= 0x1f || r == 0x7f {
+			return true
+		}
+	}
+	return false
 }
 
 func renderTwemoji(raw string) string {
@@ -905,6 +958,42 @@ func attrValue(node *nethtml.Node, key string) string {
 		}
 	}
 	return ""
+}
+
+func setAttr(node *nethtml.Node, key string, value string) {
+	for index := range node.Attr {
+		if strings.EqualFold(node.Attr[index].Key, key) {
+			node.Attr[index].Key = key
+			node.Attr[index].Val = value
+			return
+		}
+	}
+	node.Attr = append(node.Attr, nethtml.Attribute{Key: key, Val: value})
+}
+
+func mergeRelTokens(current string, tokens ...string) string {
+	seen := make(map[string]bool)
+	out := make([]string, 0, len(strings.Fields(current))+len(tokens))
+
+	for _, token := range strings.Fields(current) {
+		normalized := strings.ToLower(token)
+		if seen[normalized] {
+			continue
+		}
+		seen[normalized] = true
+		out = append(out, token)
+	}
+
+	for _, token := range tokens {
+		normalized := strings.ToLower(token)
+		if seen[normalized] {
+			continue
+		}
+		seen[normalized] = true
+		out = append(out, token)
+	}
+
+	return strings.Join(out, " ")
 }
 
 func hasDescendantTag(node *nethtml.Node, tag string) bool {

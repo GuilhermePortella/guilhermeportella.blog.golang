@@ -63,13 +63,12 @@ body {
 a {
   color: var(--link);
   text-decoration: none;
-  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+  transition: color 0.15s ease;
 }
 
 a:hover {
   color: var(--link-hover);
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  text-decoration: none;
 }
 
 a:focus-visible,
@@ -470,7 +469,7 @@ h4 {
   font-size: 0.75rem;
   font-weight: 600;
   line-height: 1rem;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .hero-card-grid {
@@ -518,7 +517,7 @@ h4 {
   font-size: 0.75rem;
   font-weight: 600;
   line-height: 1rem;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .home-section--routes {
@@ -560,7 +559,7 @@ h4 {
   font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.25rem;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .shortcut-grid {
@@ -688,19 +687,6 @@ h4 {
   line-height: 1.75rem;
 }
 
-.article-card h3 span {
-  text-decoration-color: transparent;
-  text-decoration-line: underline;
-  text-decoration-thickness: 0.08em;
-  text-underline-offset: 0.2em;
-  transition: text-decoration-color 150ms ease;
-}
-
-.article-card__link:hover h3 span,
-.article-card__link:focus h3 span {
-  text-decoration-color: var(--stone-900);
-}
-
 .article-card__meta {
   margin-top: 0.5rem;
   color: var(--stone-500);
@@ -727,7 +713,7 @@ h4 {
   font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.25rem;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .empty-state {
@@ -927,7 +913,7 @@ h4 {
   font-size: 0.75rem;
   font-weight: 600;
   line-height: 1rem;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .blog-browser {
@@ -1042,7 +1028,7 @@ h4 {
   color: var(--stone-900);
   font-size: 0.875rem;
   font-weight: 600;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .blog-filter {
@@ -1187,19 +1173,6 @@ h4 {
   line-height: 1.75rem;
 }
 
-.blog-card h3 span {
-  text-decoration-color: transparent;
-  text-decoration-line: underline;
-  text-decoration-thickness: 0.08em;
-  text-underline-offset: 0.2em;
-  transition: text-decoration-color 150ms ease;
-}
-
-.blog-card:hover h3 span,
-.blog-card:focus h3 span {
-  text-decoration-color: var(--stone-900);
-}
-
 .blog-card__meta {
   color: var(--stone-500);
   font-size: 0.75rem;
@@ -1222,7 +1195,7 @@ h4 {
   font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.25rem;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .blog-empty {
@@ -1396,7 +1369,7 @@ h4 {
 
 .note-card__content a {
   color: var(--stone-900);
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .notes-empty {
@@ -1513,7 +1486,7 @@ h4 {
 
 .article-breadcrumbs a:hover,
 .article-breadcrumbs a:focus {
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .article-hero__copy {
@@ -1616,7 +1589,7 @@ h4 {
   font-size: 0.875rem;
   font-weight: 600;
   line-height: 1.25rem;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .article-toc--mobile {
@@ -1752,9 +1725,7 @@ h4 {
 
 .prose a {
   color: #1d4ed8;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
+  text-decoration: none;
 }
 
 .prose strong {
@@ -2076,7 +2047,7 @@ img.emoji {
   color: var(--stone-900);
   font-size: 0.875rem;
   line-height: 1.25rem;
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 .about-page {
@@ -2340,8 +2311,7 @@ img.emoji {
   font-size: 14px;
   font-weight: 600;
   line-height: 20px;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  text-decoration: none;
 }
 
 .about-pillar-grid {
@@ -2622,8 +2592,7 @@ img.emoji {
 .curiosity-section__link {
   color: #1c1917;
   font-weight: 600;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  text-decoration: none;
 }
 
 .curiosity-map-card__item a {
@@ -2757,8 +2726,7 @@ img.emoji {
   font-size: 14px;
   font-weight: 600;
   line-height: 20px;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  text-decoration: none;
 }
 
 .curiosity-collection-grid {

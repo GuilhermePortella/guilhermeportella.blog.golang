@@ -325,12 +325,79 @@ func withBasePath(value string, basePath string) string {
 }
 
 func cleanOutputDir(outputDir string) (string, error) {
-	cleaned := filepath.Clean(strings.TrimSpace(outputDir))
-	if cleaned == "" || cleaned == "." || cleaned == string(filepath.Separator) {
+	value := strings.TrimSpace(outputDir)
+	if value == "" {
 		return "", errors.New("output directory must be a non-root directory")
 	}
 
+	cleaned := filepath.Clean(value)
+	if cleaned == "." || cleaned == string(filepath.Separator) {
+		return "", errors.New("output directory must be a non-root directory")
+	}
+
+	absoluteOutputDir, err := filepath.Abs(cleaned)
+	if err != nil {
+		return "", fmt.Errorf("resolve output directory %q: %w", outputDir, err)
+	}
+
+	projectRoot, err := findProjectRoot()
+	if err != nil {
+		return "", err
+	}
+
+	relativeOutputDir, err := filepath.Rel(projectRoot, absoluteOutputDir)
+	if err != nil {
+		return "", fmt.Errorf("compare output directory %q with project root: %w", outputDir, err)
+	}
+
+	if relativeOutputDir == "." || relativeOutputDir == ".." || strings.HasPrefix(relativeOutputDir, ".."+string(filepath.Separator)) {
+		return "", fmt.Errorf("output directory must stay inside the project, got %q", outputDir)
+	}
+
+	root := strings.Split(filepath.ToSlash(relativeOutputDir), "/")[0]
+	if isProtectedOutputRoot(root) {
+		return "", fmt.Errorf("output directory %q would overwrite project source directory %q", outputDir, root)
+	}
+
+	if info, err := os.Stat(absoluteOutputDir); err == nil {
+		if !info.IsDir() {
+			return "", fmt.Errorf("output directory %q points to a file", outputDir)
+		}
+	} else if !errors.Is(err, os.ErrNotExist) {
+		return "", fmt.Errorf("inspect output directory %q: %w", outputDir, err)
+	}
+
 	return cleaned, nil
+}
+
+func isProtectedOutputRoot(root string) bool {
+	switch root {
+	case ".git", ".github", "cmd", "configs", "content", "docs", "internal", "migrations", "scripts", "web":
+		return true
+	default:
+		return strings.HasPrefix(root, ".")
+	}
+}
+
+func findProjectRoot() (string, error) {
+	dir, err := os.Getwd()
+	if err != nil {
+		return "", fmt.Errorf("resolve working directory: %w", err)
+	}
+
+	for {
+		if info, err := os.Stat(filepath.Join(dir, "go.mod")); err == nil && !info.IsDir() {
+			return dir, nil
+		} else if err != nil && !errors.Is(err, os.ErrNotExist) {
+			return "", fmt.Errorf("inspect project root candidate %q: %w", dir, err)
+		}
+
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			return "", errors.New("could not find project root containing go.mod")
+		}
+		dir = parent
+	}
 }
 
 func normalizeBasePath(basePath string) (string, error) {
@@ -353,11 +420,16 @@ func normalizeBasePath(basePath string) (string, error) {
 }
 
 func resetOutputDir(outputDir string) error {
-	if err := os.RemoveAll(outputDir); err != nil {
-		return fmt.Errorf("remove output dir %q: %w", outputDir, err)
+	cleanedOutputDir, err := cleanOutputDir(outputDir)
+	if err != nil {
+		return err
 	}
-	if err := os.MkdirAll(outputDir, 0o755); err != nil {
-		return fmt.Errorf("create output dir %q: %w", outputDir, err)
+
+	if err := os.RemoveAll(cleanedOutputDir); err != nil {
+		return fmt.Errorf("remove output dir %q: %w", cleanedOutputDir, err)
+	}
+	if err := os.MkdirAll(cleanedOutputDir, 0o755); err != nil {
+		return fmt.Errorf("create output dir %q: %w", cleanedOutputDir, err)
 	}
 	return nil
 }

@@ -4,6 +4,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; form-action 'self'; script-src 'self' https://open.spotify.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' data: https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: https:; media-src 'self' data: https:; frame-src https://open.spotify.com; object-src 'none'">
+    <meta name="referrer" content="no-referrer">
     <meta name="description" content="{{.Description}}">
     {{with .Keywords}}<meta name="keywords" content="{{.}}">{{end}}
     {{with .CanonicalURL}}<link rel="canonical" href="{{.}}">{{end}}
@@ -21,7 +23,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-    <link rel="stylesheet" href="/static/css/main.css?v=20260512-404">
+    <link rel="stylesheet" href="/static/css/main.css?v=20260515-links">
     {{block "head-extra" .}}{{end}}
     <script src="/static/js/site.js?v=20260512-spotify" defer></script>
   </head>

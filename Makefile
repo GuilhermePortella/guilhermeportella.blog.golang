@@ -33,4 +33,4 @@ export: ## Gera o site estatico em ./dist para publicacao no GitHub Pages.
 ci: fmt-check vet test build export ## Executa as validacoes usadas no CI.
 
 clean: ## Remove artefatos locais.
-	rm -rf bin $(EXPORT_DIR)
+	rm -rf bin dist
