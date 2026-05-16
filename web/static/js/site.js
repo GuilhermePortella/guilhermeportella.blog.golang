@@ -179,7 +179,7 @@
     const emptyState = catalog.querySelector("[data-projects-empty]");
     const pagination = catalog.querySelector("[data-projects-pagination]");
     const url = catalog.dataset.projectsUrl || "";
-    const pageSize = Number.parseInt(catalog.dataset.projectsPageSize || "9", 10) || 9;
+    const pageSize = Number.parseInt(catalog.dataset.projectsPageSize || "8", 10) || 8;
 
     if (!grid || !languageSelect || !sortSelect || !statusLabel || !pagination || !url) {
       return;
