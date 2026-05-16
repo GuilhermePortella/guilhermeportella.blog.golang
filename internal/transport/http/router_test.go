@@ -169,7 +169,7 @@ func TestNewRouterProjetos(t *testing.T) {
 		`<h1 id="projects-title">Repositórios públicos, experimentos e ferramentas em construção.</h1>`,
 		`data-projects-catalog`,
 		`data-projects-url="https://api.github.com/users/guilhermeportella/repos?sort=pushed&amp;per_page=100"`,
-		`data-projects-page-size="9"`,
+		`data-projects-page-size="8"`,
 		`Filtrar projetos por linguagem`,
 		`Atividade recente`,
 		`Abrir perfil`,
