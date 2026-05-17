@@ -106,7 +106,7 @@ func newHomePageData(now time.Time, currentPath string) homePageData {
 	return homePageData{
 		Title:        "Guilherme Portella",
 		Description:  "Artigos técnicos sobre backend, arquitetura, Go, APIs e engenharia de software.",
-		CanonicalURL: "https://guilhermeportella.github.io/",
+		CanonicalURL: "https://guilhermeportella.github.io/guilhermeportella.blog.golang/",
 		TwitterCard:  "summary_large_image",
 		SiteName:     "Guilherme Portella",
 		CurrentYear:  now.Year(),
