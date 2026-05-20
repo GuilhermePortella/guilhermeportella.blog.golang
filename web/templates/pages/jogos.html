@@ -1,0 +1,73 @@
+{{define "jogos"}}{{template "base" .}}{{end}}
+
+{{define "content"}}
+<div class="games-page" aria-label="Jogos">
+  <section class="games-hero" aria-labelledby="games-title">
+    <div class="blog-shell games-hero__grid">
+      <div class="games-hero__intro">
+        <p class="eyebrow eyebrow--wide">{{.Hero.Eyebrow}}</p>
+        <h1 id="games-title">{{.Hero.Title}}</h1>
+        <p class="games-hero__text">{{.Hero.Description}}</p>
+
+        {{if .Hero.Tags}}
+        <ul class="blog-tags" aria-label="Temas desta página">
+          {{range .Hero.Tags}}
+          <li>{{.}}</li>
+          {{end}}
+        </ul>
+        {{end}}
+      </div>
+
+      <div class="games-hero__panel" aria-hidden="true">
+        <div class="games-arcade">
+          <div class="games-arcade__screen">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <div class="games-arcade__controls">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="games-hub" aria-labelledby="games-hub-title">
+    <div class="games-section-heading">
+      <p class="eyebrow eyebrow--spaced">hub</p>
+      <h2 id="games-hub-title">Escolha um jogo</h2>
+      <p>Experimentos pequenos, cada um em uma página própria.</p>
+    </div>
+
+    <div class="games-grid">
+      {{range .Games}}
+      <a class="game-card game-card--{{.Accent}} arrow-shift" href="{{.URL}}" aria-label="Jogar {{.Title}}">
+        <span class="game-card__status">{{.Status}}</span>
+        <h3>{{.Title}}</h3>
+        <p>{{.Description}}</p>
+        <dl class="game-card__meta">
+          <div>
+            <dt>Dificuldade</dt>
+            <dd>{{.Difficulty}}</dd>
+          </div>
+          <div>
+            <dt>Duração</dt>
+            <dd>{{.Duration}}</dd>
+          </div>
+        </dl>
+        <span class="game-card__action">Jogar agora <span class="link-arrow" aria-hidden="true">-&gt;</span></span>
+      </a>
+      {{end}}
+    </div>
+  </section>
+</div>
+{{end}}
