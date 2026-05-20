@@ -44,7 +44,7 @@ func TestNewRouterHome(t *testing.T) {
 		}
 	}
 
-	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260515-projects">`) {
+	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260519-games">`) {
 		t.Fatalf("body does not contain stylesheet")
 	}
 
@@ -56,7 +56,7 @@ func TestNewRouterHome(t *testing.T) {
 		t.Fatalf("body does not contain Google Fonts stylesheet")
 	}
 
-	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260515-projects" defer></script>`) {
+	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260519-games" defer></script>`) {
 		t.Fatalf("body does not contain footer script")
 	}
 
@@ -89,6 +89,9 @@ func TestNewSiteNavigationActiveRoutes(t *testing.T) {
 		{name: "articles alias", path: "/articles/", wantActive: "Cadernos"},
 		{name: "projects", path: "/projetos", wantActive: "Projetos"},
 		{name: "projects alias", path: "/projects/", wantActive: "Projetos"},
+		{name: "games", path: "/jogos", wantActive: "Jogos"},
+		{name: "game page", path: "/jogos/memoria-relampago", wantActive: "Jogos"},
+		{name: "games alias", path: "/games/", wantActive: "Jogos"},
 		{name: "about", path: "/about/", wantActive: "Sobre"},
 		{name: "trailing slash", path: "/curiosidades/", wantActive: "Curiosidades"},
 		{name: "notes", path: "/notas", wantActive: "Notas"},
@@ -200,6 +203,113 @@ func TestNewRouterProjectsAlias(t *testing.T) {
 		`<title>Projetos</title>`,
 		`<link rel="canonical" href="/projetos/">`,
 		`<a href="/projetos" class="active" aria-current="page">Projetos</a>`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("body does not contain %q", expected)
+		}
+	}
+}
+
+func TestNewRouterJogos(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/jogos", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+
+	body := recorder.Body.String()
+	for _, expected := range []string{
+		`<div class="games-page" aria-label="Jogos">`,
+		`<title>Jogos</title>`,
+		`<link rel="canonical" href="/jogos/">`,
+		`<a href="/jogos" class="active" aria-current="page">Jogos</a>`,
+		`<h1 id="games-title">Um pequeno hub para jogar, testar ideias e descansar a cabeça.</h1>`,
+		`href="/jogos/memoria-relampago"`,
+		`Memória Relâmpago`,
+		`Sequência de Cores`,
+		`Clique Rápido`,
+		`Jogar agora`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("body does not contain %q", expected)
+		}
+	}
+}
+
+func TestNewRouterGamesAlias(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/games/", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+
+	body := recorder.Body.String()
+	for _, expected := range []string{
+		`<title>Jogos</title>`,
+		`<link rel="canonical" href="/jogos/">`,
+		`<a href="/jogos" class="active" aria-current="page">Jogos</a>`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("body does not contain %q", expected)
+		}
+	}
+}
+
+func TestNewRouterJogo(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/jogos/memoria-relampago", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+
+	body := recorder.Body.String()
+	for _, expected := range []string{
+		`<div class="game-page game-page--teal" aria-label="Memória Relâmpago">`,
+		`<title>Memória Relâmpago | Jogos</title>`,
+		`<link rel="canonical" href="/jogos/memoria-relampago/">`,
+		`<a href="/jogos" class="active" aria-current="page">Jogos</a>`,
+		`<h1 id="game-title">Memória Relâmpago</h1>`,
+		`data-game="memoria-relampago"`,
+		`data-memory-game`,
+		`data-memory-board`,
+		`data-memory-restart`,
+		`Voltar para jogos`,
+		`Continue jogando`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("body does not contain %q", expected)
+		}
+	}
+}
+
+func TestNewRouterJogoNotFound(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/jogos/nao-existe", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusNotFound {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusNotFound)
+	}
+
+	body := recorder.Body.String()
+	for _, expected := range []string{
+		`<title>Página não encontrada</title>`,
+		`<h1 id="not-found-title">Esta página não existe.</h1>`,
+		`<code data-not-found-path>/jogos/nao-existe</code>`,
 	} {
 		if !strings.Contains(body, expected) {
 			t.Fatalf("body does not contain %q", expected)

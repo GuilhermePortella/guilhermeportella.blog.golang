@@ -126,6 +126,9 @@ As decisoes arquiteturais ficam em `docs/adr/`.
 - `GET /blog`
 - `GET /blog/{slug}`
 - `GET /curiosidades`
+- `GET /games` (atalho para jogos)
+- `GET /jogos`
+- `GET /jogos/{slug}`
 - `GET /notas`
 - `GET /projects` (atalho para projetos)
 - `GET /projetos`

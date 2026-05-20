@@ -251,6 +251,7 @@ func newSiteNavigation(currentPath string) []siteNavLink {
 		{Label: "Início", URL: "/"},
 		{Label: "Cadernos", URL: "/blog"},
 		{Label: "Projetos", URL: "/projetos"},
+		{Label: "Jogos", URL: "/jogos"},
 		{Label: "Sobre", URL: "/about"},
 		{Label: "Curiosidades", URL: "/curiosidades"},
 		{Label: "Notas", URL: "/notas"},
@@ -262,6 +263,9 @@ func newSiteNavigation(currentPath string) []siteNavLink {
 	}
 	if pathname == "/projects" || strings.HasPrefix(pathname, "/projects/") {
 		pathname = "/projetos"
+	}
+	if pathname == "/games" || strings.HasPrefix(pathname, "/games/") {
+		pathname = "/jogos"
 	}
 	for index := range links {
 		clean := normalizeSitePath(links[index].URL)

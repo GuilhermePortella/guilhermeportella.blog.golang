@@ -448,6 +448,396 @@
     fetchProjects();
   }
 
+  function setupGames() {
+    setupMemoryGame();
+    setupSequenceGame();
+    setupReactionGame();
+  }
+
+  function shuffled(items) {
+    const copy = [...items];
+
+    for (let index = copy.length - 1; index > 0; index -= 1) {
+      const swapIndex = Math.floor(Math.random() * (index + 1));
+      [copy[index], copy[swapIndex]] = [copy[swapIndex], copy[index]];
+    }
+
+    return copy;
+  }
+
+  function setupMemoryGame() {
+    const root = document.querySelector("[data-memory-game]");
+
+    if (!root) {
+      return;
+    }
+
+    const board = root.querySelector("[data-memory-board]");
+    const restart = root.querySelector("[data-memory-restart]");
+    const movesLabel = root.querySelector("[data-memory-moves]");
+    const pairsLabel = root.querySelector("[data-memory-pairs]");
+    const timeLabel = root.querySelector("[data-memory-time]");
+    const status = root.querySelector("[data-memory-status]");
+
+    if (!board || !restart || !movesLabel || !pairsLabel || !timeLabel || !status) {
+      return;
+    }
+
+    const labels = ["Go", "JS", "CSS", "API", "SQL", "UX", "Git", "CLI"];
+    const state = {
+      openCards: [],
+      locked: false,
+      moves: 0,
+      pairs: 0,
+      startedAt: 0,
+      timer: 0,
+    };
+
+    const updateStatus = (message) => {
+      status.textContent = message;
+    };
+
+    const updateStats = () => {
+      movesLabel.textContent = String(state.moves);
+      pairsLabel.textContent = String(state.pairs);
+    };
+
+    const updateTimer = () => {
+      if (!state.startedAt) {
+        timeLabel.textContent = "0s";
+        return;
+      }
+
+      const elapsed = Math.floor((Date.now() - state.startedAt) / 1000);
+      timeLabel.textContent = `${elapsed}s`;
+    };
+
+    const startTimer = () => {
+      if (state.startedAt) {
+        return;
+      }
+
+      state.startedAt = Date.now();
+      updateTimer();
+      state.timer = window.setInterval(updateTimer, 1000);
+    };
+
+    const stopTimer = () => {
+      window.clearInterval(state.timer);
+      state.timer = 0;
+    };
+
+    const hideCard = (button) => {
+      button.classList.add("is-hidden-card");
+      button.classList.remove("is-open");
+      button.textContent = "?";
+      button.setAttribute("aria-label", "Carta fechada");
+    };
+
+    const showCard = (button) => {
+      button.classList.remove("is-hidden-card");
+      button.classList.add("is-open");
+      button.textContent = button.dataset.value || "";
+      button.setAttribute("aria-label", `Carta ${button.dataset.value || ""}`);
+    };
+
+    const reset = () => {
+      stopTimer();
+      state.openCards = [];
+      state.locked = false;
+      state.moves = 0;
+      state.pairs = 0;
+      state.startedAt = 0;
+      updateStats();
+      updateTimer();
+      updateStatus("Encontre todos os pares.");
+
+      const deck = shuffled([...labels, ...labels]).map((label, index) => ({ id: `${label}-${index}`, label }));
+      const cards = deck.map((card) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "memory-card is-hidden-card";
+        button.dataset.memoryCard = card.id;
+        button.dataset.value = card.label;
+        button.textContent = "?";
+        button.setAttribute("aria-label", "Carta fechada");
+        return button;
+      });
+
+      board.replaceChildren(...cards);
+    };
+
+    const finishPairCheck = () => {
+      const [first, second] = state.openCards;
+
+      if (!first || !second) {
+        return;
+      }
+
+      state.moves += 1;
+
+      if (first.dataset.value === second.dataset.value) {
+        first.classList.add("is-matched");
+        second.classList.add("is-matched");
+        first.disabled = true;
+        second.disabled = true;
+        state.pairs += 1;
+        state.openCards = [];
+        state.locked = false;
+
+        if (state.pairs === labels.length) {
+          stopTimer();
+          updateStatus(`Fechado em ${state.moves} jogadas. Bela rodada.`);
+        } else {
+          updateStatus("Par encontrado.");
+        }
+      } else {
+        state.locked = true;
+        updateStatus("Essas cartas não formam par.");
+        window.setTimeout(() => {
+          hideCard(first);
+          hideCard(second);
+          state.openCards = [];
+          state.locked = false;
+          updateStatus("Continue procurando.");
+        }, 700);
+      }
+
+      updateStats();
+    };
+
+    board.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-memory-card]");
+
+      if (!button || !board.contains(button) || state.locked || button.disabled || state.openCards.includes(button)) {
+        return;
+      }
+
+      startTimer();
+      showCard(button);
+      state.openCards.push(button);
+
+      if (state.openCards.length === 2) {
+        finishPairCheck();
+      }
+    });
+
+    restart.addEventListener("click", reset);
+    reset();
+  }
+
+  function setupSequenceGame() {
+    const root = document.querySelector("[data-sequence-game]");
+
+    if (!root) {
+      return;
+    }
+
+    const start = root.querySelector("[data-sequence-start]");
+    const roundLabel = root.querySelector("[data-sequence-round]");
+    const scoreLabel = root.querySelector("[data-sequence-score]");
+    const status = root.querySelector("[data-sequence-status]");
+    const pads = Array.from(root.querySelectorAll("[data-sequence-pad]")).sort(
+      (left, right) => Number(left.dataset.sequencePad) - Number(right.dataset.sequencePad),
+    );
+
+    if (!start || !roundLabel || !scoreLabel || !status || pads.length === 0) {
+      return;
+    }
+
+    const state = {
+      sequence: [],
+      inputIndex: 0,
+      accepting: false,
+      token: 0,
+    };
+
+    const sleep = (milliseconds) => new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+
+    const setPadsDisabled = (disabled) => {
+      for (const pad of pads) {
+        pad.disabled = disabled;
+      }
+    };
+
+    const setStatus = (message) => {
+      status.textContent = message;
+    };
+
+    const lightPad = async (padIndex, token) => {
+      const pad = pads[padIndex];
+      if (!pad || token !== state.token) {
+        return;
+      }
+
+      pad.classList.add("is-lit");
+      await sleep(420);
+      pad.classList.remove("is-lit");
+      await sleep(160);
+    };
+
+    const playSequence = async () => {
+      const token = state.token;
+      state.accepting = false;
+      setPadsDisabled(true);
+      setStatus("Observe a sequência.");
+      await sleep(400);
+
+      for (const padIndex of state.sequence) {
+        if (token !== state.token) {
+          return;
+        }
+        await lightPad(padIndex, token);
+      }
+
+      if (token !== state.token) {
+        return;
+      }
+
+      state.inputIndex = 0;
+      state.accepting = true;
+      setPadsDisabled(false);
+      setStatus("Sua vez.");
+    };
+
+    const nextRound = () => {
+      state.sequence.push(Math.floor(Math.random() * pads.length));
+      roundLabel.textContent = String(state.sequence.length);
+      void playSequence();
+    };
+
+    const startGame = () => {
+      state.token += 1;
+      state.sequence = [];
+      state.inputIndex = 0;
+      state.accepting = false;
+      roundLabel.textContent = "0";
+      scoreLabel.textContent = "0";
+      start.textContent = "Recomeçar";
+      nextRound();
+    };
+
+    const failGame = () => {
+      state.accepting = false;
+      setPadsDisabled(true);
+      start.textContent = "Tentar de novo";
+      setStatus(`Fim de jogo. Pontuação: ${Math.max(0, state.sequence.length - 1)}.`);
+    };
+
+    start.addEventListener("click", startGame);
+
+    for (const pad of pads) {
+      pad.addEventListener("click", async () => {
+        if (!state.accepting) {
+          return;
+        }
+
+        const value = Number(pad.dataset.sequencePad);
+        pad.classList.add("is-lit");
+        window.setTimeout(() => pad.classList.remove("is-lit"), 180);
+
+        if (value !== state.sequence[state.inputIndex]) {
+          failGame();
+          return;
+        }
+
+        state.inputIndex += 1;
+
+        if (state.inputIndex === state.sequence.length) {
+          state.accepting = false;
+          setPadsDisabled(true);
+          scoreLabel.textContent = String(state.sequence.length);
+          setStatus("Acertou. Próxima rodada.");
+          await sleep(700);
+          nextRound();
+        }
+      });
+    }
+
+    setPadsDisabled(true);
+  }
+
+  function setupReactionGame() {
+    const root = document.querySelector("[data-reaction-game]");
+
+    if (!root) {
+      return;
+    }
+
+    const start = root.querySelector("[data-reaction-start]");
+    const target = root.querySelector("[data-reaction-target]");
+    const lastLabel = root.querySelector("[data-reaction-last]");
+    const bestLabel = root.querySelector("[data-reaction-best]");
+    const status = root.querySelector("[data-reaction-status]");
+
+    if (!start || !target || !lastLabel || !bestLabel || !status) {
+      return;
+    }
+
+    let timeout = 0;
+    let waiting = false;
+    let ready = false;
+    let readyAt = 0;
+    let best = Number.POSITIVE_INFINITY;
+
+    const setStatus = (message) => {
+      status.textContent = message;
+    };
+
+    const resetTarget = () => {
+      target.classList.remove("is-ready");
+      target.disabled = true;
+      target.textContent = "Espere";
+    };
+
+    const startRound = () => {
+      window.clearTimeout(timeout);
+      waiting = true;
+      ready = false;
+      readyAt = 0;
+      target.disabled = false;
+      target.classList.remove("is-ready");
+      target.textContent = "Espere";
+      setStatus("Aguarde o alvo ficar ativo.");
+
+      const delay = 900 + Math.floor(Math.random() * 2200);
+      timeout = window.setTimeout(() => {
+        ready = true;
+        readyAt = performance.now();
+        target.classList.add("is-ready");
+        target.textContent = "Clique";
+        setStatus("Agora.");
+      }, delay);
+    };
+
+    start.addEventListener("click", startRound);
+
+    target.addEventListener("click", () => {
+      if (!waiting) {
+        return;
+      }
+
+      if (!ready) {
+        window.clearTimeout(timeout);
+        waiting = false;
+        resetTarget();
+        setStatus("Cedo demais. Tente outra rodada.");
+        return;
+      }
+
+      const elapsed = Math.max(0, Math.round(performance.now() - readyAt));
+      best = Math.min(best, elapsed);
+      lastLabel.textContent = `${elapsed}ms`;
+      bestLabel.textContent = `${best}ms`;
+      waiting = false;
+      ready = false;
+      resetTarget();
+      setStatus(`Tempo de reação: ${elapsed}ms.`);
+    });
+
+    resetTarget();
+  }
+
   function setupNotesWall() {
     const wall = document.querySelector("[data-notes-wall]");
 
@@ -864,6 +1254,7 @@
   setupSpotifyEmbeds();
   setupBlogBrowser();
   setupProjectsCatalog();
+  setupGames();
   setupNotesWall();
   setupArticleCodeCopy();
   setupArticleTOC();

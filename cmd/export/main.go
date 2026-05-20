@@ -28,6 +28,8 @@ var staticPageRoutes = map[string]struct{}{
 	"/articles":     {},
 	"/blog":         {},
 	"/curiosidades": {},
+	"/games":        {},
+	"/jogos":        {},
 	"/notas":        {},
 	"/projects":     {},
 	"/projetos":     {},
@@ -257,7 +259,11 @@ func shouldExportRoute(route string) bool {
 		return true
 	}
 
-	return strings.HasPrefix(route, "/blog/") && !strings.Contains(strings.TrimPrefix(route, "/blog/"), "/")
+	if strings.HasPrefix(route, "/blog/") && !strings.Contains(strings.TrimPrefix(route, "/blog/"), "/") {
+		return true
+	}
+
+	return strings.HasPrefix(route, "/jogos/") && !strings.Contains(strings.TrimPrefix(route, "/jogos/"), "/")
 }
 
 func routeOutputPath(outputDir string, route string) string {

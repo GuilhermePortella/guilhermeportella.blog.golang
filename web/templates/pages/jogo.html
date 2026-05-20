@@ -1,0 +1,111 @@
+{{define "jogo"}}{{template "base" .}}{{end}}
+
+{{define "content"}}
+<div class="game-page game-page--{{.Game.Accent}}" aria-label="{{.Game.Title}}">
+  <section class="game-hero" aria-labelledby="game-title">
+    <div class="blog-shell game-hero__grid">
+      <div class="game-hero__intro">
+        <a class="game-back arrow-shift" href="/jogos">Voltar para jogos <span class="link-arrow" aria-hidden="true">-&gt;</span></a>
+        <p class="eyebrow eyebrow--wide">{{.Game.Status}}</p>
+        <h1 id="game-title">{{.Game.Title}}</h1>
+        <p class="game-hero__text">{{.Game.Intro}}</p>
+
+        {{if .Game.Tags}}
+        <ul class="blog-tags" aria-label="Temas do jogo">
+          {{range .Game.Tags}}
+          <li>{{.}}</li>
+          {{end}}
+        </ul>
+        {{end}}
+      </div>
+
+      <aside class="game-rules" aria-labelledby="game-rules-title">
+        <p class="eyebrow eyebrow--spaced">partida</p>
+        <h2 id="game-rules-title">Como funciona</h2>
+        <ul>
+          {{range .Game.Instructions}}
+          <li>
+            <span aria-hidden="true"></span>
+            <span>{{.}}</span>
+          </li>
+          {{end}}
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <section class="game-stage" aria-labelledby="game-play-title">
+    <div class="game-stage__header">
+      <div>
+        <p class="eyebrow eyebrow--spaced">jogar</p>
+        <h2 id="game-play-title">{{.Game.ShortTitle}}</h2>
+      </div>
+      <a class="game-stage__link arrow-shift" href="/jogos">Trocar jogo <span class="link-arrow" aria-hidden="true">-&gt;</span></a>
+    </div>
+
+    <div class="game-frame" data-game="{{.Game.Slug}}">
+      {{if eq .Game.Slug "memoria-relampago"}}
+      <div class="memory-game" data-memory-game>
+        <div class="game-toolbar">
+          <p><strong data-memory-moves>0</strong> jogadas</p>
+          <p><strong data-memory-pairs>0</strong>/8 pares</p>
+          <p><strong data-memory-time>0s</strong></p>
+          <button type="button" data-memory-restart>Reiniciar</button>
+        </div>
+        <div class="memory-board" data-memory-board aria-label="Tabuleiro de cartas"></div>
+        <p class="game-status" data-memory-status role="status">Encontre todos os pares.</p>
+      </div>
+      {{end}}
+
+      {{if eq .Game.Slug "sequencia-de-cores"}}
+      <div class="sequence-game" data-sequence-game>
+        <div class="game-toolbar">
+          <p>Rodada <strong data-sequence-round>0</strong></p>
+          <p>Pontos <strong data-sequence-score>0</strong></p>
+          <button type="button" data-sequence-start>Começar</button>
+        </div>
+        <div class="sequence-board" aria-label="Painel de cores">
+          <button type="button" class="sequence-pad sequence-pad--teal" data-sequence-pad="0"><span>1</span></button>
+          <button type="button" class="sequence-pad sequence-pad--amber" data-sequence-pad="1"><span>2</span></button>
+          <button type="button" class="sequence-pad sequence-pad--rose" data-sequence-pad="2"><span>3</span></button>
+          <button type="button" class="sequence-pad sequence-pad--violet" data-sequence-pad="3"><span>4</span></button>
+        </div>
+        <p class="game-status" data-sequence-status role="status">Comece uma partida para acender a primeira cor.</p>
+      </div>
+      {{end}}
+
+      {{if eq .Game.Slug "clique-rapido"}}
+      <div class="reaction-game" data-reaction-game>
+        <div class="game-toolbar">
+          <p>Último <strong data-reaction-last>--</strong></p>
+          <p>Melhor <strong data-reaction-best>--</strong></p>
+          <button type="button" data-reaction-start>Iniciar rodada</button>
+        </div>
+        <button type="button" class="reaction-target" data-reaction-target disabled>Espere</button>
+        <p class="game-status" data-reaction-status role="status">Inicie uma rodada e espere o alvo ficar ativo.</p>
+      </div>
+      {{end}}
+    </div>
+  </section>
+
+  {{if .Related}}
+  <section class="games-related" aria-labelledby="games-related-title">
+    <div class="games-section-heading">
+      <p class="eyebrow eyebrow--spaced">mais jogos</p>
+      <h2 id="games-related-title">Continue jogando</h2>
+    </div>
+
+    <div class="games-grid games-grid--compact">
+      {{range .Related}}
+      <a class="game-card game-card--{{.Accent}} arrow-shift" href="{{.URL}}" aria-label="Jogar {{.Title}}">
+        <span class="game-card__status">{{.Status}}</span>
+        <h3>{{.Title}}</h3>
+        <p>{{.Description}}</p>
+        <span class="game-card__action">Abrir <span class="link-arrow" aria-hidden="true">-&gt;</span></span>
+      </a>
+      {{end}}
+    </div>
+  </section>
+  {{end}}
+</div>
+{{end}}
