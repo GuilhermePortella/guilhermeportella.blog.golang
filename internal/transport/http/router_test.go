@@ -44,7 +44,7 @@ func TestNewRouterHome(t *testing.T) {
 		}
 	}
 
-	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260520-solitaire">`) {
+	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260521-solitaire-drag">`) {
 		t.Fatalf("body does not contain stylesheet")
 	}
 
@@ -56,7 +56,7 @@ func TestNewRouterHome(t *testing.T) {
 		t.Fatalf("body does not contain Google Fonts stylesheet")
 	}
 
-	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260520-solitaire" defer></script>`) {
+	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260521-solitaire-drag" defer></script>`) {
 		t.Fatalf("body does not contain footer script")
 	}
 

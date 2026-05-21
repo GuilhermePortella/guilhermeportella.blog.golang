@@ -1950,11 +1950,15 @@ h4 {
   text-align: center;
 }
 
-.solitaire-game {
+.solitaire-game,
+.solitaire-drag-layer {
   --solitaire-card-width: clamp(4rem, 8vw, 5.8rem);
   --solitaire-card-height: calc(var(--solitaire-card-width) * 1.38);
   --solitaire-card-offset-up: clamp(1.15rem, 2.6vw, 1.8rem);
   --solitaire-card-offset-down: clamp(0.62rem, 1.45vw, 0.95rem);
+}
+
+.solitaire-game {
   position: relative;
   display: grid;
   gap: 1rem;
@@ -2304,7 +2308,8 @@ h4 {
 }
 
 @media (max-width: 760px) {
-  .solitaire-game {
+  .solitaire-game,
+  .solitaire-drag-layer {
     --solitaire-card-width: clamp(3.85rem, 17vw, 4.7rem);
   }
 
