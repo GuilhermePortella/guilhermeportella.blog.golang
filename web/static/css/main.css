@@ -2052,7 +2052,9 @@ h4 {
 
 .solitaire-board {
   display: grid;
+  align-content: start;
   gap: 1rem;
+  min-height: clamp(32rem, 64vh, 42rem);
   overflow-x: auto;
   border: 1px solid rgb(255 255 255 / 10%);
   border-radius: 8px;
@@ -2315,6 +2317,10 @@ h4 {
 
   .solitaire-stats {
     grid-template-columns: 1fr;
+  }
+
+  .solitaire-board {
+    min-height: clamp(28rem, 58vh, 34rem);
   }
 
   .solitaire-row--top {
