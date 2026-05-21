@@ -203,6 +203,24 @@ func allGames() []gameCard {
 				"Clicar cedo demais cancela a rodada.",
 			},
 		},
+		{
+			Slug:        "paciencia-klondike",
+			Title:       "Paciência Klondike",
+			ShortTitle:  "Paciência",
+			Description: "A clássica paciência de cartas em uma versão limpa para o navegador: organize o tableau e leve cada naipe até a fundação.",
+			Intro:       "Compre cartas, monte sequências em ordem decrescente e complete as quatro fundações por naipe.",
+			URL:         "/jogos/paciencia-klondike",
+			Status:      "jogável",
+			Difficulty:  "clássico",
+			Duration:    "10 min",
+			Accent:      "blue",
+			Tags:        []string{"cartas", "klondike", "estratégia"},
+			Instructions: []string{
+				"Clique no monte para comprar uma carta.",
+				"No tableau, mova cartas em ordem decrescente alternando cores.",
+				"Complete as fundações subindo do Ás ao Rei em cada naipe.",
+			},
+		},
 	}
 }
 

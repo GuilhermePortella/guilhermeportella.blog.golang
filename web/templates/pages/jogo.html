@@ -85,6 +85,66 @@
         <p class="game-status" data-reaction-status role="status">Inicie uma rodada e espere o alvo ficar ativo.</p>
       </div>
       {{end}}
+
+      {{if eq .Game.Slug "paciencia-klondike"}}
+      <div class="solitaire-game" data-solitaire-game>
+        <div class="solitaire-toolbar" aria-label="Controles da partida">
+          <div class="solitaire-stats" aria-live="polite">
+            <p><span>Tempo</span><strong data-solitaire-timer>00:00</strong></p>
+            <p><span>Movimentos</span><strong data-solitaire-moves>0</strong></p>
+            <p><span>Vitórias</span><strong data-solitaire-wins>0</strong></p>
+          </div>
+
+          <div class="solitaire-controls">
+            <label>
+              <span>Dificuldade</span>
+              <select data-solitaire-difficulty aria-label="Selecionar dificuldade">
+                <option value="hard">Clássico</option>
+                <option value="easy">Relaxado</option>
+              </select>
+            </label>
+            <button type="button" data-solitaire-undo disabled>Desfazer</button>
+            <button type="button" data-solitaire-new>Novo jogo</button>
+            <button type="button" data-solitaire-hint>Dica</button>
+          </div>
+        </div>
+
+        <div class="solitaire-board" aria-label="Tabuleiro de paciência">
+          <div class="solitaire-row solitaire-row--top">
+            <div class="solitaire-pile solitaire-stock" data-solitaire-pile="stock" data-label="Monte" aria-label="Monte" role="button" tabindex="0"></div>
+            <div class="solitaire-pile solitaire-waste" data-solitaire-pile="waste" data-label="Descarte" aria-label="Descarte" tabindex="0"></div>
+            <div class="solitaire-top-spacer" aria-hidden="true"></div>
+            <div class="solitaire-foundations" aria-label="Fundações">
+              <div class="solitaire-pile solitaire-foundation" data-solitaire-pile="foundation" data-suit="hearts" aria-label="Fundação de copas" tabindex="0"></div>
+              <div class="solitaire-pile solitaire-foundation" data-solitaire-pile="foundation" data-suit="clubs" aria-label="Fundação de paus" tabindex="0"></div>
+              <div class="solitaire-pile solitaire-foundation" data-solitaire-pile="foundation" data-suit="diamonds" aria-label="Fundação de ouros" tabindex="0"></div>
+              <div class="solitaire-pile solitaire-foundation" data-solitaire-pile="foundation" data-suit="spades" aria-label="Fundação de espadas" tabindex="0"></div>
+            </div>
+          </div>
+
+          <div class="solitaire-row solitaire-tableau" aria-label="Tableau">
+            <div class="solitaire-pile solitaire-tableau-pile" data-solitaire-pile="tableau" data-index="0" data-label="K" aria-label="Coluna 1" tabindex="0"></div>
+            <div class="solitaire-pile solitaire-tableau-pile" data-solitaire-pile="tableau" data-index="1" data-label="K" aria-label="Coluna 2" tabindex="0"></div>
+            <div class="solitaire-pile solitaire-tableau-pile" data-solitaire-pile="tableau" data-index="2" data-label="K" aria-label="Coluna 3" tabindex="0"></div>
+            <div class="solitaire-pile solitaire-tableau-pile" data-solitaire-pile="tableau" data-index="3" data-label="K" aria-label="Coluna 4" tabindex="0"></div>
+            <div class="solitaire-pile solitaire-tableau-pile" data-solitaire-pile="tableau" data-index="4" data-label="K" aria-label="Coluna 5" tabindex="0"></div>
+            <div class="solitaire-pile solitaire-tableau-pile" data-solitaire-pile="tableau" data-index="5" data-label="K" aria-label="Coluna 6" tabindex="0"></div>
+            <div class="solitaire-pile solitaire-tableau-pile" data-solitaire-pile="tableau" data-index="6" data-label="K" aria-label="Coluna 7" tabindex="0"></div>
+          </div>
+        </div>
+
+        <p class="game-status" data-solitaire-status role="status">Clique no monte para comprar ou selecione uma carta aberta para mover.</p>
+
+        <div class="solitaire-overlay" data-solitaire-overlay aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="solitaire-win-title">
+          <div class="solitaire-overlay__card">
+            <p class="eyebrow eyebrow--spaced">vitória</p>
+            <h3 id="solitaire-win-title">Paciência resolvida.</h3>
+            <p>As quatro fundações estão completas.</p>
+            <button type="button" data-solitaire-play-again>Jogar de novo</button>
+          </div>
+        </div>
+      </div>
+      {{end}}
     </div>
   </section>
 
