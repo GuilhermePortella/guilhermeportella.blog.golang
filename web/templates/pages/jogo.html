@@ -145,6 +145,50 @@
         </div>
       </div>
       {{end}}
+
+      {{if eq .Game.Slug "dama-brasileira"}}
+      <div class="checkers-game" data-checkers-game>
+        <div class="checkers-toolbar" aria-label="Controles da partida">
+          <div class="checkers-stats" aria-live="polite">
+            <p><span>Turno</span><strong data-checkers-turn>Brancas</strong></p>
+            <p><span>Brancas</span><strong data-checkers-white-count>12</strong></p>
+            <p><span>Pretas</span><strong data-checkers-black-count>12</strong></p>
+            <p><span>Vitórias B/P</span><strong data-checkers-wins>0 / 0</strong></p>
+          </div>
+
+          <div class="checkers-controls">
+            <label>
+              <span>Dificuldade</span>
+              <select data-checkers-ai-level aria-label="Selecionar dificuldade da máquina">
+                <option value="easy">Fácil</option>
+                <option value="medium">Médio</option>
+                <option value="hard">Difícil</option>
+              </select>
+            </label>
+            <button type="button" data-checkers-toggle-ai>Vs máquina: ON</button>
+            <button type="button" data-checkers-new>Novo jogo</button>
+            <button type="button" data-checkers-undo disabled>Desfazer</button>
+          </div>
+        </div>
+
+        <div class="checkers-arena">
+          <div class="checkers-board-shell">
+            <div class="checkers-board" data-checkers-board role="grid" aria-label="Tabuleiro de dama brasileira"></div>
+          </div>
+
+          <aside class="checkers-panel" aria-label="Estado da partida">
+            <section>
+              <h3>Status da rodada</h3>
+              <p data-checkers-mode>Modo: 1 jogador.</p>
+              <p data-checkers-rule>Sem captura obrigatória neste turno.</p>
+              <p data-checkers-winner>Partida em andamento.</p>
+            </section>
+
+            <p class="game-status checkers-status" data-checkers-message role="status">Brancas iniciam a partida.</p>
+          </aside>
+        </div>
+      </div>
+      {{end}}
     </div>
   </section>
 
