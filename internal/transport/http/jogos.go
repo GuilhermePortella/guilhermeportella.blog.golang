@@ -221,6 +221,24 @@ func allGames() []gameCard {
 				"Complete as fundações subindo do Ás ao Rei em cada naipe.",
 			},
 		},
+		{
+			Slug:        "dama-brasileira",
+			Title:       "Dama Brasileira",
+			ShortTitle:  "Dama",
+			Description: "Dama em tabuleiro 8x8 com captura obrigatória, regra da maioria, captura múltipla e dama voadora.",
+			Intro:       "Jogue dama brasileira contra outra pessoa no mesmo navegador ou desafie a máquina nas peças pretas.",
+			URL:         "/jogos/dama-brasileira",
+			Status:      "jogável",
+			Difficulty:  "estratégia",
+			Duration:    "8 min",
+			Accent:      "green",
+			Tags:        []string{"tabuleiro", "dama", "estratégia"},
+			Instructions: []string{
+				"Brancas começam a partida.",
+				"Quando houver captura, a captura é obrigatória.",
+				"Se existir mais de uma captura, vale a sequência com mais peças.",
+			},
+		},
 	}
 }
 

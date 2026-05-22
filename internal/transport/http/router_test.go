@@ -44,7 +44,7 @@ func TestNewRouterHome(t *testing.T) {
 		}
 	}
 
-	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260521-solitaire-board">`) {
+	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260521-checkers">`) {
 		t.Fatalf("body does not contain stylesheet")
 	}
 
@@ -56,7 +56,7 @@ func TestNewRouterHome(t *testing.T) {
 		t.Fatalf("body does not contain Google Fonts stylesheet")
 	}
 
-	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260521-solitaire-board" defer></script>`) {
+	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260521-checkers" defer></script>`) {
 		t.Fatalf("body does not contain footer script")
 	}
 
@@ -234,6 +234,8 @@ func TestNewRouterJogos(t *testing.T) {
 		`Clique Rápido`,
 		`Paciência Klondike`,
 		`href="/jogos/paciencia-klondike"`,
+		`Dama Brasileira`,
+		`href="/jogos/dama-brasileira"`,
 		`Jogar agora`,
 	} {
 		if !strings.Contains(body, expected) {
@@ -319,6 +321,36 @@ func TestNewRouterJogoSolitaire(t *testing.T) {
 		`data-solitaire-difficulty`,
 		`data-solitaire-new`,
 		`Paciência resolvida.`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("body does not contain %q", expected)
+		}
+	}
+}
+
+func TestNewRouterJogoCheckers(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/jogos/dama-brasileira", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+
+	body := recorder.Body.String()
+	for _, expected := range []string{
+		`<div class="game-page game-page--green" aria-label="Dama Brasileira">`,
+		`<title>Dama Brasileira | Jogos</title>`,
+		`<link rel="canonical" href="/jogos/dama-brasileira/">`,
+		`<h1 id="game-title">Dama Brasileira</h1>`,
+		`data-game="dama-brasileira"`,
+		`data-checkers-game`,
+		`data-checkers-board`,
+		`data-checkers-ai-level`,
+		`data-checkers-new`,
+		`Vs máquina: ON`,
 	} {
 		if !strings.Contains(body, expected) {
 			t.Fatalf("body does not contain %q", expected)
