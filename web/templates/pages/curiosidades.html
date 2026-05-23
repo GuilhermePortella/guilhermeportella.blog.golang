@@ -76,6 +76,39 @@
     </div>
   </section>
 
+  <section id="apis" class="curiosity-section curiosity-section--apis" aria-labelledby="curiosity-apis-title">
+    <div class="curiosity-section__header curiosity-section__header--split">
+      <div>
+        <p class="curiosity-eyebrow">apis</p>
+        <h2 id="curiosity-apis-title">Exploradores de dados</h2>
+        <p>Pequenas interfaces para brincar com APIs publicas sem sair do site.</p>
+      </div>
+    </div>
+
+    <div class="curiosity-api-grid">
+      {{range .APIs}}
+      <article class="curiosity-api-card">
+        <div class="curiosity-api-card__copy">
+          <p class="curiosity-eyebrow">api publica</p>
+          <h3>{{.Title}}</h3>
+          <p>{{.Description}}</p>
+          <code>{{.Source}}</code>
+        </div>
+        <div class="curiosity-api-card__meta">
+          <ul aria-label="Recursos da API {{.Title}}">
+            {{range .Tags}}
+            <li>{{.}}</li>
+            {{end}}
+          </ul>
+          <a class="curiosity-api-card__link arrow-shift" href="{{.URL}}">
+            Abrir portal <span class="link-arrow" aria-hidden="true">-&gt;</span>
+          </a>
+        </div>
+      </article>
+      {{end}}
+    </div>
+  </section>
+
   <section id="colecao" class="curiosity-section curiosity-section--collection" aria-labelledby="curiosity-collection-title">
     <div class="curiosity-section__header">
       <p class="curiosity-eyebrow">coleção</p>

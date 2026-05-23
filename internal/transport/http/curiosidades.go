@@ -22,6 +22,7 @@ type curiosidadesPageData struct {
 	Tags        []string
 	QuickMap    []curiosidadesLinkCard
 	Shortcuts   []curiosidadesLinkCard
+	APIs        []curiosidadesAPICard
 	Collections []curiosidadesCollection
 	Songs       []curiosidadesSong
 	Playlists   []curiosidadesPlaylist
@@ -46,6 +47,14 @@ type curiosidadesLinkCard struct {
 	Title       string
 	Description string
 	URL         string
+}
+
+type curiosidadesAPICard struct {
+	Title       string
+	Description string
+	URL         string
+	Source      string
+	Tags        []string
 }
 
 type curiosidadesCollection struct {
@@ -146,11 +155,6 @@ func newCuriosidadesPageData(now time.Time, currentPath string) curiosidadesPage
 			quickMap[2],
 			quickMap[3],
 			{
-				Title:       "Rick and Morty",
-				Description: "Personagens, locais e episodios consumidos da API oficial.",
-				URL:         "/rick-morty",
-			},
-			{
 				Title:       "Músicas",
 				Description: "Trilha sonora que me deixa vivo.",
 				URL:         "#musica",
@@ -159,6 +163,20 @@ func newCuriosidadesPageData(now time.Time, currentPath string) curiosidadesPage
 				Title:       "Tecnologia",
 				Description: "Canais e leituras que sigo com carinho.",
 				URL:         "#tecnologia",
+			},
+		},
+		APIs: []curiosidadesAPICard{
+			{
+				Title:       "Rick and Morty API",
+				Description: "Portal para explorar personagens, locais e episodios consumidos da API publica oficial.",
+				URL:         "/rick-morty",
+				Source:      "https://rickandmortyapi.com/api",
+				Tags: []string{
+					"REST",
+					"personagens",
+					"locais",
+					"episodios",
+				},
 			},
 		},
 		Collections: []curiosidadesCollection{
