@@ -456,7 +456,7 @@ func TestNewRouterRickAndMorty(t *testing.T) {
 		`<div class="rick-app-root" data-rick-morty-app data-url="/rick-morty">`,
 		`<title>Rick and Morty API</title>`,
 		`<link rel="canonical" href="/rick-morty/">`,
-		`connect-src 'self' https://api.github.com https://rickandmortyapi.com`,
+		`connect-src 'self' https://api.github.com https://rickandmortyapi.com https://rickandmorty.fandom.com`,
 		`<a href="/curiosidades" class="active" aria-current="page">Curiosidades</a>`,
 		`/static/js/rick-and-morty-app.js?v=20260522-go-static`,
 		`Rick and Morty API`,
@@ -467,8 +467,8 @@ func TestNewRouterRickAndMorty(t *testing.T) {
 		}
 	}
 
-	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "connect-src 'self' https://api.github.com https://rickandmortyapi.com") {
-		t.Fatalf("Content-Security-Policy = %q, want Rick and Morty connect-src", got)
+	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "connect-src 'self' https://api.github.com https://rickandmortyapi.com https://rickandmorty.fandom.com") {
+		t.Fatalf("Content-Security-Policy = %q, want Rick and Morty and Fandom connect-src", got)
 	}
 }
 

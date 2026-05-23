@@ -6,6 +6,8 @@
   }
 
   const BASE_URL = "https://rickandmortyapi.com/api";
+  const FANDOM_API_URL = "https://rickandmorty.fandom.com/api.php";
+  const FANDOM_WIKI_URL = "https://rickandmorty.fandom.com/wiki/";
   const PAGE_SIZE = 12;
   const API_PAGE_SIZE = 20;
   const UNKNOWN_LABEL = "Nao informado";
@@ -219,6 +221,31 @@
     return response.json();
   }
 
+  async function fetchFandomJSON(params, signal) {
+    const url = new URL(FANDOM_API_URL);
+    url.searchParams.set("format", "json");
+    url.searchParams.set("origin", "*");
+
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== null && value !== undefined && String(value).trim() !== "") {
+        url.searchParams.set(key, String(value));
+      }
+    }
+
+    const response = await fetch(url.href, {
+      signal,
+      headers: { Accept: "application/json" },
+    });
+
+    if (!response.ok) {
+      const error = new Error("Fandom API request failed.");
+      error.status = response.status;
+      throw error;
+    }
+
+    return response.json();
+  }
+
   async function fetchResourceApiPage(resource, apiPage, searchTerm, signal) {
     try {
       return await fetchJSON(resource, {
@@ -353,6 +380,114 @@
     );
 
     return responses.flat();
+  }
+
+  async function fetchCharacterWiki(characterName, signal) {
+    const search = await fetchFandomJSON({
+      action: "query",
+      list: "search",
+      srsearch: characterName,
+      srlimit: 8,
+    }, signal);
+    const results = safeArray(search?.query?.search);
+    const normalizedName = String(characterName || "").trim().toLowerCase();
+    const selected = results.find((result) => String(result.title || "").toLowerCase() === normalizedName)
+      || results.find((result) => !String(result.title || "").includes("("))
+      || results[0];
+
+    if (!selected?.title) {
+      return null;
+    }
+
+    const parsed = await fetchFandomJSON({
+      action: "parse",
+      page: selected.title,
+      prop: "text|sections|displaytitle",
+    }, signal);
+    const title = readable(wikiTitleText(parsed?.parse?.displaytitle || parsed?.parse?.title || selected.title));
+    const html = parsed?.parse?.text?.["*"] || "";
+    const sections = wikiSectionsFromHTML(html);
+
+    return {
+      title,
+      text: sections.length > 0 ? sections.map((section) => `${section.title}\n${section.text}`).join("\n\n") : UNKNOWN_LABEL,
+      translationStatus: "Fonte em ingles, exibida em texto simples sem traducao automatica.",
+      sourceURL: `${FANDOM_WIKI_URL}${encodeURIComponent(selected.title).replaceAll("%20", "_")}`,
+    };
+  }
+
+  function wikiSectionsFromHTML(html) {
+    const container = document.createElement("div");
+    container.innerHTML = html;
+
+    container.querySelectorAll("aside, table, sup, style, script, nav, .portable-infobox, .reference, .mw-editsection, .toc").forEach((node) => {
+      node.remove();
+    });
+
+    const output = container.querySelector(".mw-parser-output") || container;
+    const sections = [];
+    let current = { title: "Resumo", chunks: [] };
+
+    const saveCurrent = () => {
+      const text = cleanWikiText(current.chunks.join(" "));
+      if (text.length >= 80) {
+        sections.push({
+          title: current.title,
+          text: limitText(text, 850),
+        });
+      }
+    };
+
+    Array.from(output.children).forEach((child) => {
+      const tag = child.tagName?.toLowerCase();
+
+      if (tag === "h2" || tag === "h3") {
+        saveCurrent();
+        current = {
+          title: cleanWikiText(child.textContent || "Secao"),
+          chunks: [],
+        };
+        return;
+      }
+
+      if (tag === "p" || tag === "ul" || tag === "ol" || tag === "dl") {
+        const text = cleanWikiText(child.textContent || "");
+        if (text.length >= 40) {
+          current.chunks.push(text);
+        }
+      }
+    });
+
+    saveCurrent();
+
+    const relevantNames = ["resumo", "overview", "biography", "personality", "appearance", "history", "background"];
+    const relevant = sections.filter((section) => {
+      const title = section.title.toLowerCase();
+      return relevantNames.some((name) => title.includes(name));
+    });
+
+    return (relevant.length > 0 ? relevant : sections).slice(0, 3);
+  }
+
+  function cleanWikiText(value) {
+    return String(value || "")
+      .replace(/\[[^\]]*]/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function wikiTitleText(value) {
+    const container = document.createElement("div");
+    container.innerHTML = String(value || "");
+    return cleanWikiText(container.textContent || value);
+  }
+
+  function limitText(value, maxLength) {
+    if (value.length <= maxLength) {
+      return value;
+    }
+
+    return `${value.slice(0, maxLength).replace(/\s+\S*$/, "")}...`;
   }
 
   function parseAPIDate(value) {
@@ -736,6 +871,9 @@
     let mainError = "";
     let relatedStatus = "loading";
     let relatedError = "";
+    let wiki = null;
+    let wikiStatus = "loading";
+    let wikiError = "";
     let tab = "resumo";
 
     const render = () => {
@@ -770,6 +908,12 @@
           `).join("")}
         </div>
       `;
+      const wikiHTML = wikiPanelHTML(wiki, wikiStatus, wikiError);
+      const activePanel = {
+        resumo: infoGridHTML(info),
+        episodios: episodesHTML,
+        wiki: wikiHTML,
+      }[tab] || infoGridHTML(info);
 
       renderDetailShell(`
         <article class="rick-detail-card rick-character-detail">
@@ -782,8 +926,9 @@
             <div class="rick-tabs" role="tablist" aria-label="Detalhes do personagem">
               <button type="button" class="${tab === "resumo" ? "is-active" : ""}" data-rick-tab="resumo">Resumo</button>
               <button type="button" class="${tab === "episodios" ? "is-active" : ""}" data-rick-tab="episodios">Episodios</button>
+              <button type="button" class="${tab === "wiki" ? "is-active" : ""}" data-rick-tab="wiki">Wiki</button>
             </div>
-            ${tab === "resumo" ? infoGridHTML(info) : episodesHTML}
+            ${activePanel}
           </div>
         </article>
       `);
@@ -806,23 +951,46 @@
       }
       mainStatus = "success";
       relatedStatus = "loading";
+      wikiStatus = "loading";
       render();
 
-      try {
-        episodes = await fetchByIds("episode", safeArray(character.episode).map(extractIdFromURL), request.signal);
-        if (!request.isActive()) {
-          return;
+      const episodeTask = (async () => {
+        try {
+          episodes = await fetchByIds("episode", safeArray(character.episode).map(extractIdFromURL), request.signal);
+          if (!request.isActive()) {
+            return;
+          }
+          relatedStatus = "success";
+          render();
+        } catch (error) {
+          if (!request.isActive() || error?.name === "AbortError") {
+            return;
+          }
+          relatedStatus = "error";
+          relatedError = "Nao foi possivel carregar os episodios deste personagem.";
+          render();
         }
-        relatedStatus = "success";
-        render();
-      } catch (error) {
-        if (!request.isActive() || error?.name === "AbortError") {
-          return;
+      })();
+
+      const wikiTask = (async () => {
+        try {
+          wiki = await fetchCharacterWiki(character.name, request.signal);
+          if (!request.isActive()) {
+            return;
+          }
+          wikiStatus = "success";
+          render();
+        } catch (error) {
+          if (!request.isActive() || error?.name === "AbortError") {
+            return;
+          }
+          wikiStatus = "error";
+          wikiError = "Nao foi possivel carregar a wiki do Fandom para este personagem.";
+          render();
         }
-        relatedStatus = "error";
-        relatedError = "Nao foi possivel carregar os episodios deste personagem.";
-        render();
-      }
+      })();
+
+      await Promise.allSettled([episodeTask, wikiTask]);
     } catch (error) {
       if (!request.isActive() || error?.name === "AbortError") {
         return;
@@ -831,6 +999,34 @@
       mainError = error?.status === 404 ? "Personagem nao encontrado." : "Erro ao consultar personagem.";
       render();
     }
+  }
+
+  function wikiPanelHTML(wiki, status, error) {
+    if (status === "loading") {
+      return '<p class="rick-related-status">Carregando wiki no Fandom.</p>';
+    }
+
+    if (status === "error") {
+      return `<p class="rick-related-status rick-related-status--error">${escapeHTML(error)}</p>`;
+    }
+
+    if (!wiki) {
+      return '<p class="rick-related-status">Nenhuma pagina de wiki encontrada para este personagem.</p>';
+    }
+
+    return `
+      <article class="rick-wiki-panel">
+        <div>
+          <p class="curiosity-eyebrow">fandom wiki</p>
+          <h2>${escapeHTML(wiki.title)}</h2>
+          <p class="rick-wiki-panel__translation">Status de traducao: ${escapeHTML(wiki.translationStatus)}</p>
+        </div>
+        <p class="rick-wiki-panel__text">${escapeHTML(wiki.text)}</p>
+        <a class="rick-wiki-panel__source arrow-shift" href="${escapeHTML(wiki.sourceURL)}" target="_blank" rel="noopener noreferrer">
+          Abrir fonte <span class="link-arrow" aria-hidden="true">-&gt;</span>
+        </a>
+      </article>
+    `;
   }
 
   async function loadEpisodeDetail(id) {

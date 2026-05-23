@@ -5430,6 +5430,45 @@ img.emoji {
   color: #9f1239;
 }
 
+.rick-wiki-panel {
+  display: grid;
+  gap: 14px;
+  border: 1px solid #d8e7df;
+  border-radius: 8px;
+  background: #f8fafc;
+  padding: 16px;
+}
+
+.rick-wiki-panel h2 {
+  color: #123733;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.rick-wiki-panel__translation {
+  margin-top: 6px;
+  color: #355c57;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+.rick-wiki-panel__text {
+  white-space: pre-line;
+  color: #44403c;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.rick-wiki-panel__source {
+  width: fit-content;
+  color: #123733;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 20px;
+}
+
 .rick-related-section {
   display: grid;
   gap: 16px;
