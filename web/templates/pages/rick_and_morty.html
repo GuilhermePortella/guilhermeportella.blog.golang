@@ -1,0 +1,20 @@
+{{define "rick_and_morty"}}{{template "base" .}}{{end}}
+
+{{define "head-extra"}}
+    <script src="/static/js/rick-and-morty-app.js?v=20260522-go-static" defer></script>
+{{end}}
+
+{{define "content"}}
+<div class="rick-app-root" data-rick-morty-app data-url="/rick-morty">
+  <section class="rick-boot" aria-label="Rick and Morty API">
+    <div class="container">
+      <p class="curiosity-eyebrow">api externa</p>
+      <h1>Rick and Morty API</h1>
+      <p>Carregando o portal.</p>
+    </div>
+  </section>
+</div>
+<noscript>
+  <p class="rick-noscript">Esta pagina precisa de JavaScript para consultar a Rick and Morty API.</p>
+</noscript>
+{{end}}

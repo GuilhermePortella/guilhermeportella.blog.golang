@@ -44,7 +44,7 @@ func TestNewRouterHome(t *testing.T) {
 		}
 	}
 
-	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260521-checkers">`) {
+	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260522-rick-react">`) {
 		t.Fatalf("body does not contain stylesheet")
 	}
 
@@ -56,7 +56,7 @@ func TestNewRouterHome(t *testing.T) {
 		t.Fatalf("body does not contain Google Fonts stylesheet")
 	}
 
-	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260521-checkers" defer></script>`) {
+	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260522-rick-react" defer></script>`) {
 		t.Fatalf("body does not contain footer script")
 	}
 
@@ -94,6 +94,8 @@ func TestNewSiteNavigationActiveRoutes(t *testing.T) {
 		{name: "games alias", path: "/games/", wantActive: "Jogos"},
 		{name: "about", path: "/about/", wantActive: "Sobre"},
 		{name: "trailing slash", path: "/curiosidades/", wantActive: "Curiosidades"},
+		{name: "rick and morty curiosity", path: "/curiosidades/rick-and-morty", wantActive: "Curiosidades"},
+		{name: "rick and morty app", path: "/rick-morty/personagem/1", wantActive: "Curiosidades"},
 		{name: "notes", path: "/notas", wantActive: "Notas"},
 	}
 
@@ -405,6 +407,8 @@ func TestNewRouterCuriosidades(t *testing.T) {
 		`Interstellar (Nolan)`,
 		`DEATH STRANDING 2: ON THE BEACH`,
 		`YouTube: canais de programação e desenvolvimento`,
+		`href="/rick-morty"`,
+		`Personagens, locais e episodios consumidos da API oficial.`,
 		`data-spotify-resource="spotify:track:44AyOl4qVkzS48vBsbNXaC"`,
 		`https://open.spotify.com/embed/track/44AyOl4qVkzS48vBsbNXaC`,
 		`https://open.spotify.com/embed/track/3YRCqOhFifThpSRFJ1VWFM`,
@@ -424,6 +428,68 @@ func TestNewRouterCuriosidades(t *testing.T) {
 
 	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "script-src 'self' https://open.spotify.com") {
 		t.Fatalf("Content-Security-Policy = %q, want Spotify script-src", got)
+	}
+
+	if strings.Contains(body, `data-rick-and-morty`) {
+		t.Fatalf("body contains Rick and Morty API widget on curiosity index")
+	}
+}
+
+func TestNewRouterRickAndMorty(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/rick-morty", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+
+	body := recorder.Body.String()
+	for _, expected := range []string{
+		`<div class="rick-app-root" data-rick-morty-app data-url="/rick-morty">`,
+		`<title>Rick and Morty API</title>`,
+		`<link rel="canonical" href="/rick-morty/">`,
+		`connect-src 'self' https://api.github.com https://rickandmortyapi.com`,
+		`<a href="/curiosidades" class="active" aria-current="page">Curiosidades</a>`,
+		`/static/js/rick-and-morty-app.js?v=20260522-go-static`,
+		`Rick and Morty API`,
+		`Carregando o portal.`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("body does not contain %q", expected)
+		}
+	}
+
+	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "connect-src 'self' https://api.github.com https://rickandmortyapi.com") {
+		t.Fatalf("Content-Security-Policy = %q, want Rick and Morty connect-src", got)
+	}
+}
+
+func TestNewRouterRickAndMortyDetailRoutes(t *testing.T) {
+	handler := newTestRouter(t)
+
+	for _, route := range []string{
+		"/curiosidades/rick-and-morty",
+		"/rick-morty/personagem/1",
+		"/rick-morty/local/1",
+		"/rick-morty/episodio/1",
+	} {
+		t.Run(route, func(t *testing.T) {
+			request := httptest.NewRequest(http.MethodGet, route, nil)
+			recorder := httptest.NewRecorder()
+
+			handler.ServeHTTP(recorder, request)
+
+			if recorder.Code != http.StatusOK {
+				t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+			}
+
+			if body := recorder.Body.String(); !strings.Contains(body, `data-rick-morty-app`) {
+				t.Fatalf("body does not contain Rick and Morty app root")
+			}
+		})
 	}
 }
 
