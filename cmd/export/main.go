@@ -22,17 +22,19 @@ import (
 )
 
 var staticPageRoutes = map[string]struct{}{
-	"/":             {},
-	"/404":          {},
-	"/about":        {},
-	"/articles":     {},
-	"/blog":         {},
-	"/curiosidades": {},
-	"/games":        {},
-	"/jogos":        {},
-	"/notas":        {},
-	"/projects":     {},
-	"/projetos":     {},
+	"/":                            {},
+	"/404":                         {},
+	"/about":                       {},
+	"/articles":                    {},
+	"/blog":                        {},
+	"/curiosidades":                {},
+	"/curiosidades/rick-and-morty": {},
+	"/rick-morty":                  {},
+	"/games":                       {},
+	"/jogos":                       {},
+	"/notas":                       {},
+	"/projects":                    {},
+	"/projetos":                    {},
 }
 
 type exportOptions struct {

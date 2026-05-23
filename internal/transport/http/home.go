@@ -267,6 +267,9 @@ func newSiteNavigation(currentPath string) []siteNavLink {
 	if pathname == "/games" || strings.HasPrefix(pathname, "/games/") {
 		pathname = "/jogos"
 	}
+	if pathname == "/rick-morty" || strings.HasPrefix(pathname, "/rick-morty/") {
+		pathname = "/curiosidades"
+	}
 	for index := range links {
 		clean := normalizeSitePath(links[index].URL)
 		links[index].Active = pathname == clean || (clean != "/" && strings.HasPrefix(pathname, clean))

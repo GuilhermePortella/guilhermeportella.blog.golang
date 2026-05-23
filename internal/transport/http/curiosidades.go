@@ -22,15 +22,39 @@ type curiosidadesPageData struct {
 	Tags        []string
 	QuickMap    []curiosidadesLinkCard
 	Shortcuts   []curiosidadesLinkCard
+	APIs        []curiosidadesAPICard
 	Collections []curiosidadesCollection
 	Songs       []curiosidadesSong
 	Playlists   []curiosidadesPlaylist
+}
+
+type rickAndMortyPageData struct {
+	Title          string
+	Description    string
+	CanonicalURL   string
+	OpenGraphImage string
+	OpenGraphType  string
+	TwitterCard    string
+	Keywords       string
+	Locale         string
+	SiteName       string
+	CurrentYear    int
+
+	Navigation []siteNavLink
 }
 
 type curiosidadesLinkCard struct {
 	Title       string
 	Description string
 	URL         string
+}
+
+type curiosidadesAPICard struct {
+	Title       string
+	Description string
+	URL         string
+	Source      string
+	Tags        []string
 }
 
 type curiosidadesCollection struct {
@@ -65,6 +89,17 @@ func curiosidadesHandler(renderer *Renderer, logger *slog.Logger) http.HandlerFu
 
 		if err := renderer.Render(w, "curiosidades", data); err != nil {
 			logger.Error("render curiosidades page", "error", err, "request_id", getRequestID(r.Context()))
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+	}
+}
+
+func rickAndMortyHandler(renderer *Renderer, logger *slog.Logger) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		data := newRickAndMortyPageData(time.Now(), r.URL.Path)
+
+		if err := renderer.Render(w, "rick_and_morty", data); err != nil {
+			logger.Error("render rick and morty page", "error", err, "request_id", getRequestID(r.Context()))
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		}
 	}
@@ -128,6 +163,20 @@ func newCuriosidadesPageData(now time.Time, currentPath string) curiosidadesPage
 				Title:       "Tecnologia",
 				Description: "Canais e leituras que sigo com carinho.",
 				URL:         "#tecnologia",
+			},
+		},
+		APIs: []curiosidadesAPICard{
+			{
+				Title:       "Rick and Morty API",
+				Description: "Portal para explorar personagens, locais e episodios consumidos da API publica oficial.",
+				URL:         "/rick-morty",
+				Source:      "https://rickandmortyapi.com/api",
+				Tags: []string{
+					"REST",
+					"personagens",
+					"locais",
+					"episodios",
+				},
 			},
 		},
 		Collections: []curiosidadesCollection{
@@ -272,5 +321,20 @@ func newCuriosidadesPageData(now time.Time, currentPath string) curiosidadesPage
 				SpotifyURL: "https://open.spotify.com/playlist/3LuwLZF9DuqtT5n92wCmcU",
 			},
 		},
+	}
+}
+
+func newRickAndMortyPageData(now time.Time, currentPath string) rickAndMortyPageData {
+	return rickAndMortyPageData{
+		Title:         "Rick and Morty API",
+		Description:   "Portal interativo para explorar personagens, lugares e episódios da Rick and Morty API.",
+		CanonicalURL:  "/rick-morty/",
+		OpenGraphType: "website",
+		TwitterCard:   "summary_large_image",
+		Keywords:      "rick and morty, api, curiosidades, personagens, episódios, rest",
+		Locale:        "pt_BR",
+		SiteName:      "Guilherme Portella",
+		CurrentYear:   now.Year(),
+		Navigation:    newSiteNavigation(currentPath),
 	}
 }

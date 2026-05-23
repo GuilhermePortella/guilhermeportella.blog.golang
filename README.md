@@ -126,6 +126,11 @@ As decisoes arquiteturais ficam em `docs/adr/`.
 - `GET /blog`
 - `GET /blog/{slug}`
 - `GET /curiosidades`
+- `GET /curiosidades/rick-and-morty`
+- `GET /rick-morty`
+- `GET /rick-morty/personagem/{id}`
+- `GET /rick-morty/local/{id}`
+- `GET /rick-morty/episodio/{id}`
 - `GET /games` (atalho para jogos)
 - `GET /jogos`
 - `GET /jogos/{slug}`

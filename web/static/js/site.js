@@ -448,6 +448,467 @@
     fetchProjects();
   }
 
+  function setupRickAndMortyPortal() {
+    const root = document.querySelector("[data-rick-and-morty]");
+
+    if (!root) {
+      return;
+    }
+
+    const apiBase = (root.dataset.rickApiBase || "https://rickandmortyapi.com/api").replace(/\/$/, "");
+    const form = root.querySelector("[data-rick-form]");
+    const nameInput = root.querySelector("[data-rick-name]");
+    const statusSelect = root.querySelector("[data-rick-status]");
+    const randomButton = root.querySelector("[data-rick-random]");
+    const prevButton = root.querySelector("[data-rick-prev]");
+    const nextButton = root.querySelector("[data-rick-next]");
+    const pageLabel = root.querySelector("[data-rick-page-label]");
+    const message = root.querySelector("[data-rick-message]");
+    const grid = root.querySelector("[data-rick-grid]");
+    const spotlight = root.querySelector("[data-rick-spotlight]");
+
+    if (!form || !nameInput || !statusSelect || !randomButton || !prevButton || !nextButton || !pageLabel || !message || !grid || !spotlight) {
+      return;
+    }
+
+    const controller = new AbortController();
+    window.addEventListener("pagehide", () => controller.abort(), { once: true });
+
+    const state = {
+      page: 1,
+      pages: 1,
+      name: "",
+      status: "",
+      totalCharacters: 826,
+      loading: false,
+      localSelection: false,
+    };
+
+    const fallbackCharacters = [
+      {
+        id: 1,
+        name: "Rick Sanchez",
+        status: "Alive",
+        species: "Human",
+        gender: "Male",
+        origin: { name: "Earth (C-137)" },
+        location: { name: "Citadel of Ricks" },
+        image: "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
+        episodeCount: 51,
+        url: "https://rickandmortyapi.com/api/character/1",
+      },
+      {
+        id: 2,
+        name: "Morty Smith",
+        status: "Alive",
+        species: "Human",
+        gender: "Male",
+        origin: { name: "Earth (C-137)" },
+        location: { name: "Earth (Replacement Dimension)" },
+        image: "https://rickandmortyapi.com/api/character/avatar/2.jpeg",
+        episodeCount: 51,
+        url: "https://rickandmortyapi.com/api/character/2",
+      },
+      {
+        id: 3,
+        name: "Summer Smith",
+        status: "Alive",
+        species: "Human",
+        gender: "Female",
+        origin: { name: "Earth (Replacement Dimension)" },
+        location: { name: "Earth (Replacement Dimension)" },
+        image: "https://rickandmortyapi.com/api/character/avatar/3.jpeg",
+        episodeCount: 42,
+        url: "https://rickandmortyapi.com/api/character/3",
+      },
+      {
+        id: 183,
+        name: "Johnny Depp",
+        status: "Alive",
+        species: "Human",
+        gender: "Male",
+        origin: { name: "Earth (C-500A)" },
+        location: { name: "Earth (C-500A)" },
+        image: "https://rickandmortyapi.com/api/character/avatar/183.jpeg",
+        episodeCount: 1,
+        url: "https://rickandmortyapi.com/api/character/183",
+      },
+    ];
+
+    const statusLabels = {
+      Alive: "Vivo",
+      Dead: "Morto",
+      unknown: "Desconhecido",
+    };
+
+    const genderLabels = {
+      Female: "Feminino",
+      Male: "Masculino",
+      Genderless: "Sem gênero",
+      unknown: "Desconhecido",
+    };
+
+    const safeRickURL = (value) => {
+      if (!value) {
+        return "";
+      }
+
+      try {
+        const parsed = new URL(value, apiBase);
+        if (parsed.protocol !== "https:" || parsed.hostname !== "rickandmortyapi.com") {
+          return "";
+        }
+        return parsed.href;
+      } catch {
+        return "";
+      }
+    };
+
+    const setMessage = (kind, text) => {
+      message.textContent = text;
+      message.classList.toggle("is-error", kind === "error");
+      message.classList.toggle("is-empty", kind === "empty");
+    };
+
+    const setStat = (key, value) => {
+      const element = root.querySelector(`[data-rick-stat="${key}"]`);
+      if (!element || !Number.isFinite(value)) {
+        return;
+      }
+
+      element.textContent = new Intl.NumberFormat("pt-BR").format(value);
+    };
+
+    const updateControls = () => {
+      prevButton.disabled = state.loading || state.localSelection || state.page <= 1;
+      nextButton.disabled = state.loading || state.localSelection || state.page >= state.pages;
+      randomButton.disabled = state.loading;
+      const submitButton = form.querySelector("button[type='submit']");
+      if (submitButton) {
+        submitButton.disabled = state.loading;
+      }
+
+      if (state.localSelection) {
+        pageLabel.textContent = "Seleção";
+      } else {
+        pageLabel.textContent = `Página ${state.page} de ${state.pages}`;
+      }
+    };
+
+    const endpointURL = (resource) => `${apiBase}/${resource}`;
+
+    const fetchJSON = async (url) => {
+      const response = await fetch(url, {
+        signal: controller.signal,
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        const error = new Error("Rick and Morty API request failed.");
+        error.status = response.status;
+        throw error;
+      }
+
+      return response.json();
+    };
+
+    const charactersURL = () => {
+      const url = new URL(endpointURL("character"));
+      url.searchParams.set("page", String(state.page));
+
+      if (state.name) {
+        url.searchParams.set("name", state.name);
+      }
+
+      if (state.status) {
+        url.searchParams.set("status", state.status);
+      }
+
+      return url.href;
+    };
+
+    const normalizeCharacter = (character) => ({
+      id: character.id,
+      name: character.name || "Personagem sem nome",
+      status: character.status || "unknown",
+      species: character.species || "Espécie desconhecida",
+      gender: character.gender || "unknown",
+      origin: character.origin?.name || "Origem desconhecida",
+      location: character.location?.name || "Local desconhecido",
+      image: safeRickURL(character.image),
+      episodeCount: Array.isArray(character.episode) ? character.episode.length : Number(character.episodeCount) || 0,
+      url: safeRickURL(character.url),
+    });
+
+    const statusClass = (status) => {
+      const normalized = String(status || "").toLowerCase();
+      if (normalized === "alive" || normalized === "dead") {
+        return normalized;
+      }
+      return "unknown";
+    };
+
+    const appendMeta = (list, label, value) => {
+      const group = document.createElement("div");
+      const term = document.createElement("dt");
+      const description = document.createElement("dd");
+
+      term.textContent = label;
+      description.textContent = value;
+      group.append(term, description);
+      list.append(group);
+    };
+
+    const characterCard = (character) => {
+      const card = document.createElement("article");
+      card.className = "rick-character";
+
+      const media = document.createElement("div");
+      media.className = "rick-character__media";
+
+      if (character.image) {
+        const image = document.createElement("img");
+        image.src = character.image;
+        image.alt = `Retrato de ${character.name}`;
+        image.loading = "lazy";
+        image.width = 300;
+        image.height = 300;
+        media.append(image);
+      }
+
+      const content = document.createElement("div");
+      content.className = "rick-character__content";
+
+      const badge = document.createElement("span");
+      badge.className = `rick-status rick-status--${statusClass(character.status)}`;
+      badge.textContent = statusLabels[character.status] || "Desconhecido";
+
+      const title = document.createElement("h3");
+      title.textContent = character.name;
+
+      const summary = document.createElement("p");
+      summary.textContent = `${character.species} · ${genderLabels[character.gender] || character.gender}`;
+
+      const meta = document.createElement("dl");
+      meta.className = "rick-character__meta";
+      appendMeta(meta, "Origem", character.origin);
+      appendMeta(meta, "Último local", character.location);
+      appendMeta(meta, "Episódios", String(character.episodeCount));
+
+      content.append(badge, title, summary, meta);
+
+      if (character.url) {
+        const link = document.createElement("a");
+        link.className = "rick-character__link arrow-shift";
+        link.href = character.url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.append(document.createTextNode("Ver JSON "));
+
+        const arrow = document.createElement("span");
+        arrow.className = "link-arrow";
+        arrow.setAttribute("aria-hidden", "true");
+        arrow.textContent = "->";
+        link.append(arrow);
+        content.append(link);
+      }
+
+      card.append(media, content);
+      return card;
+    };
+
+    const renderSpotlight = (character, localSelection = false) => {
+      if (!character) {
+        const empty = document.createElement("div");
+        empty.className = "rick-spotlight__empty";
+
+        const eyebrow = document.createElement("p");
+        eyebrow.className = "curiosity-eyebrow";
+        eyebrow.textContent = "destaque";
+
+        const title = document.createElement("h3");
+        title.textContent = "Nada encontrado.";
+
+        const copy = document.createElement("p");
+        copy.textContent = "Tenta outro nome ou limpa o filtro de status.";
+
+        empty.append(eyebrow, title, copy);
+        spotlight.replaceChildren(empty);
+        return;
+      }
+
+      const article = document.createElement("article");
+      article.className = "rick-spotlight__character";
+
+      if (character.image) {
+        const image = document.createElement("img");
+        image.src = character.image;
+        image.alt = `Retrato em destaque de ${character.name}`;
+        image.loading = "lazy";
+        image.width = 300;
+        image.height = 300;
+        article.append(image);
+      }
+
+      const copy = document.createElement("div");
+      const eyebrow = document.createElement("p");
+      eyebrow.className = "curiosity-eyebrow";
+      eyebrow.textContent = localSelection ? "fallback local" : "destaque";
+
+      const title = document.createElement("h3");
+      title.textContent = character.name;
+
+      const text = document.createElement("p");
+      text.textContent = `${statusLabels[character.status] || "Desconhecido"} · ${character.species} · ${character.episodeCount} episódios`;
+
+      const location = document.createElement("span");
+      location.textContent = character.location;
+
+      copy.append(eyebrow, title, text, location);
+      article.append(copy);
+      spotlight.replaceChildren(article);
+    };
+
+    const renderEmpty = () => {
+      const empty = document.createElement("article");
+      empty.className = "rick-empty";
+      empty.textContent = "Nenhum personagem encontrado com esse filtro.";
+      grid.replaceChildren(empty);
+      renderSpotlight(null);
+    };
+
+    const renderCharacters = (characters, options = {}) => {
+      const normalized = characters.map(normalizeCharacter);
+      const visible = normalized.slice(0, 8);
+      const cards = visible.map(characterCard);
+
+      state.localSelection = Boolean(options.localSelection);
+      state.pages = Math.max(1, Number(options.pages) || 1);
+
+      grid.replaceChildren(...cards);
+      renderSpotlight(visible[0], state.localSelection);
+      updateControls();
+    };
+
+    const loadStats = async () => {
+      try {
+        const [locations, episodes] = await Promise.all([
+          fetchJSON(endpointURL("location")),
+          fetchJSON(endpointURL("episode")),
+        ]);
+
+        setStat("locations", Number(locations?.info?.count));
+        setStat("episodes", Number(episodes?.info?.count));
+      } catch (error) {
+        if (error?.name !== "AbortError") {
+          setStat("locations", 126);
+          setStat("episodes", 51);
+        }
+      }
+    };
+
+    const loadCharacters = async () => {
+      state.loading = true;
+      state.localSelection = false;
+      setMessage("loading", "Consultando personagens na API.");
+      updateControls();
+
+      try {
+        const data = await fetchJSON(charactersURL());
+        const characters = Array.isArray(data?.results) ? data.results : [];
+        const count = Number(data?.info?.count) || characters.length;
+
+        state.totalCharacters = Math.max(count, state.totalCharacters);
+        setStat("characters", count);
+        renderCharacters(characters, { pages: data?.info?.pages });
+        setMessage("success", `${Math.min(characters.length, 8)} destaques desta busca, de ${new Intl.NumberFormat("pt-BR").format(count)} personagens encontrados.`);
+      } catch (error) {
+        if (error?.name === "AbortError") {
+          return;
+        }
+
+        if (error?.status === 404) {
+          state.pages = 1;
+          state.localSelection = false;
+          renderEmpty();
+          setMessage("empty", "Nenhum personagem encontrado com esse filtro.");
+          return;
+        }
+
+        state.page = 1;
+        renderCharacters(fallbackCharacters, { pages: 1, localSelection: true });
+        setMessage("error", "A API não respondeu agora. Mantive uma seleção local para a seção não quebrar.");
+      } finally {
+        state.loading = false;
+        updateControls();
+      }
+    };
+
+    const loadRandomCharacter = async () => {
+      state.loading = true;
+      setMessage("loading", "Buscando um personagem aleatório.");
+      updateControls();
+
+      const randomId = Math.floor(Math.random() * Math.max(state.totalCharacters, 826)) + 1;
+
+      try {
+        const character = await fetchJSON(endpointURL(`character/${randomId}`));
+        state.page = 1;
+        renderCharacters([character], { pages: 1 });
+        setMessage("success", `Personagem aleatório: ${character.name}.`);
+      } catch (error) {
+        if (error?.name === "AbortError") {
+          return;
+        }
+
+        const fallback = fallbackCharacters[Math.floor(Math.random() * fallbackCharacters.length)];
+        renderCharacters([fallback], { pages: 1, localSelection: true });
+        setMessage("error", "Não consegui sortear pela API. Mostrei um favorito local.");
+      } finally {
+        state.loading = false;
+        updateControls();
+      }
+    };
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      state.page = 1;
+      state.name = nameInput.value.trim();
+      state.status = statusSelect.value;
+      loadCharacters();
+    });
+
+    statusSelect.addEventListener("change", () => {
+      state.page = 1;
+      state.status = statusSelect.value;
+      state.name = nameInput.value.trim();
+      loadCharacters();
+    });
+
+    prevButton.addEventListener("click", () => {
+      if (state.page <= 1) {
+        return;
+      }
+      state.page -= 1;
+      loadCharacters();
+    });
+
+    nextButton.addEventListener("click", () => {
+      if (state.page >= state.pages) {
+        return;
+      }
+      state.page += 1;
+      loadCharacters();
+    });
+
+    randomButton.addEventListener("click", loadRandomCharacter);
+
+    loadStats();
+    loadCharacters();
+  }
+
   function setupGames() {
     setupMemoryGame();
     setupSequenceGame();
@@ -3682,6 +4143,7 @@
   setupSpotifyEmbeds();
   setupBlogBrowser();
   setupProjectsCatalog();
+  setupRickAndMortyPortal();
   setupGames();
   setupNotesWall();
   setupArticleCodeCopy();
