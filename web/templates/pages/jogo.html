@@ -189,6 +189,55 @@
         </div>
       </div>
       {{end}}
+
+      {{if eq .Game.Slug "snake"}}
+      <div class="snake-game" data-snake-game>
+        <div class="snake-toolbar" aria-label="Placar da partida">
+          <div class="snake-stats" aria-live="polite">
+            <p><span>Pontos</span><strong data-snake-score>0</strong></p>
+            <p><span>Melhor</span><strong data-snake-best>0</strong></p>
+            <p><span>Velocidade</span><strong data-snake-speed>1.00x</strong></p>
+          </div>
+
+          <button type="button" data-snake-restart hidden>Jogar novamente</button>
+        </div>
+
+        <div class="snake-arena">
+          <div class="snake-board-shell" data-snake-board-shell tabindex="0" aria-label="Tabuleiro do Snake">
+            <canvas class="snake-board" data-snake-canvas width="500" height="500"></canvas>
+
+            <div class="snake-start-panel" data-snake-start-panel role="dialog" aria-modal="true" aria-labelledby="snake-start-title">
+              <div>
+                <p class="eyebrow eyebrow--spaced">nova partida</p>
+                <h3 id="snake-start-title">Snake Classic</h3>
+                <label for="snake-player-name">Nome do jogador</label>
+                <input id="snake-player-name" type="text" maxlength="12" autocomplete="nickname" placeholder="Seu nome" data-snake-name>
+                <button type="button" data-snake-start>Iniciar jogo</button>
+              </div>
+            </div>
+          </div>
+
+          <aside class="snake-panel" aria-label="Estado da partida">
+            <section>
+              <h3>Vidas extras</h3>
+              <div class="snake-lives" data-snake-lives aria-label="Vidas extras disponíveis"></div>
+            </section>
+
+            <section class="snake-help">
+              <h3>Como jogar</h3>
+              <ul>
+                <li>Use setas ou WASD para virar.</li>
+                <li>No celular, deslize no tabuleiro.</li>
+                <li>Também dá para clicar perto da direção desejada.</li>
+                <li>Evite bordas e o próprio corpo.</li>
+              </ul>
+            </section>
+
+            <p class="game-status snake-status" data-snake-status role="status">Informe seu nome para iniciar.</p>
+          </aside>
+        </div>
+      </div>
+      {{end}}
     </div>
   </section>
 

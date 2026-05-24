@@ -239,6 +239,24 @@ func allGames() []gameCard {
 				"Se existir mais de uma captura, vale a sequência com mais peças.",
 			},
 		},
+		{
+			Slug:        "snake",
+			Title:       "Snake Classic",
+			ShortTitle:  "Snake",
+			Description: "Releitura do clássico Snake com tela escura, ritmo progressivo, vidas extras e controle por teclado ou toque.",
+			Intro:       "Guie a cobrinha pelo tabuleiro escuro, colete a comida e evite bater nas bordas ou no próprio corpo.",
+			URL:         "/jogos/snake",
+			Status:      "jogável",
+			Difficulty:  "arcade",
+			Duration:    "3 min",
+			Accent:      "green",
+			Tags:        []string{"canvas", "arcade", "reflexo"},
+			Instructions: []string{
+				"Use as setas ou WASD para mudar a direção.",
+				"Em telas touch, deslize no tabuleiro para virar.",
+				"Ganhe vidas extras aos 50, 100 e 150 pontos.",
+			},
+		},
 	}
 }
 
