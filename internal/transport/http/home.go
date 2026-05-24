@@ -252,9 +252,9 @@ func newSiteNavigation(currentPath string) []siteNavLink {
 		{Label: "Cadernos", URL: "/blog"},
 		{Label: "Projetos", URL: "/projetos"},
 		{Label: "Jogos", URL: "/jogos"},
-		{Label: "Sobre", URL: "/about"},
 		{Label: "Curiosidades", URL: "/curiosidades"},
 		{Label: "Notas", URL: "/notas"},
+		{Label: "Sobre", URL: "/about"},
 	}
 
 	pathname := normalizeSitePath(currentPath)
