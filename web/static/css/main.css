@@ -1957,6 +1957,293 @@ h4 {
   text-align: center;
 }
 
+.game-frame[data-game="snake"] {
+  background:
+    radial-gradient(circle at 18% 12%, rgb(34 197 94 / 12%), transparent 38%),
+    linear-gradient(145deg, #111827, #18181b 58%, #0f172a);
+}
+
+.snake-game {
+  display: grid;
+  gap: 1rem;
+  min-height: 28rem;
+  color: #f8fafc;
+}
+
+.snake-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 8px;
+  background: rgb(255 255 255 / 8%);
+  color: #f8fafc;
+  padding: 0.75rem;
+}
+
+.snake-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.snake-stats p {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 6.75rem;
+  margin: 0;
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 8px;
+  background: rgb(255 255 255 / 7%);
+  padding: 0.6rem 0.75rem;
+}
+
+.snake-stats span {
+  color: #d1d5db;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1rem;
+  text-transform: uppercase;
+}
+
+.snake-stats strong {
+  color: #ffffff;
+  font-size: 1.25rem;
+  line-height: 1.35rem;
+}
+
+.snake-toolbar button,
+.snake-start-panel button {
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 8px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 750;
+  transition: background-color 140ms ease, border-color 140ms ease, transform 120ms ease;
+}
+
+.snake-toolbar button,
+.snake-start-panel button {
+  background: #22c55e;
+  color: #052e16;
+  padding: 0.55rem 0.85rem;
+}
+
+.snake-toolbar button:hover,
+.snake-start-panel button:hover,
+.snake-toolbar button:focus,
+.snake-start-panel button:focus {
+  background: #86efac;
+}
+
+.snake-toolbar button[hidden] {
+  display: none;
+}
+
+.snake-arena {
+  display: grid;
+  gap: 1rem;
+}
+
+.snake-board-shell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(100%, 36rem);
+  margin: 0 auto;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgb(13 34 53 / 96%), rgb(5 13 24 / 98%)),
+    #071521;
+  box-shadow:
+    0 24px 70px rgb(0 0 0 / 30%),
+    inset 0 0 0 1px rgb(255 255 255 / 4%),
+    inset 0 0 45px rgb(95 143 197 / 12%);
+  padding: 1rem;
+  touch-action: none;
+}
+
+.snake-board {
+  display: block;
+  width: 100%;
+  max-width: 34rem;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  border: 1px solid rgb(187 214 241 / 16%);
+  border-radius: 8px;
+  background: #071521;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 4%),
+    inset 0 22px 80px rgb(95 143 197 / 10%);
+  touch-action: none;
+}
+
+.snake-start-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 50% 42%, rgb(7 21 33 / 10%), rgb(7 21 33 / 48%)),
+    rgb(7 21 33 / 20%);
+  padding: 1rem;
+  backdrop-filter: blur(3px);
+}
+
+.snake-start-panel[hidden] {
+  display: none;
+}
+
+.snake-start-panel > div {
+  display: grid;
+  gap: 0.75rem;
+  width: min(23rem, 100%);
+  border: 1px solid rgb(182 201 226 / 86%);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgb(246 249 253 / 96%), rgb(226 236 249 / 96%)),
+    #f8fafc;
+  box-shadow: 0 24px 60px rgb(0 0 0 / 30%);
+  color: var(--stone-900);
+  padding: 1.25rem;
+}
+
+.snake-start-panel .eyebrow {
+  color: #15803d;
+}
+
+.snake-start-panel h3 {
+  margin: 0;
+  color: var(--stone-900);
+  font-size: 1.35rem;
+  font-weight: 750;
+  line-height: 1.6rem;
+}
+
+.snake-start-panel label {
+  color: var(--stone-600);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.snake-start-panel input {
+  width: 100%;
+  border: 1px solid rgb(182 201 226);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--stone-900);
+  padding: 0.72rem 0.8rem;
+}
+
+.snake-start-panel input::placeholder {
+  color: var(--stone-400);
+}
+
+.snake-panel {
+  display: grid;
+  gap: 0.85rem;
+  align-content: start;
+}
+
+.snake-panel section {
+  display: grid;
+  gap: 0.65rem;
+  border: 1px solid rgb(255 255 255 / 12%);
+  border-radius: 8px;
+  background: rgb(255 255 255 / 8%);
+  padding: 0.85rem;
+}
+
+.snake-panel h3 {
+  margin: 0;
+  color: #f8fafc;
+  font-size: 0.95rem;
+  font-weight: 750;
+}
+
+.snake-lives {
+  display: grid;
+  grid-template-columns: repeat(3, 1.65rem);
+  gap: 0.45rem;
+}
+
+.snake-life {
+  width: 1.65rem;
+  height: 0.65rem;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 14%);
+}
+
+.snake-life.is-active {
+  border-color: rgb(134 239 172 / 55%);
+  background: linear-gradient(90deg, #22c55e, #a7f3d0);
+  box-shadow: 0 0 16px rgb(34 197 94 / 34%);
+}
+
+.snake-help ul {
+  display: grid;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: #d1d5db;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+
+.snake-help li {
+  position: relative;
+  padding-left: 1rem;
+}
+
+.snake-help li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.58em;
+  width: 0.38rem;
+  height: 0.38rem;
+  border-radius: 999px;
+  background: #22c55e;
+}
+
+.snake-status {
+  margin: 0;
+}
+
+@media (min-width: 920px) {
+  .snake-arena {
+    grid-template-columns: minmax(0, 1fr) 15rem;
+    align-items: start;
+  }
+}
+
+@media (max-width: 520px) {
+  .snake-toolbar,
+  .snake-stats {
+    display: grid;
+  }
+
+  .snake-stats p {
+    min-width: 0;
+  }
+
+  .snake-board-shell {
+    padding: 0.65rem;
+  }
+
+  .snake-start-panel {
+    inset: 0.65rem;
+  }
+}
+
 .solitaire-game,
 .solitaire-drag-layer {
   --solitaire-card-width: clamp(4rem, 8vw, 5.8rem);

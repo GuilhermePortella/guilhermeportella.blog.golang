@@ -910,11 +910,619 @@
   }
 
   function setupGames() {
+    setupSnakeGame();
     setupMemoryGame();
     setupSequenceGame();
     setupReactionGame();
     setupSolitaireGame();
     setupCheckersGame();
+  }
+
+  function setupSnakeGame() {
+    const root = document.querySelector("[data-snake-game]");
+
+    if (!root) {
+      return;
+    }
+
+    const canvas = root.querySelector("[data-snake-canvas]");
+    const boardShell = root.querySelector("[data-snake-board-shell]");
+    const startPanel = root.querySelector("[data-snake-start-panel]");
+    const nameInput = root.querySelector("[data-snake-name]");
+    const startButton = root.querySelector("[data-snake-start]");
+    const restartButton = root.querySelector("[data-snake-restart]");
+    const scoreLabel = root.querySelector("[data-snake-score]");
+    const bestLabel = root.querySelector("[data-snake-best]");
+    const speedLabel = root.querySelector("[data-snake-speed]");
+    const livesContainer = root.querySelector("[data-snake-lives]");
+    const status = root.querySelector("[data-snake-status]");
+
+    if (!canvas || !boardShell || !startPanel || !startButton || !scoreLabel || !bestLabel || !speedLabel || !livesContainer || !status) {
+      return;
+    }
+
+    const context = canvas.getContext("2d");
+    const gridSize = 20;
+    const initialSnakeLength = 4;
+    const initialSpeed = 145;
+    const minimumSpeed = 58;
+    const maxLives = 3;
+    const lifeMilestones = [50, 100, 150];
+    const localBestKey = "snake-classic-best-score";
+    const vectors = {
+      up: { x: 0, y: -1 },
+      down: { x: 0, y: 1 },
+      left: { x: -1, y: 0 },
+      right: { x: 1, y: 0 },
+    };
+    const opposite = {
+      up: "down",
+      down: "up",
+      left: "right",
+      right: "left",
+    };
+
+    const state = {
+      snake: [],
+      food: { x: 0, y: 0 },
+      direction: "right",
+      nextDirection: "right",
+      playerName: "",
+      score: 0,
+      bestScore: readBestScore(),
+      gameOver: false,
+      gameStarted: false,
+      scoreSaved: false,
+      lives: 0,
+      speed: initialSpeed,
+      intervalId: null,
+      awardedMilestones: [],
+      pointerStart: null,
+    };
+
+    function columns() {
+      return Math.floor(canvas.width / gridSize);
+    }
+
+    function rows() {
+      return Math.floor(canvas.height / gridSize);
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function createSnake(length = initialSnakeLength) {
+      const colCount = columns();
+      const rowCount = rows();
+      const playableLength = Math.max(2, Math.min(length, colCount - 2));
+      const headX = clamp(Math.floor(colCount / 2), playableLength, Math.max(playableLength, colCount - 2));
+      const headY = clamp(Math.floor(rowCount / 2), 1, Math.max(1, rowCount - 2));
+
+      return Array.from({ length: playableLength }, (_, index) => ({
+        x: headX - index,
+        y: headY,
+      }));
+    }
+
+    function resizeCanvas(force = false) {
+      if (state.gameStarted && !state.gameOver && !force) {
+        return;
+      }
+
+      const shellStyles = getComputedStyle(boardShell);
+      const paddingX = Number.parseFloat(shellStyles.paddingLeft || 0) + Number.parseFloat(shellStyles.paddingRight || 0);
+      const shellWidth = Math.max(0, boardShell.clientWidth - paddingX);
+      const maxBoardSize = 540;
+      const minBoardSize = window.innerWidth < 420 ? 220 : 280;
+      const rawSize = Math.min(shellWidth || maxBoardSize, maxBoardSize);
+      const size = Math.max(gridSize * 10, Math.floor(Math.max(minBoardSize, rawSize) / gridSize) * gridSize);
+
+      canvas.width = size;
+      canvas.height = size;
+      draw();
+    }
+
+    function draw() {
+      drawBoard();
+      drawFood();
+      drawSnake();
+
+      if (!state.gameStarted && !state.gameOver) {
+        drawBoardLabel("Pronto");
+      }
+
+      if (state.gameOver) {
+        drawBoardLabel("Fim de jogo");
+      }
+    }
+
+    function drawBoard() {
+      context.fillStyle = "#071521";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.strokeStyle = "rgba(156, 194, 231, 0.07)";
+      context.lineWidth = 1;
+
+      for (let x = gridSize; x < canvas.width; x += gridSize) {
+        context.beginPath();
+        context.moveTo(x + 0.5, 0);
+        context.lineTo(x + 0.5, canvas.height);
+        context.stroke();
+      }
+
+      for (let y = gridSize; y < canvas.height; y += gridSize) {
+        context.beginPath();
+        context.moveTo(0, y + 0.5);
+        context.lineTo(canvas.width, y + 0.5);
+        context.stroke();
+      }
+
+      const glow = context.createRadialGradient(
+        canvas.width * 0.18,
+        canvas.height * 0.14,
+        10,
+        canvas.width * 0.18,
+        canvas.height * 0.14,
+        canvas.width * 0.75,
+      );
+      glow.addColorStop(0, "rgba(95, 143, 197, 0.18)");
+      glow.addColorStop(1, "rgba(95, 143, 197, 0)");
+      context.fillStyle = glow;
+      context.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function drawSnake() {
+      for (const [index, segment] of state.snake.entries()) {
+        const x = segment.x * gridSize + 2;
+        const y = segment.y * gridSize + 2;
+        const size = gridSize - 4;
+        const isHead = index === 0;
+
+        context.fillStyle = isHead ? "#a7f3d0" : "#35d399";
+        fillRoundRect(x, y, size, size, isHead ? 7 : 5);
+
+        if (isHead) {
+          context.fillStyle = "#082034";
+          const eyeOffsetX = state.direction === "left" ? 5 : state.direction === "right" ? 11 : 6;
+          const eyeOffsetY = state.direction === "up" ? 5 : state.direction === "down" ? 11 : 6;
+          context.beginPath();
+          context.arc(x + eyeOffsetX, y + eyeOffsetY, 2, 0, Math.PI * 2);
+          context.arc(
+            x + (state.direction === "left" || state.direction === "right" ? eyeOffsetX : 11),
+            y + (state.direction === "up" || state.direction === "down" ? eyeOffsetY : 11),
+            2,
+            0,
+            Math.PI * 2,
+          );
+          context.fill();
+        }
+      }
+    }
+
+    function drawFood() {
+      const centerX = state.food.x * gridSize + gridSize / 2;
+      const centerY = state.food.y * gridSize + gridSize / 2;
+
+      context.fillStyle = "#fb7185";
+      context.beginPath();
+      context.arc(centerX, centerY, gridSize * 0.34, 0, Math.PI * 2);
+      context.fill();
+      context.strokeStyle = "rgba(255, 255, 255, 0.46)";
+      context.lineWidth = 2;
+      context.stroke();
+    }
+
+    function drawBoardLabel(label) {
+      context.save();
+      context.fillStyle = "rgba(5, 13, 24, 0.62)";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = "#f8fafc";
+      context.font = "700 28px Inter, system-ui, sans-serif";
+      context.textAlign = "center";
+      context.textBaseline = "middle";
+      context.fillText(label, canvas.width / 2, canvas.height / 2);
+      context.restore();
+    }
+
+    function fillRoundRect(x, y, width, height, radius) {
+      if (typeof context.roundRect === "function") {
+        context.beginPath();
+        context.roundRect(x, y, width, height, radius);
+        context.fill();
+        return;
+      }
+
+      context.fillRect(x, y, width, height);
+    }
+
+    function update() {
+      state.direction = state.nextDirection;
+      const movement = vectors[state.direction];
+      const head = {
+        x: state.snake[0].x + movement.x,
+        y: state.snake[0].y + movement.y,
+      };
+
+      if (isOutOfBounds(head) || isOnSnake(head, true)) {
+        handleCollision();
+        return;
+      }
+
+      state.snake.unshift(head);
+
+      if (head.x === state.food.x && head.y === state.food.y) {
+        state.score += 1;
+        updateScore();
+        checkAndAwardLife();
+        checkAndIncreaseSpeed();
+        generateFood();
+      } else {
+        state.snake.pop();
+      }
+    }
+
+    function isOutOfBounds(cell) {
+      return cell.x < 0 || cell.x >= columns() || cell.y < 0 || cell.y >= rows();
+    }
+
+    function isOnSnake(cell, ignoreHead = false) {
+      const startIndex = ignoreHead ? 1 : 0;
+
+      for (let index = startIndex; index < state.snake.length; index += 1) {
+        if (cell.x === state.snake[index].x && cell.y === state.snake[index].y) {
+          return true;
+        }
+      }
+
+      return false;
+    }
+
+    function generateFood() {
+      const freeCells = [];
+
+      for (let y = 0; y < rows(); y += 1) {
+        for (let x = 0; x < columns(); x += 1) {
+          const cell = { x, y };
+
+          if (!isOnSnake(cell)) {
+            freeCells.push(cell);
+          }
+        }
+      }
+
+      if (!freeCells.length) {
+        state.gameOver = true;
+        setStatus(`Tabuleiro completo. Pontuação final: ${state.score}.`);
+        return;
+      }
+
+      state.food = freeCells[Math.floor(Math.random() * freeCells.length)];
+    }
+
+    function handleCollision() {
+      if (state.lives > 0) {
+        state.lives -= 1;
+        state.snake = createSnake(Math.min(state.snake.length, columns() - 2));
+        state.direction = "right";
+        state.nextDirection = "right";
+        updateLives();
+        setStatus(`Colisão aparada. Vidas extras restantes: ${state.lives}.`);
+        return;
+      }
+
+      state.gameOver = true;
+    }
+
+    function tick() {
+      if (state.gameOver) {
+        finishGame();
+        return;
+      }
+
+      update();
+      draw();
+    }
+
+    function finishGame() {
+      if (!state.scoreSaved) {
+        state.scoreSaved = true;
+        restartButton.hidden = false;
+        setStatus(`Fim de jogo. Pontuação final: ${state.score}.`);
+      }
+
+      draw();
+      stopLoop();
+    }
+
+    function setDirection(nextDirection) {
+      if (!vectors[nextDirection] || !state.gameStarted || state.gameOver) {
+        return;
+      }
+
+      if (opposite[nextDirection] === state.direction || opposite[nextDirection] === state.nextDirection) {
+        return;
+      }
+
+      state.nextDirection = nextDirection;
+    }
+
+    function setDirectionFromPoint(clientX, clientY) {
+      if (!state.gameStarted || state.gameOver || !state.snake.length) {
+        return;
+      }
+
+      const rect = canvas.getBoundingClientRect();
+      const head = state.snake[0];
+      const headX = rect.left + ((head.x + 0.5) / columns()) * rect.width;
+      const headY = rect.top + ((head.y + 0.5) / rows()) * rect.height;
+      const dx = clientX - headX;
+      const dy = clientY - headY;
+
+      if (Math.hypot(dx, dy) < 8) {
+        return;
+      }
+
+      if (Math.abs(dx) > Math.abs(dy)) {
+        setDirection(dx > 0 ? "right" : "left");
+      } else {
+        setDirection(dy > 0 ? "down" : "up");
+      }
+    }
+
+    function handleKeyPress(event) {
+      const isArrowKey = event.key.startsWith("Arrow");
+      const key = event.key.toLowerCase();
+      const editableTarget =
+        event.target instanceof HTMLElement &&
+        (event.target.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(event.target.tagName));
+
+      if (isArrowKey && !editableTarget) {
+        event.preventDefault();
+      }
+
+      if (editableTarget) {
+        return;
+      }
+
+      if (event.key === "ArrowUp" || key === "w") {
+        setDirection("up");
+      }
+      if (event.key === "ArrowDown" || key === "s") {
+        setDirection("down");
+      }
+      if (event.key === "ArrowLeft" || key === "a") {
+        setDirection("left");
+      }
+      if (event.key === "ArrowRight" || key === "d") {
+        setDirection("right");
+      }
+    }
+
+    function startGame() {
+      state.playerName = normalizePlayerName(nameInput ? nameInput.value : "");
+      resizeCanvas(true);
+      state.snake = createSnake();
+      state.direction = "right";
+      state.nextDirection = "right";
+      state.score = 0;
+      state.lives = 0;
+      state.awardedMilestones = [];
+      state.speed = initialSpeed;
+      state.gameOver = false;
+      state.gameStarted = true;
+      state.scoreSaved = false;
+      startPanel.hidden = true;
+      restartButton.hidden = true;
+      updateScore();
+      updateSpeedLabel();
+      updateLives();
+      generateFood();
+      draw();
+      setStatus(`${state.playerName} em jogo.`);
+      boardShell.focus({ preventScroll: true });
+      restartLoop();
+    }
+
+    function resetToStartScreen() {
+      state.gameStarted = false;
+      state.gameOver = false;
+      state.scoreSaved = false;
+      stopLoop();
+      restartButton.hidden = true;
+      startPanel.hidden = false;
+      state.snake = createSnake();
+      state.direction = "right";
+      state.nextDirection = "right";
+      state.score = 0;
+      state.speed = initialSpeed;
+      updateScore();
+      updateSpeedLabel();
+      updateLives();
+      generateFood();
+      draw();
+      setStatus("Informe seu nome para iniciar.");
+
+      if (nameInput) {
+        nameInput.focus({ preventScroll: true });
+      }
+    }
+
+    function normalizePlayerName(value) {
+      const trimmedName = value.trim();
+      return (trimmedName || "Anônimo").slice(0, 12);
+    }
+
+    function restartLoop() {
+      stopLoop();
+      state.intervalId = window.setInterval(tick, state.speed);
+    }
+
+    function stopLoop() {
+      if (state.intervalId) {
+        window.clearInterval(state.intervalId);
+        state.intervalId = null;
+      }
+    }
+
+    function updateScore() {
+      scoreLabel.textContent = String(state.score);
+
+      if (state.score > state.bestScore) {
+        state.bestScore = state.score;
+        writeBestScore(state.bestScore);
+      }
+
+      bestLabel.textContent = String(state.bestScore);
+    }
+
+    function updateSpeedLabel() {
+      speedLabel.textContent = `${(initialSpeed / state.speed).toFixed(2)}x`;
+    }
+
+    function updateLives() {
+      const fragment = document.createDocumentFragment();
+
+      for (let index = 0; index < maxLives; index += 1) {
+        const life = document.createElement("span");
+        life.className = index < state.lives ? "snake-life is-active" : "snake-life";
+        life.setAttribute("aria-hidden", "true");
+        fragment.append(life);
+      }
+
+      livesContainer.replaceChildren(fragment);
+    }
+
+    function setStatus(message) {
+      status.textContent = message;
+    }
+
+    function checkAndAwardLife() {
+      for (const milestone of lifeMilestones) {
+        if (state.score >= milestone && !state.awardedMilestones.includes(milestone)) {
+          if (state.lives < maxLives) {
+            state.lives += 1;
+            updateLives();
+            setStatus(`Vida extra liberada aos ${milestone} pontos.`);
+          }
+
+          state.awardedMilestones.push(milestone);
+        }
+      }
+    }
+
+    function checkAndIncreaseSpeed() {
+      if (state.score > 0 && state.score % 20 === 0) {
+        state.speed = Math.max(minimumSpeed, state.speed * 0.96);
+        restartLoop();
+        updateSpeedLabel();
+        setStatus(`Velocidade ajustada para ${speedLabel.textContent}.`);
+      }
+    }
+
+    function readBestScore() {
+      try {
+        const value = Number(window.localStorage.getItem(localBestKey) || "0");
+        return Number.isFinite(value) ? value : 0;
+      } catch {
+        return 0;
+      }
+    }
+
+    function writeBestScore(value) {
+      bestLabel.textContent = String(value);
+
+      try {
+        window.localStorage.setItem(localBestKey, String(value));
+      } catch {
+        // Local storage can be disabled in private contexts.
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyPress, { capture: true });
+
+    canvas.addEventListener("pointerdown", (event) => {
+      if (!state.gameStarted || state.gameOver) {
+        return;
+      }
+
+      event.preventDefault();
+      state.pointerStart = {
+        x: event.clientX,
+        y: event.clientY,
+        id: event.pointerId,
+      };
+
+      if (canvas.setPointerCapture) {
+        canvas.setPointerCapture(event.pointerId);
+      }
+    });
+
+    canvas.addEventListener(
+      "pointermove",
+      (event) => {
+        if (state.gameStarted && !state.gameOver) {
+          event.preventDefault();
+        }
+      },
+      { passive: false },
+    );
+
+    canvas.addEventListener("pointerup", (event) => {
+      if (!state.pointerStart || state.pointerStart.id !== event.pointerId) {
+        return;
+      }
+
+      event.preventDefault();
+      const dx = event.clientX - state.pointerStart.x;
+      const dy = event.clientY - state.pointerStart.y;
+      const distance = Math.hypot(dx, dy);
+
+      if (distance >= 24) {
+        if (Math.abs(dx) > Math.abs(dy)) {
+          setDirection(dx > 0 ? "right" : "left");
+        } else {
+          setDirection(dy > 0 ? "down" : "up");
+        }
+      } else {
+        setDirectionFromPoint(event.clientX, event.clientY);
+      }
+
+      if (canvas.releasePointerCapture) {
+        canvas.releasePointerCapture(event.pointerId);
+      }
+
+      state.pointerStart = null;
+    });
+
+    canvas.addEventListener("pointercancel", () => {
+      state.pointerStart = null;
+    });
+
+    startButton.addEventListener("click", startGame);
+    restartButton.addEventListener("click", resetToStartScreen);
+
+    if (nameInput) {
+      nameInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          startGame();
+        }
+      });
+    }
+
+    window.addEventListener("resize", () => resizeCanvas(false));
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", () => resizeCanvas(false));
+    }
+
+    resizeCanvas(true);
+    state.snake = createSnake();
+    generateFood();
+    updateScore();
+    updateSpeedLabel();
+    updateLives();
+    draw();
   }
 
   function shuffled(items) {
