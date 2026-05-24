@@ -255,6 +255,7 @@ func allGames() []gameCard {
 				"Use as setas ou WASD para mudar a direção.",
 				"Em telas touch, deslize no tabuleiro para virar.",
 				"Ganhe vidas extras aos 50, 100 e 150 pontos.",
+				"Ao usar uma vida, a cobrinha volta ao centro com uma breve recuperação.",
 			},
 		},
 	}
