@@ -56,7 +56,7 @@ func TestNewRouterHome(t *testing.T) {
 		t.Fatalf("body does not contain Google Fonts stylesheet")
 	}
 
-	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260524-snake" defer></script>`) {
+	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260524-snake-life" defer></script>`) {
 		t.Fatalf("body does not contain footer script")
 	}
 

@@ -946,6 +946,10 @@
     const initialSnakeLength = 4;
     const initialSpeed = 145;
     const minimumSpeed = 58;
+    const extraLifeRecoverySpeed = 115;
+    const extraLifeRecoveryDelay = 750;
+    const extraLifeRecoveryTicks = 5;
+    const extraLifeRespawnMargin = 4;
     const maxLives = 3;
     const lifeMilestones = [50, 100, 150];
     const localBestKey = "snake-classic-best-score";
@@ -978,6 +982,8 @@
       intervalId: null,
       awardedMilestones: [],
       pointerStart: null,
+      recoveryUntil: 0,
+      recoveryTicks: 0,
     };
 
     function columns() {
@@ -1003,6 +1009,26 @@
         x: headX - index,
         y: headY,
       }));
+    }
+
+    function createExtraLifeSnake(length = initialSnakeLength) {
+      const colCount = columns();
+      const rowCount = rows();
+      const marginX = safeRespawnMargin(colCount);
+      const marginY = safeRespawnMargin(rowCount);
+      const headX = clamp(Math.floor(colCount / 2), marginX + 1, Math.max(marginX + 1, colCount - marginX - 1));
+      const headY = clamp(Math.floor(rowCount / 2), marginY, Math.max(marginY, rowCount - marginY - 1));
+      const maxLength = Math.max(2, headX - marginX + 1);
+      const playableLength = Math.max(2, Math.min(length, maxLength));
+
+      return Array.from({ length: playableLength }, (_, index) => ({
+        x: headX - index,
+        y: headY,
+      }));
+    }
+
+    function safeRespawnMargin(cellCount) {
+      return clamp(Math.floor(cellCount * 0.18), 2, extraLifeRespawnMargin);
     }
 
     function resizeCanvas(force = false) {
@@ -1034,6 +1060,10 @@
 
       if (state.gameOver) {
         drawBoardLabel("Fim de jogo");
+      }
+
+      if (state.gameStarted && !state.gameOver && isRecovering()) {
+        drawBoardLabel("Prepare-se");
       }
     }
 
@@ -1202,11 +1232,15 @@
     function handleCollision() {
       if (state.lives > 0) {
         state.lives -= 1;
-        state.snake = createSnake(Math.min(state.snake.length, columns() - 2));
+        state.snake = createExtraLifeSnake(state.snake.length);
         state.direction = "right";
         state.nextDirection = "right";
+        state.recoveryUntil = Date.now() + extraLifeRecoveryDelay;
+        state.recoveryTicks = extraLifeRecoveryTicks;
         updateLives();
-        setStatus(`Colisão aparada. Vidas extras restantes: ${state.lives}.`);
+        generateFood();
+        restartLoop(Math.max(state.speed, extraLifeRecoverySpeed));
+        setStatus(`Vida extra usada. Reposicionando no centro; restantes: ${state.lives}.`);
         return;
       }
 
@@ -1219,8 +1253,27 @@
         return;
       }
 
+      if (isRecovering()) {
+        draw();
+        return;
+      }
+
+      const recoveryTicksBeforeUpdate = state.recoveryTicks;
       update();
       draw();
+
+      if (!isRecovering() && recoveryTicksBeforeUpdate > 0 && state.recoveryTicks > 0 && !state.gameOver) {
+        state.recoveryTicks -= 1;
+
+        if (state.recoveryTicks === 0) {
+          state.recoveryUntil = 0;
+          restartLoop();
+        }
+      }
+    }
+
+    function isRecovering() {
+      return state.recoveryUntil > Date.now();
     }
 
     function finishGame() {
@@ -1311,6 +1364,8 @@
       state.gameOver = false;
       state.gameStarted = true;
       state.scoreSaved = false;
+      state.recoveryUntil = 0;
+      state.recoveryTicks = 0;
       startPanel.hidden = true;
       restartButton.hidden = true;
       updateScore();
@@ -1335,6 +1390,8 @@
       state.nextDirection = "right";
       state.score = 0;
       state.speed = initialSpeed;
+      state.recoveryUntil = 0;
+      state.recoveryTicks = 0;
       updateScore();
       updateSpeedLabel();
       updateLives();
@@ -1352,9 +1409,9 @@
       return (trimmedName || "Anônimo").slice(0, 12);
     }
 
-    function restartLoop() {
+    function restartLoop(delay = state.speed) {
       stopLoop();
-      state.intervalId = window.setInterval(tick, state.speed);
+      state.intervalId = window.setInterval(tick, delay);
     }
 
     function stopLoop() {
@@ -1413,7 +1470,7 @@
     function checkAndIncreaseSpeed() {
       if (state.score > 0 && state.score % 20 === 0) {
         state.speed = Math.max(minimumSpeed, state.speed * 0.96);
-        restartLoop();
+        restartLoop(state.recoveryTicks > 0 ? Math.max(state.speed, extraLifeRecoverySpeed) : state.speed);
         updateSpeedLabel();
         setStatus(`Velocidade ajustada para ${speedLabel.textContent}.`);
       }
