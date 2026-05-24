@@ -2405,14 +2405,26 @@ h4 {
 .solitaire-pile:empty::after {
   content: attr(data-label);
   position: absolute;
-  inset: 0;
+  inset: 0 auto auto 0;
   display: grid;
+  width: var(--solitaire-card-width);
+  height: var(--solitaire-card-height);
+  box-sizing: border-box;
   place-items: center;
   border: 1px dashed rgb(255 255 255 / 25%);
   border-radius: 8px;
   color: rgb(255 255 255 / 42%);
   font-size: 1.15rem;
   font-weight: 800;
+}
+
+.solitaire-tableau-pile:empty:focus-visible {
+  outline: none;
+}
+
+.solitaire-tableau-pile:empty:focus-visible::after {
+  outline: 2px solid rgb(191 219 254 / 88%);
+  outline-offset: 3px;
 }
 
 .solitaire-foundation:empty::after {
