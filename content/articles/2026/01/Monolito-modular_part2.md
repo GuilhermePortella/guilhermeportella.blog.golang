@@ -1,4 +1,3 @@
-
 ---
 title: "Microserviços vs Monólito Modular: modularidade, operação e evolução"
 summary: "Uma reflexão sobre como escolher entre microserviços e monólito modular olhando para limites, operação, evolução e trade-offs técnicos e organizacionais."
@@ -10,7 +9,6 @@ tags:
   - monólito modular
 slug: "microservicos-vs-monolito-modular"
 ---
-
 
 ## Dicução sobre abordagem entre microserviços vs monólito modular.
 
