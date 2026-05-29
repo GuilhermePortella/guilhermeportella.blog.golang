@@ -464,8 +464,12 @@ func TestNewRouterCuriosidades(t *testing.T) {
 		t.Fatalf("Content-Security-Policy = %q, want Spotify frame-src", got)
 	}
 
-	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "script-src 'self' https://open.spotify.com") {
-		t.Fatalf("Content-Security-Policy = %q, want Spotify script-src", got)
+	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "script-src 'self';") {
+		t.Fatalf("Content-Security-Policy = %q, want self-only script-src", got)
+	}
+
+	if got := recorder.Header().Get("Content-Security-Policy"); strings.Contains(got, "unsafe-eval") || strings.Contains(got, "embed-cdn.spotifycdn.com") {
+		t.Fatalf("Content-Security-Policy = %q, should not relax script-src for Spotify iframe API", got)
 	}
 
 	if strings.Contains(body, `data-rick-and-morty`) {
