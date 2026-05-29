@@ -41,6 +41,7 @@ type HTTPConfig struct {
 
 type PathConfig struct {
 	ContentDir   string
+	ImagesDir    string
 	NotesDir     string
 	StaticDir    string
 	TemplatesDir string
@@ -101,6 +102,7 @@ func Load() (Config, error) {
 		},
 		Paths: PathConfig{
 			ContentDir:   envString("CONTENT_DIR", "content/articles"),
+			ImagesDir:    envString("IMAGES_DIR", "public/images"),
 			NotesDir:     envString("NOTES_DIR", "content/notes"),
 			StaticDir:    envString("STATIC_DIR", "web/static"),
 			TemplatesDir: envString("TEMPLATES_DIR", "web/templates"),
@@ -157,6 +159,10 @@ func (cfg Config) Validate() error {
 
 	if cfg.Paths.ContentDir == "" {
 		errs = append(errs, errors.New("CONTENT_DIR is required"))
+	}
+
+	if cfg.Paths.ImagesDir == "" {
+		errs = append(errs, errors.New("IMAGES_DIR is required"))
 	}
 
 	if cfg.Paths.NotesDir == "" {

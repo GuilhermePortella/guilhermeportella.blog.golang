@@ -45,6 +45,7 @@ type exportOptions struct {
 type exporter struct {
 	handler   http.Handler
 	outputDir string
+	imagesDir string
 	staticDir string
 	basePath  string
 }
@@ -69,6 +70,7 @@ func run(args []string) error {
 
 	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
 	handler, err := httptransport.NewRouter(httptransport.RouterOptions{
+		ImagesDir:    cfg.Paths.ImagesDir,
 		StaticDir:    cfg.Paths.StaticDir,
 		TemplatesDir: cfg.Paths.TemplatesDir,
 		ContentDir:   cfg.Paths.ContentDir,
@@ -81,6 +83,7 @@ func run(args []string) error {
 	exporter := exporter{
 		handler:   handler,
 		outputDir: options.outputDir,
+		imagesDir: cfg.Paths.ImagesDir,
 		staticDir: cfg.Paths.StaticDir,
 		basePath:  options.basePath,
 	}
@@ -122,6 +125,10 @@ func (exporter exporter) Export() error {
 
 	if err := copyDir(exporter.staticDir, filepath.Join(exporter.outputDir, "static")); err != nil {
 		return fmt.Errorf("copy static assets: %w", err)
+	}
+
+	if err := copyDirIfExists(exporter.imagesDir, filepath.Join(exporter.outputDir, "images")); err != nil {
+		return fmt.Errorf("copy image assets: %w", err)
 	}
 
 	if err := os.WriteFile(filepath.Join(exporter.outputDir, ".nojekyll"), nil, 0o644); err != nil {
@@ -466,6 +473,21 @@ func copyDir(source string, destination string) error {
 
 		return copyFile(sourcePath, destinationPath)
 	})
+}
+
+func copyDirIfExists(source string, destination string) error {
+	info, err := os.Stat(source)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return nil
+		}
+		return err
+	}
+	if !info.IsDir() {
+		return fmt.Errorf("%q is not a directory", source)
+	}
+
+	return copyDir(source, destination)
 }
 
 func copyFile(source string, destination string) error {
