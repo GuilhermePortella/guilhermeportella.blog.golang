@@ -663,6 +663,22 @@ func TestNewRouterNotesTrailingSlash(t *testing.T) {
 	}
 }
 
+func TestNewRouterImages(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/images/mcp_architecture.png", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+
+	if recorder.Body.Len() == 0 {
+		t.Fatal("image response body is empty")
+	}
+}
+
 func TestLoadNotesTagFallbackAndSort(t *testing.T) {
 	notes, err := loadNotes(filepath.Join("..", "..", "..", "content", "notes"))
 	if err != nil {
@@ -922,6 +938,7 @@ func newTestRouter(t *testing.T) http.Handler {
 
 	root := filepath.Join("..", "..", "..")
 	handler, err := NewRouter(RouterOptions{
+		ImagesDir:    filepath.Join(root, "public", "images"),
 		StaticDir:    filepath.Join(root, "web", "static"),
 		TemplatesDir: filepath.Join(root, "web", "templates"),
 		ContentDir:   filepath.Join(root, "content", "articles"),

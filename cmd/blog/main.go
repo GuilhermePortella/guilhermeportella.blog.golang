@@ -28,6 +28,7 @@ func run() error {
 
 	log := logger.New(cfg.App.Environment, cfg.App.Debug)
 	handler, err := httptransport.NewRouter(httptransport.RouterOptions{
+		ImagesDir:    cfg.Paths.ImagesDir,
 		StaticDir:    cfg.Paths.StaticDir,
 		TemplatesDir: cfg.Paths.TemplatesDir,
 		ContentDir:   cfg.Paths.ContentDir,

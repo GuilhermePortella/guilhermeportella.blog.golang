@@ -71,7 +71,7 @@ O diagrama a seguir ilustra a arquitetura fundamental do MCP, destacando a inter
 
 <figure class="my-8">
   <img
-    src="/images\mcp_architecture.png"
+    src="/images/mcp_architecture.png"
     alt="Interação entre Host, Cliente e Servidor"
     class="rounded-2xl shadow-md mx-auto"
     width="800"
@@ -130,7 +130,7 @@ O diagrama de sequência a seguir ilustra o fluxo de comunicação para o ciclo 
 
 <figure class="my-8">
   <img
-    src="/images\mcp_lifecycle_sampling.png"
+    src="/images/mcp_lifecycle_sampling.png"
     alt="Diagrama do Ciclo de Vida e Sampling do MCP"
     class="rounded-2xl shadow-md mx-auto"
     width="800"

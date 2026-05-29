@@ -33,6 +33,7 @@ internal/blog/            tipos e contratos iniciais do dominio de blog
 internal/platform/        adaptadores de infraestrutura compartilhados
 content/articles/         textos Markdown do blog
 content/notes/            notas curtas em Markdown
+public/images/            imagens referenciadas por artigos em /images/*
 web/static/               assets publicos, como CSS
 web/templates/            templates HTML da aplicacao
 migrations/               migracoes futuras de banco de dados

@@ -7,6 +7,7 @@ import (
 )
 
 type RouterOptions struct {
+	ImagesDir    string
 	StaticDir    string
 	TemplatesDir string
 	ContentDir   string
@@ -63,6 +64,7 @@ func NewRouter(options RouterOptions, logger *slog.Logger) (http.Handler, error)
 	mux.HandleFunc("GET /404/{$}", notFoundPreviewHandler(renderer, logger))
 	mux.HandleFunc("GET /healthz", healthHandler)
 	mux.HandleFunc("GET /readyz", readyHandler)
+	mux.Handle("GET /images/", http.StripPrefix("/images/", newStaticFileServer(options.ImagesDir)))
 	mux.Handle("GET /static/", http.StripPrefix("/static/", newStaticFileServer(options.StaticDir)))
 	mux.HandleFunc("GET /", notFoundHandler(renderer, logger))
 
@@ -76,6 +78,10 @@ func NewRouter(options RouterOptions, logger *slog.Logger) (http.Handler, error)
 }
 
 func (options RouterOptions) withDefaults() RouterOptions {
+	if options.ImagesDir == "" {
+		options.ImagesDir = "public/images"
+	}
+
 	if options.StaticDir == "" {
 		options.StaticDir = "web/static"
 	}
