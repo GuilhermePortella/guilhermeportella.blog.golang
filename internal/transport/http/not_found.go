@@ -39,7 +39,7 @@ func renderNotFoundPage(w http.ResponseWriter, r *http.Request, renderer *Render
 
 	if err := renderer.RenderStatus(w, "not_found", data, statusCode); err != nil {
 		logger.Error("render not found page", "error", err, "request_id", getRequestID(r.Context()))
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		renderUnexpectedErrorPage(w, r, renderer, logger, http.StatusInternalServerError)
 	}
 }
 

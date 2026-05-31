@@ -71,7 +71,7 @@ func jogosHandler(renderer *Renderer, logger *slog.Logger) http.HandlerFunc {
 
 		if err := renderer.Render(w, "jogos", data); err != nil {
 			logger.Error("render jogos page", "error", err, "request_id", getRequestID(r.Context()))
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			renderUnexpectedErrorPage(w, r, renderer, logger, http.StatusInternalServerError)
 		}
 	}
 }
@@ -85,13 +85,13 @@ func jogoHandler(renderer *Renderer, logger *slog.Logger) http.HandlerFunc {
 				return
 			}
 			logger.Error("load jogo page", "error", err, "request_id", getRequestID(r.Context()))
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			renderUnexpectedErrorPage(w, r, renderer, logger, http.StatusInternalServerError)
 			return
 		}
 
 		if err := renderer.Render(w, "jogo", data); err != nil {
 			logger.Error("render jogo page", "error", err, "request_id", getRequestID(r.Context()))
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			renderUnexpectedErrorPage(w, r, renderer, logger, http.StatusInternalServerError)
 		}
 	}
 }

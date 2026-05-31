@@ -128,6 +128,7 @@ As decisoes arquiteturais ficam em `docs/adr/`.
 - `GET /blog/{slug}`
 - `GET /curiosidades`
 - `GET /curiosidades/rick-and-morty`
+- `GET /erro`
 - `GET /rick-morty`
 - `GET /rick-morty/personagem/{id}`
 - `GET /rick-morty/local/{id}`
@@ -138,6 +139,7 @@ As decisoes arquiteturais ficam em `docs/adr/`.
 - `GET /notas`
 - `GET /projects` (atalho para projetos)
 - `GET /projetos`
+- `GET /service-worker.js`
 - `GET /static/*`
 - `GET /healthz`
 - `GET /readyz`

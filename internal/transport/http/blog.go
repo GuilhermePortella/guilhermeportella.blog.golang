@@ -82,13 +82,13 @@ func blogHandler(renderer *Renderer, logger *slog.Logger, contentDir string) htt
 		data, err := newBlogPageData(time.Now(), r.URL.Path, contentDir)
 		if err != nil {
 			logger.Error("load blog page", "error", err, "request_id", getRequestID(r.Context()))
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			renderUnexpectedErrorPage(w, r, renderer, logger, http.StatusInternalServerError)
 			return
 		}
 
 		if err := renderer.Render(w, "blog", data); err != nil {
 			logger.Error("render blog page", "error", err, "request_id", getRequestID(r.Context()))
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			renderUnexpectedErrorPage(w, r, renderer, logger, http.StatusInternalServerError)
 		}
 	}
 }
