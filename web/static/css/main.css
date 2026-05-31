@@ -6494,18 +6494,13 @@ img.emoji {
   text-align: center;
 }
 
-.site-footer__button {
+.site-footer__text {
   display: inline-flex;
-  cursor: default;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border: 0;
-  border-radius: 9999px;
-  background: transparent;
   color: var(--neutral-500);
   padding: 0.25rem 0.5rem;
-  font: inherit;
   font-size: 0.875rem;
   line-height: 1.25rem;
 }
