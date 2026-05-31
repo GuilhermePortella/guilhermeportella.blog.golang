@@ -44,7 +44,7 @@ func TestNewRouterHome(t *testing.T) {
 		}
 	}
 
-	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260524-solitaire">`) {
+	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260531-errors">`) {
 		t.Fatalf("body does not contain stylesheet")
 	}
 
@@ -56,7 +56,7 @@ func TestNewRouterHome(t *testing.T) {
 		t.Fatalf("body does not contain Google Fonts stylesheet")
 	}
 
-	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260524-snake-life" defer></script>`) {
+	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260531-errors" defer></script>`) {
 		t.Fatalf("body does not contain footer script")
 	}
 
@@ -934,6 +934,81 @@ func TestNewRouterNotFoundPreview(t *testing.T) {
 
 	if body := recorder.Body.String(); !strings.Contains(body, `<code data-not-found-path>/404</code>`) {
 		t.Fatalf("body does not contain preview path")
+	}
+}
+
+func TestNewRouterErrorPreview(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/erro", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+
+	body := recorder.Body.String()
+	for _, expected := range []string{
+		`<div class="not-found-page error-page" aria-label="Problema ao carregar">`,
+		`erro 500`,
+		`<h1 id="error-page-title" data-error-title>Não consegui carregar isso agora.</h1>`,
+		`<code data-error-path>/erro</code>`,
+		`Tentar de novo`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("body does not contain %q", expected)
+		}
+	}
+}
+
+func TestRecovererRendersUnexpectedErrorPage(t *testing.T) {
+	root := filepath.Join("..", "..", "..")
+	renderer, err := NewRenderer(filepath.Join(root, "web", "templates"))
+	if err != nil {
+		t.Fatalf("NewRenderer() error = %v", err)
+	}
+
+	handler := chain(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			panic("boom")
+		}),
+		requestID,
+		recoverer(renderer, testLogger()),
+	)
+	request := httptest.NewRequest(http.MethodGet, "/explodiu", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusInternalServerError {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusInternalServerError)
+	}
+
+	body := recorder.Body.String()
+	for _, expected := range []string{
+		`<div class="not-found-page error-page" aria-label="Problema ao carregar">`,
+		`<code data-error-path>/explodiu</code>`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("body does not contain %q", expected)
+		}
+	}
+}
+
+func TestNewRouterServiceWorker(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/service-worker.js", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+
+	if body := recorder.Body.String(); !strings.Contains(body, `guilherme-portella-site-`) {
+		t.Fatalf("body does not contain service worker cache name")
 	}
 }
 

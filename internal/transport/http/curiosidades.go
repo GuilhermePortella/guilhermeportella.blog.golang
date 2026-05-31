@@ -89,7 +89,7 @@ func curiosidadesHandler(renderer *Renderer, logger *slog.Logger) http.HandlerFu
 
 		if err := renderer.Render(w, "curiosidades", data); err != nil {
 			logger.Error("render curiosidades page", "error", err, "request_id", getRequestID(r.Context()))
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			renderUnexpectedErrorPage(w, r, renderer, logger, http.StatusInternalServerError)
 		}
 	}
 }
@@ -100,7 +100,7 @@ func rickAndMortyHandler(renderer *Renderer, logger *slog.Logger) http.HandlerFu
 
 		if err := renderer.Render(w, "rick_and_morty", data); err != nil {
 			logger.Error("render rick and morty page", "error", err, "request_id", getRequestID(r.Context()))
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			renderUnexpectedErrorPage(w, r, renderer, logger, http.StatusInternalServerError)
 		}
 	}
 }

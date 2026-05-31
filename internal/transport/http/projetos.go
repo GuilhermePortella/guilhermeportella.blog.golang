@@ -37,7 +37,7 @@ func projetosHandler(renderer *Renderer, logger *slog.Logger) http.HandlerFunc {
 
 		if err := renderer.Render(w, "projetos", data); err != nil {
 			logger.Error("render projetos page", "error", err, "request_id", getRequestID(r.Context()))
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			renderUnexpectedErrorPage(w, r, renderer, logger, http.StatusInternalServerError)
 		}
 	}
 }

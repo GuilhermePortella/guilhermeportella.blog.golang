@@ -29,6 +29,7 @@ var staticPageRoutes = map[string]struct{}{
 	"/blog":                        {},
 	"/curiosidades":                {},
 	"/curiosidades/rick-and-morty": {},
+	"/erro":                        {},
 	"/rick-morty":                  {},
 	"/games":                       {},
 	"/jogos":                       {},
@@ -125,6 +126,10 @@ func (exporter exporter) Export() error {
 
 	if err := copyDir(exporter.staticDir, filepath.Join(exporter.outputDir, "static")); err != nil {
 		return fmt.Errorf("copy static assets: %w", err)
+	}
+
+	if err := copyFileIfExists(filepath.Join(exporter.staticDir, "service-worker.js"), filepath.Join(exporter.outputDir, "service-worker.js")); err != nil {
+		return fmt.Errorf("copy service worker: %w", err)
 	}
 
 	if err := copyDirIfExists(exporter.imagesDir, filepath.Join(exporter.outputDir, "images")); err != nil {
@@ -488,6 +493,21 @@ func copyDirIfExists(source string, destination string) error {
 	}
 
 	return copyDir(source, destination)
+}
+
+func copyFileIfExists(source string, destination string) error {
+	info, err := os.Stat(source)
+	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			return nil
+		}
+		return err
+	}
+	if info.IsDir() {
+		return fmt.Errorf("%q is a directory", source)
+	}
+
+	return copyFile(source, destination)
 }
 
 func copyFile(source string, destination string) error {

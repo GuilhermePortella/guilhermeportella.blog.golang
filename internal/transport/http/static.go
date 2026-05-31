@@ -4,11 +4,20 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 )
 
 func newStaticFileServer(staticDir string) http.Handler {
 	return http.FileServer(staticFileSystem{root: http.Dir(staticDir)})
+}
+
+func serviceWorkerHandler(staticDir string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-cache")
+		w.Header().Set("Content-Type", "application/javascript; charset=utf-8")
+		http.ServeFile(w, r, filepath.Join(staticDir, "service-worker.js"))
+	}
 }
 
 type staticFileSystem struct {

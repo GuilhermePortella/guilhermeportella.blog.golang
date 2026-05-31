@@ -1,0 +1,33 @@
+{{define "error_page"}}{{template "base" .}}{{end}}
+
+{{define "content"}}
+<div class="not-found-page error-page" aria-label="Problema ao carregar">
+  <section class="not-found-hero error-hero" aria-labelledby="error-page-title">
+    <div class="container not-found-hero__grid">
+      <div class="not-found-hero__copy">
+        <p class="not-found-eyebrow" data-error-label>{{.StatusLabel}}</p>
+        <h1 id="error-page-title" data-error-title>Não consegui carregar isso agora.</h1>
+        <p class="not-found-hero__lead" data-error-lead><span data-error-lead-prefix>O endereço </span><code data-error-path>{{.RequestPath}}</code><span data-error-lead-suffix> encontrou uma instabilidade inesperada ou uma conexão que caiu no caminho.</span></p>
+        <p class="not-found-hero__note" data-error-note>Espere alguns segundos e tente novamente. Se a internet estiver instável, voltar para uma página já aberta pode ser o caminho mais curto.</p>
+
+        <div class="not-found-actions" aria-label="Ações para tentar continuar">
+          <button class="button button--primary arrow-shift" type="button" data-error-retry>Tentar de novo <span class="link-arrow" aria-hidden="true">-&gt;</span></button>
+          <a class="button button--secondary arrow-shift" href="/">Voltar ao início <span class="link-arrow" aria-hidden="true">-&gt;</span></a>
+        </div>
+      </div>
+
+      <div class="not-found-hero__visual" aria-hidden="true">
+        <div class="not-found-gif error-console">
+          <div class="not-found-gif__screen">
+            <div class="not-found-gif__bar"></div>
+            <div class="not-found-gif__code" data-error-code>500</div>
+            <div class="not-found-gif__line not-found-gif__line--wide"></div>
+            <div class="not-found-gif__line not-found-gif__line--short"></div>
+          </div>
+          <div class="not-found-gif__shadow"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+{{end}}

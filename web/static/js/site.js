@@ -1,4 +1,28 @@
 (() => {
+  const siteBasePath = getSiteBasePath();
+
+  function getSiteBasePath() {
+    const script = document.currentScript;
+
+    if (!script) {
+      return "";
+    }
+
+    try {
+      const source = new URL(script.src, window.location.href);
+      const marker = "/static/js/site.js";
+      const markerIndex = source.pathname.lastIndexOf(marker);
+
+      if (markerIndex <= 0) {
+        return "";
+      }
+
+      return source.pathname.slice(0, markerIndex);
+    } catch {
+      return "";
+    }
+  }
+
   function setHidden(element, hidden) {
     if (!element) {
       return;
@@ -37,6 +61,69 @@
     }
 
     pathLabel.textContent = window.location.pathname || "/";
+  }
+
+  function setupErrorPage() {
+    const title = document.querySelector("[data-error-title]");
+
+    if (!title) {
+      return;
+    }
+
+    const label = document.querySelector("[data-error-label]");
+    const leadPrefix = document.querySelector("[data-error-lead-prefix]");
+    const leadSuffix = document.querySelector("[data-error-lead-suffix]");
+    const note = document.querySelector("[data-error-note]");
+    const pathLabel = document.querySelector("[data-error-path]");
+    const code = document.querySelector("[data-error-code]");
+    const retry = document.querySelector("[data-error-retry]");
+
+    if (pathLabel) {
+      pathLabel.textContent = window.location.pathname || "/";
+    }
+
+    if (retry) {
+      retry.addEventListener("click", () => {
+        window.location.reload();
+      });
+    }
+
+    function applyConnectionState() {
+      if (navigator.onLine !== false) {
+        return;
+      }
+
+      if (label) {
+        label.textContent = "sem conexão";
+      }
+      title.textContent = "Parece que sua internet caiu.";
+      if (leadPrefix) {
+        leadPrefix.textContent = "Tentei abrir ";
+      }
+      if (leadSuffix) {
+        leadSuffix.textContent = ", mas o navegador não conseguiu conversar com a rede agora.";
+      }
+      if (note) {
+        note.textContent = "Quando a conexão voltar, tente novamente. Enquanto isso, páginas já visitadas podem continuar disponíveis pelo cache.";
+      }
+      if (code) {
+        code.textContent = "OFF";
+      }
+    }
+
+    applyConnectionState();
+    window.addEventListener("offline", applyConnectionState);
+  }
+
+  function setupServiceWorker() {
+    if (!("serviceWorker" in navigator) || window.location.protocol === "file:") {
+      return;
+    }
+
+    const scope = siteBasePath === "" ? "/" : `${siteBasePath}/`;
+    const serviceWorkerURL = `${siteBasePath}/service-worker.js`;
+
+    navigator.serviceWorker.register(serviceWorkerURL, { scope }).catch(() => {});
   }
 
   function setupSpotifyEmbeds() {
@@ -4726,6 +4813,8 @@
 
   setupFooterSecret();
   setupNotFoundPath();
+  setupErrorPage();
+  setupServiceWorker();
   setupSpotifyEmbeds();
   setupBlogBrowser();
   setupProjectsCatalog();

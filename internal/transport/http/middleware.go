@@ -45,7 +45,7 @@ func requestID(next http.Handler) http.Handler {
 	})
 }
 
-func recoverer(logger *slog.Logger) middleware {
+func recoverer(renderer *Renderer, logger *slog.Logger) middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			defer func() {
@@ -57,7 +57,7 @@ func recoverer(logger *slog.Logger) middleware {
 						"stack", string(debug.Stack()),
 					)
 
-					http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+					renderUnexpectedErrorPage(w, r, renderer, logger, http.StatusInternalServerError)
 				}
 			}()
 

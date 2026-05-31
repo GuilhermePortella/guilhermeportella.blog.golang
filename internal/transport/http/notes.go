@@ -60,13 +60,13 @@ func notesHandler(renderer *Renderer, logger *slog.Logger, notesDir string) http
 		data, err := newNotesPageData(time.Now(), r.URL.Path, notesDir)
 		if err != nil {
 			logger.Error("load notes page", "error", err, "request_id", getRequestID(r.Context()))
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			renderUnexpectedErrorPage(w, r, renderer, logger, http.StatusInternalServerError)
 			return
 		}
 
 		if err := renderer.Render(w, "notes", data); err != nil {
 			logger.Error("render notes page", "error", err, "request_id", getRequestID(r.Context()))
-			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			renderUnexpectedErrorPage(w, r, renderer, logger, http.StatusInternalServerError)
 		}
 	}
 }
