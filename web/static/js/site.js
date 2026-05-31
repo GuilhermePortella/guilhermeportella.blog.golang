@@ -32,27 +32,6 @@
     element.classList.toggle("is-hidden", hidden);
   }
 
-  function setupFooterSecret() {
-    const footer = document.querySelector("[data-footer-secret]");
-
-    if (!footer || window.location.pathname !== "/") {
-      return;
-    }
-
-    let lastActivation = 0;
-
-    footer.addEventListener("pointerup", () => {
-      const now = Date.now();
-
-      if (now - lastActivation <= 1400) {
-        window.location.assign("/convite");
-        return;
-      }
-
-      lastActivation = now;
-    });
-  }
-
   function setupNotFoundPath() {
     const pathLabel = document.querySelector("[data-not-found-path]");
 
@@ -4811,7 +4790,6 @@
     applyFilter();
   }
 
-  setupFooterSecret();
   setupNotFoundPath();
   setupErrorPage();
   setupServiceWorker();
