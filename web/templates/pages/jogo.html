@@ -86,6 +86,30 @@
       </div>
       {{end}}
 
+      {{if eq .Game.Slug "soma-rapida"}}
+      <div class="math-game" data-math-game>
+        <div class="game-toolbar">
+          <p>Pontos <strong data-math-score>0</strong></p>
+          <p>Sequência <strong data-math-streak>0</strong></p>
+          <p>Melhor <strong data-math-best>0</strong></p>
+          <p>Tempo <strong data-math-time>30s</strong></p>
+          <button type="button" data-math-start>Começar</button>
+        </div>
+
+        <div class="math-card" aria-live="polite">
+          <span class="math-card__label">Resolva</span>
+          <strong class="math-card__question" data-math-question>?</strong>
+          <form class="math-answer" data-math-form>
+            <label for="math-answer-input">Resposta</label>
+            <input id="math-answer-input" type="number" inputmode="numeric" autocomplete="off" data-math-answer disabled>
+            <button type="submit" data-math-submit disabled>Enviar</button>
+          </form>
+        </div>
+
+        <p class="game-status" data-math-status role="status">Clique em começar para abrir a primeira conta.</p>
+      </div>
+      {{end}}
+
       {{if eq .Game.Slug "paciencia-klondike"}}
       <div class="solitaire-game" data-solitaire-game>
         <div class="solitaire-toolbar" aria-label="Controles da partida">

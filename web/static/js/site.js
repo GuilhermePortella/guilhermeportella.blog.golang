@@ -901,6 +901,7 @@
     setupMemoryGame();
     setupSequenceGame();
     setupReactionGame();
+    setupMathGame();
     setupSolitaireGame();
     setupCheckersGame();
   }
@@ -1951,6 +1952,199 @@
     });
 
     resetTarget();
+  }
+
+  function setupMathGame() {
+    const root = document.querySelector("[data-math-game]");
+
+    if (!root) {
+      return;
+    }
+
+    const start = root.querySelector("[data-math-start]");
+    const form = root.querySelector("[data-math-form]");
+    const answerInput = root.querySelector("[data-math-answer]");
+    const submit = root.querySelector("[data-math-submit]");
+    const questionLabel = root.querySelector("[data-math-question]");
+    const scoreLabel = root.querySelector("[data-math-score]");
+    const streakLabel = root.querySelector("[data-math-streak]");
+    const bestLabel = root.querySelector("[data-math-best]");
+    const timeLabel = root.querySelector("[data-math-time]");
+    const status = root.querySelector("[data-math-status]");
+
+    if (!start || !form || !answerInput || !submit || !questionLabel || !scoreLabel || !streakLabel || !bestLabel || !timeLabel || !status) {
+      return;
+    }
+
+    const roundDuration = 30;
+    const bestScoreKey = "soma-rapida-best-score";
+    const state = {
+      active: false,
+      score: 0,
+      streak: 0,
+      bestScore: readBestScore(),
+      secondsLeft: roundDuration,
+      answer: 0,
+      timerId: 0,
+    };
+
+    function readBestScore() {
+      try {
+        const value = Number(window.localStorage.getItem(bestScoreKey) || "0");
+        return Number.isFinite(value) ? value : 0;
+      } catch {
+        return 0;
+      }
+    }
+
+    function writeBestScore(value) {
+      try {
+        window.localStorage.setItem(bestScoreKey, String(value));
+      } catch {
+        // A rodada não depende do storage local.
+      }
+    }
+
+    function randomInt(min, max) {
+      return min + Math.floor(Math.random() * (max - min + 1));
+    }
+
+    function setControlsEnabled(enabled) {
+      answerInput.disabled = !enabled;
+      submit.disabled = !enabled;
+    }
+
+    function setStatus(message) {
+      status.textContent = message;
+    }
+
+    function updateStats() {
+      scoreLabel.textContent = String(state.score);
+      streakLabel.textContent = String(state.streak);
+      bestLabel.textContent = String(state.bestScore);
+    }
+
+    function updateTimer() {
+      timeLabel.textContent = `${state.secondsLeft}s`;
+    }
+
+    function createQuestion() {
+      const level = Math.min(5, Math.floor(state.score / 50) + 1);
+      const operations = level >= 3 ? ["+", "-", "x"] : ["+", "-"];
+      const operation = operations[randomInt(0, operations.length - 1)];
+      let left = randomInt(2, 8 + level * 3);
+      let right = randomInt(2, 8 + level * 3);
+      let answer = left + right;
+
+      if (operation === "-") {
+        if (right > left) {
+          [left, right] = [right, left];
+        }
+        answer = left - right;
+      }
+
+      if (operation === "x") {
+        left = randomInt(2, 5 + level);
+        right = randomInt(2, 9);
+        answer = left * right;
+      }
+
+      state.answer = answer;
+      questionLabel.textContent = `${left} ${operation} ${right}`;
+      answerInput.value = "";
+      answerInput.focus({ preventScroll: true });
+    }
+
+    function finishGame() {
+      state.active = false;
+      window.clearInterval(state.timerId);
+      state.timerId = 0;
+      state.secondsLeft = Math.max(0, state.secondsLeft);
+      setControlsEnabled(false);
+      start.textContent = "Jogar de novo";
+      questionLabel.textContent = "Fim";
+
+      if (state.score > state.bestScore) {
+        state.bestScore = state.score;
+        writeBestScore(state.bestScore);
+        setStatus(`Tempo esgotado. Nova melhor pontuação: ${state.score}.`);
+      } else {
+        setStatus(`Tempo esgotado. Pontuação final: ${state.score}.`);
+      }
+
+      updateStats();
+      updateTimer();
+    }
+
+    function startGame() {
+      window.clearInterval(state.timerId);
+      state.active = true;
+      state.score = 0;
+      state.streak = 0;
+      state.secondsLeft = roundDuration;
+      start.textContent = "Recomeçar";
+      setControlsEnabled(true);
+      updateStats();
+      updateTimer();
+      setStatus("Rodada em andamento.");
+      createQuestion();
+
+      state.timerId = window.setInterval(() => {
+        if (!state.active) {
+          return;
+        }
+
+        state.secondsLeft -= 1;
+        updateTimer();
+
+        if (state.secondsLeft <= 0) {
+          finishGame();
+        }
+      }, 1000);
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      if (!state.active) {
+        return;
+      }
+
+      const rawAnswer = answerInput.value.trim();
+      const userAnswer = Number(rawAnswer);
+
+      if (rawAnswer === "" || !Number.isFinite(userAnswer)) {
+        setStatus("Digite uma resposta para continuar.");
+        answerInput.focus({ preventScroll: true });
+        return;
+      }
+
+      if (userAnswer === state.answer) {
+        state.streak += 1;
+        const points = 10 + Math.min(10, Math.floor(state.streak / 3) * 2);
+        state.score += points;
+        setStatus(`Certo. +${points} pontos.`);
+      } else {
+        state.streak = 0;
+        state.secondsLeft = Math.max(0, state.secondsLeft - 3);
+        setStatus(`Ops, era ${state.answer}. -3s.`);
+      }
+
+      updateStats();
+      updateTimer();
+
+      if (state.secondsLeft <= 0) {
+        finishGame();
+        return;
+      }
+
+      createQuestion();
+    });
+
+    start.addEventListener("click", startGame);
+    setControlsEnabled(false);
+    updateStats();
+    updateTimer();
   }
 
   function setupSolitaireGame() {
