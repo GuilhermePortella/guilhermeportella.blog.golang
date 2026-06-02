@@ -234,6 +234,8 @@ func TestNewRouterJogos(t *testing.T) {
 		`Memória Relâmpago`,
 		`Sequência de Cores`,
 		`Clique Rápido`,
+		`Soma Rápida`,
+		`href="/jogos/soma-rapida"`,
 		`Paciência Klondike`,
 		`href="/jogos/paciencia-klondike"`,
 		`Dama Brasileira`,
@@ -295,6 +297,36 @@ func TestNewRouterJogo(t *testing.T) {
 		`data-memory-restart`,
 		`Voltar para jogos`,
 		`Continue jogando`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("body does not contain %q", expected)
+		}
+	}
+}
+
+func TestNewRouterJogoMath(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/jogos/soma-rapida", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+
+	body := recorder.Body.String()
+	for _, expected := range []string{
+		`<div class="game-page game-page--blue" aria-label="Soma Rápida">`,
+		`<title>Soma Rápida | Jogos</title>`,
+		`<link rel="canonical" href="/jogos/soma-rapida/">`,
+		`<h1 id="game-title">Soma Rápida</h1>`,
+		`data-game="soma-rapida"`,
+		`data-math-game`,
+		`data-math-question`,
+		`data-math-answer`,
+		`data-math-start`,
+		`Clique em começar para iniciar uma rodada de 30 segundos.`,
 	} {
 		if !strings.Contains(body, expected) {
 			t.Fatalf("body does not contain %q", expected)

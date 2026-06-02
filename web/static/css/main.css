@@ -1766,7 +1766,8 @@ h4 {
 
 .memory-game,
 .sequence-game,
-.reaction-game {
+.reaction-game,
+.math-game {
   display: grid;
   gap: 1rem;
   min-height: 28rem;
@@ -1944,6 +1945,107 @@ h4 {
 .reaction-target:disabled {
   cursor: not-allowed;
   opacity: 0.72;
+}
+
+.math-card {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 1.15rem;
+  width: min(100%, 34rem);
+  min-height: 18rem;
+  margin: 0 auto;
+  border: 1px solid rgb(255 255 255 / 14%);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 18% 12%, rgb(96 165 250 / 22%), transparent 34%),
+    linear-gradient(135deg, rgb(248 250 252), rgb(219 234 254));
+  color: #172554;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.math-card__label {
+  color: #1e40af;
+  font-size: 0.75rem;
+  font-weight: 800;
+  line-height: 1rem;
+  text-transform: uppercase;
+}
+
+.math-card__question {
+  color: #0f172a;
+  font-size: 3rem;
+  font-weight: 850;
+  line-height: 1.05;
+}
+
+.math-answer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.65rem;
+  width: min(100%, 22rem);
+}
+
+.math-answer label {
+  grid-column: 1 / -1;
+  justify-self: start;
+  color: #1e3a8a;
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1rem;
+}
+
+.math-answer input,
+.math-answer button {
+  min-height: 2.75rem;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 1rem;
+}
+
+.math-answer input {
+  min-width: 0;
+  width: 100%;
+  border: 1px solid rgb(37 99 235 / 28%);
+  background: #ffffff;
+  color: #0f172a;
+  padding: 0.5rem 0.7rem;
+}
+
+.math-answer button {
+  border: 1px solid rgb(30 64 175 / 18%);
+  background: var(--game-accent);
+  color: #ffffff;
+  cursor: pointer;
+  padding: 0.5rem 0.85rem;
+  font-weight: 750;
+}
+
+.math-answer button:not(:disabled):hover,
+.math-answer button:not(:disabled):focus {
+  background: var(--game-accent-dark);
+}
+
+.math-answer input:disabled,
+.math-answer button:disabled {
+  cursor: not-allowed;
+  opacity: 0.58;
+}
+
+@media (max-width: 520px) {
+  .math-card {
+    min-height: 17rem;
+    padding: 1rem;
+  }
+
+  .math-card__question {
+    font-size: 2.35rem;
+  }
+
+  .math-answer {
+    grid-template-columns: 1fr;
+  }
 }
 
 .game-status {
