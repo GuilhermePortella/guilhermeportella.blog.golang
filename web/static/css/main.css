@@ -3285,6 +3285,9 @@ h4 {
 .article-hero__inner {
   position: relative;
   z-index: 1;
+  max-width: 112rem;
+  padding-right: clamp(1.5rem, 3.8vw, 4.5rem);
+  padding-left: clamp(1.5rem, 3.8vw, 4.5rem);
   padding-top: 4rem;
   padding-bottom: 4rem;
 }
