@@ -3312,7 +3312,8 @@ h4 {
 .article-hero__copy {
   display: grid;
   gap: 1.25rem;
-  max-width: 52rem;
+  width: 100%;
+  max-width: none;
   margin-top: 1.5rem;
 }
 
@@ -3321,12 +3322,14 @@ h4 {
   font-family: var(--font-display);
   font-size: 2.25rem;
   font-weight: 600;
-  letter-spacing: -0.018em;
+  letter-spacing: 0;
   line-height: 1.22;
+  text-wrap: balance;
 }
 
 .article-hero__summary {
-  max-width: 48rem;
+  width: 100%;
+  max-width: none;
   color: var(--stone-700);
   font-size: 1.125rem;
   line-height: 1.625;
@@ -6905,5 +6908,406 @@ img.emoji {
 
   .button {
     justify-content: center;
+  }
+}
+
+/* Compact typography layer. */
+.site-nav {
+  font-size: 14px;
+}
+
+.site-brand {
+  font-size: 17px;
+}
+
+.site-brand span {
+  font-size: 10px;
+}
+
+.site-links a,
+.button,
+.section-link,
+.article-card__action,
+.blog-card__action,
+.game-card__action,
+.game-back,
+.game-stage__link,
+.about-pill,
+.about-section__link,
+.curiosity-section__link,
+.curiosity-api-card__link,
+.curiosity-api__source,
+.rick-api-back,
+.rick-back,
+.rick-doc-link,
+.rick-button,
+.rick-pagination button,
+.rick-resource-tabs button,
+.rick-tabs button {
+  font-size: 0.8125rem;
+}
+
+.eyebrow,
+.eyebrow--spaced,
+.home-tags,
+.blog-tags,
+.article-tags,
+.article-breadcrumbs,
+.article-meta,
+.blog-card__meta,
+.article-card__meta,
+.project-card__meta,
+.projects-count-label,
+.blog-active-label,
+.notes-count-label,
+.note-card__meta,
+.curiosity-tags,
+.about-eyebrow,
+.curiosity-eyebrow,
+.math-card__label,
+.snake-stats span,
+.solitaire-stats span,
+.solitaire-controls label > span,
+.checkers-stats span,
+.checkers-controls label > span,
+.rick-field span,
+.rick-status,
+.rick-result-card__type,
+.rick-result-card dt,
+.rick-info-grid dt,
+.rick-character__meta dt,
+.rick-episode-list span {
+  font-size: 0.6875rem;
+}
+
+.home-hero__intro .eyebrow,
+.eyebrow--wide,
+.about-eyebrow--hero,
+.curiosity-eyebrow--hero,
+.shortcut-card__tag,
+.game-card__meta dt,
+.solitaire-pile[data-count]:not([data-count="0"])::before {
+  font-size: 0.625rem;
+}
+
+#home-title,
+#blog-title,
+#projects-title,
+#games-title,
+#game-title,
+#notes-title,
+#article-title {
+  font-size: 2rem;
+}
+
+#not-found-title,
+#error-page-title {
+  font-size: 2.35rem;
+}
+
+#about-title,
+#curiosity-title,
+#rick-api-title {
+  font-size: 32px;
+}
+
+#rick-title,
+.rick-detail-card h1 {
+  font-size: 38px;
+}
+
+.home-hero__text,
+.blog-hero__text,
+.games-hero__text,
+.game-hero__text,
+.article-hero__summary,
+.about-hero__lead,
+.curiosity-hero__lead,
+.rick-api-hero__lead,
+.rick-hero__lead,
+.not-found-hero__lead,
+.rick-boot p:not(.curiosity-eyebrow),
+.rick-noscript {
+  font-size: 1rem;
+}
+
+.section-heading--split h2,
+.section-heading--border h2,
+.section-heading--center h2,
+.blog-group__heading h2,
+.games-section-heading h2,
+.game-stage__header h2,
+.game-rules h2,
+.about-section h2,
+.curiosity-section__header h2,
+.curiosity-music__header h2,
+.curiosity-api__header h2,
+.rick-browser__header h2,
+.rick-related-section__header h2 {
+  font-size: 1.375rem;
+}
+
+.notes-board__intro h2 {
+  font-size: 1.5rem;
+}
+
+.quick-map h2,
+.blog-guide-card h2,
+.blog-browser__aside h2,
+.blog-search h2,
+.projects-controls h2,
+.article-card h3,
+.blog-card h3,
+.project-card h3,
+.curiosity-map-card h2,
+.curiosity-shortcut-card h3,
+.curiosity-collection-card h3,
+.rick-spotlight h3,
+.rick-character h3,
+.rick-result-card h3,
+.rick-person-card h3,
+.rick-state h2,
+.rick-wiki-panel h2 {
+  font-size: 1rem;
+}
+
+.shortcut-card h3,
+.game-card h3,
+.snake-stats strong,
+.snake-start-panel h3,
+.solitaire-overlay__card h3,
+.checkers-panel h3,
+.curiosity-api-card h3,
+.curiosity-api__stats strong,
+.rick-api-hero__panel strong,
+.rick-hero__metric span,
+.rick-episode-list h2 {
+  font-size: 1.125rem;
+}
+
+.rick-browser__header h2,
+.rick-related-section__header h2 {
+  font-size: 1.55rem;
+}
+
+.prose {
+  font-size: 0.95rem;
+}
+
+.prose h1 {
+  font-size: 2rem;
+}
+
+.prose h2 {
+  font-size: 1.25rem;
+}
+
+.prose h3 {
+  font-size: 1.05rem;
+}
+
+.prose blockquote::before {
+  font-size: 2.25rem;
+}
+
+.quick-map > p,
+.quick-map__item,
+.section-heading--split p:not(.eyebrow),
+.section-heading--center p:not(.eyebrow),
+.shortcut-card p,
+.article-card p,
+.blog-guide-card > p:not(.eyebrow),
+.blog-browser__aside > p:not(.eyebrow),
+.blog-guide-card ul,
+.blog-note-card > p:not(.eyebrow),
+.blog-search__results p,
+.blog-search__results a,
+.blog-filter label,
+.blog-filter select,
+.blog-filter__button,
+.blog-card p,
+.projects-controls label,
+.projects-controls select,
+.projects-status,
+.projects-empty,
+.project-card p,
+.projects-pagination button,
+.games-section-heading p:not(.eyebrow),
+.game-card p,
+.game-card__meta dd,
+.game-rules ul,
+.game-toolbar p,
+.game-toolbar button,
+.game-status,
+.snake-help ul,
+.solitaire-controls select,
+.solitaire-controls button,
+.solitaire-overlay__card button,
+.checkers-controls select,
+.checkers-controls button,
+.checkers-panel p,
+.notes-board__intro p:not(.eyebrow),
+.notes-pin,
+.notes-empty,
+.notes-pagination button,
+.article-side-card p:not(.eyebrow),
+.article-side-card a,
+.article-reading__links a,
+.article-toc summary,
+.about-hero__note,
+.about-note-card p:not(.about-eyebrow),
+.about-section__header p:not(.about-eyebrow),
+.about-ritual-card__copy p:not(.about-eyebrow),
+.about-contact-card > p:not(.about-eyebrow),
+.about-pillar-card p,
+.about-ritual-list,
+.curiosity-section__header p:not(.curiosity-eyebrow),
+.curiosity-music__header p:not(.curiosity-eyebrow),
+.curiosity-map-card > p:not(.curiosity-eyebrow),
+.curiosity-small-card > p:not(.curiosity-eyebrow),
+.curiosity-shortcut-card p,
+.curiosity-api-card p:not(.curiosity-eyebrow),
+.rick-api-hero__panel p:not(.curiosity-eyebrow),
+.curiosity-api__header p:not(.curiosity-eyebrow),
+.curiosity-api__message,
+.curiosity-api__noscript,
+.rick-spotlight p,
+.rick-spotlight span,
+.rick-character p,
+.rick-empty,
+.rick-hero__panel p:not(.curiosity-eyebrow),
+.rick-browser__header p:not(.curiosity-eyebrow),
+.rick-related-section__header p:not(.curiosity-eyebrow),
+.rick-status-line,
+.rick-state p,
+.rick-episode-list p,
+.rick-related-status,
+.rick-wiki-panel__text,
+.rick-wiki-panel__source,
+.curiosity-song-card__description,
+.curiosity-music__fallback,
+.curiosity-music__fallback-links,
+.site-footer__text {
+  font-size: 0.8125rem;
+}
+
+.note-card__content,
+.solitaire-overlay__card p:not(.eyebrow),
+.curiosity-api-card code,
+.rick-api-hero__panel code,
+.rick-hero__panel code {
+  font-size: 0.875rem;
+}
+
+.about-pillar-card h3,
+.about-profile-card h2,
+.curiosity-map-card__item h3,
+.curiosity-song-card h3,
+.rick-info-grid dd {
+  font-size: 0.875rem;
+}
+
+.about-profile-card p,
+.curiosity-map-card__item p,
+.curiosity-map-card__item a,
+.curiosity-small-card a,
+.curiosity-api-card__meta li,
+.rick-character__meta dd,
+.rick-character__link,
+.rick-pagination span,
+.rick-wiki-panel__translation,
+.rick-person-card p,
+.curiosity-song-card__album {
+  font-size: 0.75rem;
+}
+
+.memory-card {
+  font-size: 1.15rem;
+}
+
+.reaction-target {
+  font-size: 1.35rem;
+}
+
+.math-card__question {
+  font-size: 2.6rem;
+}
+
+.math-answer input,
+.math-answer button {
+  font-size: 0.9375rem;
+}
+
+.solitaire-card__corner {
+  font-size: 0.92rem;
+}
+
+.solitaire-card__suit {
+  font-size: 2.1rem;
+}
+
+.solitaire-foundation:empty::after {
+  font-size: 1.25rem;
+}
+
+.checkers-piece.is-king::after {
+  font-size: 0.85rem;
+}
+
+.not-found-gif__code {
+  font-size: 5.75rem;
+}
+
+@media (min-width: 768px) {
+  #home-title,
+  #blog-title,
+  #projects-title,
+  #games-title,
+  #game-title,
+  #notes-title,
+  #article-title,
+  #not-found-title,
+  #error-page-title {
+    font-size: 3.35rem;
+  }
+
+  #about-title,
+  #curiosity-title {
+    font-size: 56px;
+  }
+
+  #rick-api-title,
+  #rick-title {
+    font-size: 50px;
+  }
+
+  .section-heading--center h2 {
+    font-size: 1.625rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .rick-detail-card h1 {
+    font-size: 42px;
+  }
+}
+
+@media (max-width: 640px) {
+  .site-brand {
+    font-size: 15px;
+  }
+
+  .site-links a {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 520px) {
+  .math-card__question {
+    font-size: 2.1rem;
+  }
+
+  .memory-card {
+    font-size: 1rem;
   }
 }
