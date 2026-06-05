@@ -1,0 +1,149 @@
+@media (min-width: 640px) {
+  .hero-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .blog-search__form {
+    flex-direction: row;
+  }
+}
+
+@media (min-width: 768px) {
+  #home-title,
+  #blog-title,
+  #projects-title,
+  #games-title,
+  #game-title,
+  #notes-title,
+  #article-title,
+  #not-found-title,
+  #error-page-title {
+    font-size: 4rem;
+    line-height: 1.2;
+  }
+
+  .home-hero {
+    padding: 6rem 0;
+  }
+
+  .not-found-hero {
+    padding: 6rem 0;
+  }
+
+  .shortcut-grid,
+  .article-grid,
+    .faq-grid,
+    .blog-card-grid,
+    .projects-grid,
+    .games-grid,
+    .notes-wall {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-faq {
+    padding: 6rem 0;
+  }
+
+  .section-heading--center h2 {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-hero__grid,
+  .blog-hero__grid,
+  .games-hero__grid,
+  .game-hero__grid {
+    grid-template-columns: 1.15fr 0.85fr;
+    align-items: center;
+  }
+
+  .games-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .blog-browser__grid {
+    grid-template-columns: 1fr 280px;
+  }
+
+  .projects-browser__grid {
+    grid-template-columns: 1fr 280px;
+  }
+
+  .projects-controls__fields {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .article-layout {
+    grid-template-columns: minmax(0, 1fr) 260px;
+  }
+
+  .article-toc--mobile {
+    display: none;
+  }
+
+  .article-toc--desktop {
+    position: sticky;
+    top: 6rem;
+    display: block;
+  }
+
+  .notes-wall {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .not-found-hero__grid {
+    grid-template-columns: 1.05fr 0.95fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .site-nav .inner {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  .site-brand {
+    font-size: 16px;
+  }
+
+  .site-links {
+    width: 100%;
+    flex: 1 1 100%;
+    gap: 8px;
+    margin-top: 2px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .site-links::-webkit-scrollbar {
+    display: none;
+  }
+
+  .site-links a {
+    padding-inline: 10px;
+    font-size: 13px;
+  }
+
+  .section-heading--border {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .home-actions,
+  .blog-actions,
+  .not-found-actions,
+  .button {
+    width: 100%;
+  }
+
+  .button {
+    justify-content: center;
+  }
+}
+
