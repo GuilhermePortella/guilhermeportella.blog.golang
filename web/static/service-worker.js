@@ -1,9 +1,30 @@
 const CACHE_PREFIX = "guilherme-portella-site-";
-const CACHE_NAME = `${CACHE_PREFIX}v20260531-errors`;
+const CACHE_NAME = `${CACHE_PREFIX}v20260605-css-split`;
 const OFFLINE_PATH = "./erro/";
+const CSS_VERSION = "20260605-css-split";
+const CSS_PATHS = [
+  "./static/css/main.css",
+  "./static/css/globals.css",
+  "./static/css/pages/home.css",
+  "./static/css/pages/blog.css",
+  "./static/css/pages/projects.css",
+  "./static/css/pages/games.css",
+  "./static/css/pages/notes.css",
+  "./static/css/pages/article.css",
+  "./static/css/components/faq.css",
+  "./static/css/pages/about.css",
+  "./static/css/pages/curiosities.css",
+  "./static/css/pages/errors.css",
+  "./static/css/utilities/page-effects.css",
+  "./static/css/components/footer.css",
+  "./static/css/utilities/motion.css",
+  "./static/css/utilities/keyframes.css",
+  "./static/css/utilities/responsive.css",
+  "./static/css/utilities/compact-typography.css",
+];
 const PRECACHE_PATHS = [
   OFFLINE_PATH,
-  "./static/css/main.css?v=20260531-errors",
+  ...CSS_PATHS.map((path) => `${path}?v=${CSS_VERSION}`),
   "./static/js/site.js?v=20260531-errors",
 ];
 

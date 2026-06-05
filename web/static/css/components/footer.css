@@ -1,0 +1,17 @@
+.site-footer {
+  border-top: 1px solid var(--stone-200);
+  padding: 1.5rem 1rem 2rem;
+  text-align: center;
+}
+
+.site-footer__text {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--neutral-500);
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+

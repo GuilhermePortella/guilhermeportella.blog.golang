@@ -1,0 +1,242 @@
+:root {
+  color-scheme: light;
+  --paper: #f8f1e7;
+  --peach: #f3c9a4;
+  --green: #b7d5cf;
+  --card-border: #e6d8cb;
+  --card-border-hover: #cfb6a4;
+  --button-bg: #f4e7da;
+  --button-bg-hover: #efdfcf;
+  --button-border: #d9c7b6;
+  --button-border-hover: #cbb2a1;
+  --map-dot: #c0845a;
+  --stone-900: #1c1917;
+  --stone-800: #292524;
+  --stone-700: #44403c;
+  --stone-600: #57534e;
+  --stone-500: #78716c;
+  --stone-400: #a8a29e;
+  --stone-300: #d6d3d1;
+  --stone-200: #e7e5e4;
+  --neutral-500: #737373;
+  --muted: #6b7280;
+  --link: #2563eb;
+  --link-hover: #1d4ed8;
+  --accent: #f59e0b;
+  --font-sans: "Inter";
+  --font-serif: var(--font-sans);
+  --font-body: var(--font-sans), system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-display: var(--font-body);
+  --shadow-route: 0 14px 35px rgb(15 23 42 / 8%);
+  --shadow-map: 0 18px 45px rgb(15 23 42 / 10%);
+  --shadow-article-hover: 0 18px 40px rgb(15 23 42 / 12%);
+  --shadow-faq-open: 0 14px 35px rgb(15 23 42 / 12%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden],
+.is-hidden {
+  display: none !important;
+}
+
+html {
+  font-family: var(--font-body);
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at top, #e5e7eb 0, #f3f4f6 36%, #f9fafb 100%);
+  color: #111827;
+  font-family: var(--font-body);
+  font-feature-settings: "liga" 1, "calt" 1;
+  font-optical-sizing: auto;
+  line-height: 1.5;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: var(--link);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+a:hover {
+  color: var(--link-hover);
+  text-decoration: none;
+}
+
+.link-arrow {
+  display: inline-block;
+  transition: transform 150ms ease;
+}
+
+.arrow-shift:hover .link-arrow,
+.arrow-shift:focus .link-arrow {
+  transform: translateX(0.25rem);
+}
+
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible {
+  outline: 2px solid rgb(168 162 158 / 60%);
+  outline-offset: 4px;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+h1,
+h2,
+h3,
+p,
+a,
+span,
+summary,
+li {
+  overflow-wrap: anywhere;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  text-wrap: balance;
+}
+
+.skip-link {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 50;
+  transform: translateY(-150%);
+  border-radius: 999px;
+  background: var(--stone-900);
+  color: #ffffff;
+  padding: 0.6rem 0.85rem;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.container {
+  max-width: 1120px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.site-nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  border-bottom: 1px solid rgba(229, 231, 235, 0.9);
+  background: rgba(248, 250, 252, 0.9);
+  color: #525252;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+  backdrop-filter: saturate(140%) blur(12px);
+}
+
+.site-nav .inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 64px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.site-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.site-brand:hover {
+  color: #0f172a;
+  text-decoration: none;
+}
+
+.site-brand span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.site-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 6px 12px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+}
+
+.site-links a:hover {
+  border-color: rgba(37, 99, 235, 0.12);
+  background-color: rgba(37, 99, 235, 0.06);
+  color: var(--link-hover);
+  text-decoration: none;
+  transform: translateY(-0.5px);
+}
+
+.site-links a.active {
+  border-color: var(--accent);
+  background: #fef3c7;
+  box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.18);
+  color: #111827;
+}
+
+.site-main {
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+}
+

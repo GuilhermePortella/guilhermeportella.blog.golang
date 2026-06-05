@@ -1,0 +1,319 @@
+@media (prefers-reduced-motion: no-preference) {
+  .not-found-hero__copy {
+    animation: fadeUp 0.75s ease-out both;
+    animation-delay: 80ms;
+  }
+
+  .not-found-gif {
+    animation: notFoundFloat 2.8s ease-in-out infinite;
+  }
+
+  .not-found-gif__screen::after {
+    animation: notFoundScan 2.4s ease-in-out infinite;
+  }
+
+  .not-found-gif__bar {
+    animation: notFoundBlink 1.5s steps(2, start) infinite;
+  }
+
+  .about-hero__orb--warm {
+    animation: floatSlow 18s ease-in-out infinite;
+  }
+
+  .about-hero__orb--cool {
+    animation: floatSlow 22s ease-in-out infinite;
+  }
+
+  .about-eyebrow--hero {
+    animation: fadeUp 0.7s ease-out both;
+    animation-delay: 40ms;
+  }
+
+  #about-title {
+    animation: fadeUp 0.75s ease-out both;
+    animation-delay: 120ms;
+  }
+
+  .about-hero__aside {
+    animation: fadeUp 0.85s ease-out both;
+    animation-delay: 240ms;
+  }
+
+  .curiosity-hero__blob--warm {
+    animation: floatSlow 18s ease-in-out infinite;
+  }
+
+  .curiosity-hero__blob--cool {
+    animation: floatSlow 22s ease-in-out infinite;
+  }
+
+  .curiosity-eyebrow--hero {
+    animation: fadeUp 0.7s ease-out both;
+    animation-delay: 40ms;
+  }
+
+  #curiosity-title {
+    animation: fadeUp 0.75s ease-out both;
+    animation-delay: 120ms;
+  }
+
+  .curiosity-hero__lead {
+    animation: fadeUp 0.8s ease-out both;
+    animation-delay: 200ms;
+  }
+
+  .curiosity-tags {
+    animation: fadeUp 0.85s ease-out both;
+    animation-delay: 260ms;
+  }
+
+  .curiosity-hero__aside {
+    animation: fadeUp 0.85s ease-out both;
+    animation-delay: 220ms;
+  }
+
+  .curiosity-song-card {
+    transition: transform 150ms ease, border-color 150ms ease;
+  }
+
+  .curiosity-song-card:hover {
+    transform: translateY(-2px);
+  }
+
+  .curiosity-spotify-frame [data-spotify-embed],
+  .curiosity-playlist-card [data-spotify-embed] {
+    animation: spotifyEmbedLoading 1.4s ease-in-out infinite;
+  }
+
+  .rick-character {
+    transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+  }
+
+  .rick-character:hover {
+    border-color: #7ea6a0;
+    box-shadow: 0 16px 32px rgb(15 23 42 / 14%);
+    transform: translateY(-3px);
+  }
+
+  .rick-character--skeleton {
+    animation: spotifyEmbedLoading 1.4s ease-in-out infinite;
+  }
+
+  .rick-api-hero__intro,
+  .rick-api-hero__panel {
+    animation: fadeUp 0.8s ease-out both;
+  }
+
+  .rick-api-hero__panel {
+    animation-delay: 120ms;
+  }
+}
+
+@media (min-width: 768px) {
+  .about-hero__grid {
+    padding-top: 96px;
+    padding-bottom: 96px;
+  }
+
+  #about-title {
+    font-size: 64px;
+  }
+
+  .about-pillar-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .about-ritual-card__grid {
+    grid-template-columns: 0.9fr 1.1fr;
+  }
+
+  .curiosity-hero .container {
+    padding-right: 24px;
+    padding-left: 24px;
+  }
+
+  .curiosity-hero__grid {
+    padding-top: 96px;
+    padding-bottom: 96px;
+  }
+
+  #curiosity-title {
+    font-size: 64px;
+  }
+
+  .rick-api-hero__grid {
+    padding-top: 88px;
+    padding-bottom: 72px;
+  }
+
+  #rick-api-title {
+    font-size: 56px;
+  }
+
+  .rick-hero__grid {
+    grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+    align-items: center;
+    padding-top: 56px;
+    padding-bottom: 48px;
+  }
+
+  #rick-title {
+    font-size: 56px;
+  }
+
+  .rick-toolbar {
+    grid-template-columns: minmax(210px, 0.6fr) minmax(0, 1fr);
+    align-items: end;
+  }
+
+  .rick-search {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
+
+  .rick-search__actions {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .rick-search__actions .rick-button {
+    min-width: 120px;
+  }
+
+  .curiosity-shortcut-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .curiosity-api-card {
+    grid-template-columns: minmax(0, 1.25fr) minmax(220px, 0.75fr);
+    align-items: stretch;
+  }
+
+  .curiosity-collection-grid,
+  .curiosity-song-grid,
+  .curiosity-playlist-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rick-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rick-result-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rick-character-detail {
+    grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+  }
+
+  .rick-info-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rick-person-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rick-controls {
+    grid-template-columns: minmax(0, 1fr) minmax(140px, 180px);
+    align-items: end;
+  }
+
+  .rick-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .rick-actions .rick-button {
+    min-width: 148px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .about-hero__grid {
+    grid-template-columns: 1.1fr 0.9fr;
+  }
+
+  .curiosity-hero__grid {
+    grid-template-columns: 1.1fr 0.9fr;
+    align-items: center;
+  }
+
+  .curiosity-api__body {
+    grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+    align-items: stretch;
+  }
+
+  .rick-api-hero__grid {
+    grid-template-columns: minmax(0, 1.12fr) minmax(300px, 0.88fr);
+    align-items: center;
+  }
+
+  .rick-controls {
+    grid-template-columns: minmax(0, 1fr) 150px auto;
+  }
+
+  .rick-actions {
+    grid-column: auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(126px, 1fr));
+  }
+
+  .rick-actions .rick-button {
+    min-width: 0;
+  }
+
+  .rick-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .rick-result-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .rick-detail-card h1 {
+    font-size: 48px;
+  }
+}
+
+@media (max-width: 520px) {
+  .about-pill {
+    width: 100%;
+  }
+
+  .about-ritual-card {
+    padding: 24px;
+  }
+
+  .curiosity-music__wrapper {
+    padding: 20px;
+  }
+
+  .curiosity-api__surface {
+    padding: 20px;
+  }
+
+  .curiosity-api__stats {
+    grid-template-columns: 1fr;
+  }
+
+  .rick-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .rick-search__actions {
+    grid-template-columns: 1fr;
+  }
+
+  .rick-person-card {
+    grid-template-columns: 78px minmax(0, 1fr);
+  }
+
+  .rick-person-card img {
+    width: 78px;
+    min-height: 104px;
+  }
+}
+

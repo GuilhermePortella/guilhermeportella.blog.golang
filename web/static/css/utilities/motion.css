@@ -1,0 +1,86 @@
+@media (prefers-reduced-motion: no-preference) {
+  .home-hero::before {
+    animation: floatSlow 16s ease-in-out infinite;
+  }
+
+  .home-hero::after {
+    animation: floatSlow 20s ease-in-out infinite;
+  }
+
+  .home-hero__intro > :nth-child(1) {
+    animation: fadeUp 0.7s ease-out both;
+    animation-delay: 40ms;
+  }
+
+  .home-hero__intro > :nth-child(2) {
+    animation: fadeUp 0.75s ease-out both;
+    animation-delay: 120ms;
+  }
+
+  .home-hero__intro > :nth-child(3) {
+    animation: fadeUp 0.8s ease-out both;
+    animation-delay: 200ms;
+  }
+
+  .home-hero__intro > :nth-child(4) {
+    animation: fadeUp 0.85s ease-out both;
+    animation-delay: 280ms;
+  }
+
+  .home-hero__intro > :nth-child(5) {
+    animation: fadeUp 0.9s ease-out both;
+    animation-delay: 360ms;
+  }
+
+  .home-hero__aside {
+    animation: fadeUp 0.8s ease-out both;
+    animation-delay: 260ms;
+  }
+
+  .blog-hero__orb--warm {
+    animation: floatSlow 18s ease-in-out infinite;
+  }
+
+  .blog-hero__orb--cool {
+    animation: floatSlow 22s ease-in-out infinite;
+  }
+
+  .blog-hero__intro > :nth-child(1) {
+    animation: fadeUp 0.7s ease-out both;
+    animation-delay: 40ms;
+  }
+
+  .blog-hero__intro > :nth-child(2) {
+    animation: fadeUp 0.75s ease-out both;
+    animation-delay: 120ms;
+  }
+
+  .blog-hero__intro > :nth-child(3) {
+    animation: fadeUp 0.8s ease-out both;
+    animation-delay: 200ms;
+  }
+
+  .blog-hero__intro > :nth-child(4) {
+    animation: fadeUp 0.85s ease-out both;
+    animation-delay: 260ms;
+  }
+
+  .blog-hero__intro > :nth-child(5) {
+    animation: fadeUp 0.9s ease-out both;
+    animation-delay: 320ms;
+  }
+
+  .blog-hero__aside {
+    animation: fadeUp 0.85s ease-out both;
+    animation-delay: 220ms;
+  }
+
+  .article-hero__orb--warm {
+    animation: floatSlow 18s ease-in-out infinite;
+  }
+
+  .article-hero__orb--cool {
+    animation: floatSlow 22s ease-in-out infinite;
+  }
+}
+
