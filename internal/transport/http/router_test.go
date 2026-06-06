@@ -762,7 +762,7 @@ func TestNewRouterBlogArticle(t *testing.T) {
 		`<article class="article-page" aria-labelledby="article-title">`,
 		`<a href="/blog" class="active" aria-current="page">Cadernos</a>`,
 		`<h1 id="article-title">Estruturando um serviço Go para crescer com segurança</h1>`,
-		`<h2 id="um-comeco-que-nao-precisa-correr"><a href="#um-comeco-que-nao-precisa-correr" class="heading-anchor">Um começo que não precisa correr</a></h2>`,
+		`<h2 id="um-comeco-que-nao-precisa-correr"><a class="heading-anchor" href="#um-comeco-que-nao-precisa-correr">Um começo que não precisa correr</a></h2>`,
 		`data-article-toc`,
 		`application/ld+json`,
 		"1 min de leitura",
