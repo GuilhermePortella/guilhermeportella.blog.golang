@@ -143,7 +143,7 @@ func TestExportedSiteHasNoBrokenLocalReferences(t *testing.T) {
 	outputDir := filepath.Join(projectRoot, "tmp", "export-smoke")
 	defer os.RemoveAll(outputDir)
 
-	if err := run([]string{"-output", outputDir}); err != nil {
+	if err := run([]string{"-output", outputDir, "-base-path", "/"}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -162,7 +162,7 @@ func TestExportedSiteHasNoBrokenLocalReferences(t *testing.T) {
 		}
 
 		for _, legacy := range []string{
-			"guilhermeportella.blog.golang",
+			"https://guilhermeportella.github.io/guilhermeportella.blog.golang",
 			"estado-de-espirito",
 		} {
 			if bytes.Contains(raw, []byte(legacy)) {
