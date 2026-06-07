@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/xml"
 	"net/url"
 	"os"
 	"path"
@@ -146,6 +147,11 @@ func TestExportedSiteHasNoBrokenLocalReferences(t *testing.T) {
 	if err := run([]string{"-output", outputDir, "-base-path", "/"}); err != nil {
 		t.Fatal(err)
 	}
+	for _, generatedFile := range []string{"robots.txt", "sitemap.xml"} {
+		if _, err := os.Stat(filepath.Join(outputDir, generatedFile)); err != nil {
+			t.Fatalf("export did not write %s: %v", generatedFile, err)
+		}
+	}
 
 	var checked int
 	err = filepath.WalkDir(outputDir, func(filePath string, entry os.DirEntry, err error) error {
@@ -224,6 +230,172 @@ func TestNormalizeBasePath(t *testing.T) {
 				t.Fatalf("normalizeBasePath(%q) = %q, want %q", test.raw, got, test.want)
 			}
 		})
+	}
+}
+
+func TestNormalizeSiteURL(t *testing.T) {
+	tests := []struct {
+		raw     string
+		want    string
+		wantErr bool
+	}{
+		{raw: "https://guilhermeportella.github.io", want: "https://guilhermeportella.github.io"},
+		{raw: "https://guilhermeportella.github.io/", want: "https://guilhermeportella.github.io"},
+		{raw: "https://example.com/site/", want: "https://example.com/site"},
+		{raw: "", wantErr: true},
+		{raw: "guilhermeportella.github.io", wantErr: true},
+		{raw: "ftp://example.com", wantErr: true},
+		{raw: "https://example.com?utm=1", wantErr: true},
+	}
+
+	for _, test := range tests {
+		t.Run(test.raw, func(t *testing.T) {
+			got, err := normalizeSiteURL(test.raw)
+			if test.wantErr {
+				if err == nil {
+					t.Fatalf("normalizeSiteURL(%q) = %q, want error", test.raw, got)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got != test.want {
+				t.Fatalf("normalizeSiteURL(%q) = %q, want %q", test.raw, got, test.want)
+			}
+		})
+	}
+}
+
+func TestShouldIndexRoute(t *testing.T) {
+	tests := []struct {
+		route string
+		want  bool
+	}{
+		{route: "/", want: true},
+		{route: "/blog", want: true},
+		{route: "/blog/um-post", want: true},
+		{route: "/jogos/snake", want: true},
+		{route: "/404", want: false},
+		{route: "/erro", want: false},
+		{route: "/articles", want: false},
+		{route: "/games", want: false},
+		{route: "/projects", want: false},
+		{route: "/curiosidades/rick-and-morty", want: false},
+	}
+
+	for _, test := range tests {
+		t.Run(test.route, func(t *testing.T) {
+			if got := shouldIndexRoute(test.route); got != test.want {
+				t.Fatalf("shouldIndexRoute(%q) = %v, want %v", test.route, got, test.want)
+			}
+		})
+	}
+}
+
+func TestCanonicalSitemapRoute(t *testing.T) {
+	tests := []struct {
+		route string
+		want  string
+	}{
+		{route: "/", want: "/"},
+		{route: "/about", want: "/about/"},
+		{route: "/curiosidades", want: "/curiosidades/"},
+		{route: "/jogos", want: "/jogos/"},
+		{route: "/jogos/snake", want: "/jogos/snake/"},
+		{route: "/projetos", want: "/projetos/"},
+		{route: "/rick-morty", want: "/rick-morty/"},
+		{route: "/blog", want: "/blog"},
+		{route: "/blog/um-comeco-sem-pressa", want: "/blog/um-comeco-sem-pressa"},
+		{route: "/notas", want: "/notas"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.route, func(t *testing.T) {
+			if got := canonicalSitemapRoute(test.route); got != test.want {
+				t.Fatalf("canonicalSitemapRoute(%q) = %q, want %q", test.route, got, test.want)
+			}
+		})
+	}
+}
+
+func TestWriteSitemapAndRobots(t *testing.T) {
+	outputDir := t.TempDir()
+	exporter := exporter{
+		outputDir: outputDir,
+		basePath:  "/repo",
+		siteURL:   "https://example.com",
+	}
+
+	routes := []string{
+		"/",
+		"/404",
+		"/about",
+		"/articles",
+		"/blog",
+		"/blog/um-comeco-sem-pressa",
+		"/curiosidades/rick-and-morty",
+		"/erro",
+		"/games",
+		"/jogos/snake",
+		"/notas",
+		"/projects",
+	}
+
+	if err := exporter.writeSitemap(routes); err != nil {
+		t.Fatal(err)
+	}
+	if err := exporter.writeRobots(); err != nil {
+		t.Fatal(err)
+	}
+
+	robots, err := os.ReadFile(filepath.Join(outputDir, "robots.txt"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "Sitemap: https://example.com/repo/sitemap.xml"; !strings.Contains(string(robots), want) {
+		t.Fatalf("robots.txt does not contain %q:\n%s", want, robots)
+	}
+
+	sitemap, err := os.ReadFile(filepath.Join(outputDir, "sitemap.xml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var parsed struct {
+		URLs []struct {
+			Location string `xml:"loc"`
+		} `xml:"url"`
+	}
+	if err := xml.Unmarshal(sitemap, &parsed); err != nil {
+		t.Fatalf("parse sitemap.xml: %v\n%s", err, sitemap)
+	}
+
+	locations := make(map[string]bool, len(parsed.URLs))
+	for _, item := range parsed.URLs {
+		locations[item.Location] = true
+	}
+	for _, want := range []string{
+		"https://example.com/repo/",
+		"https://example.com/repo/blog",
+		"https://example.com/repo/blog/um-comeco-sem-pressa",
+		"https://example.com/repo/jogos/snake/",
+	} {
+		if !locations[want] {
+			t.Fatalf("sitemap.xml does not contain %q; locations=%v", want, locations)
+		}
+	}
+	for _, unwanted := range []string{
+		"https://example.com/repo/404",
+		"https://example.com/repo/erro",
+		"https://example.com/repo/articles",
+		"https://example.com/repo/games",
+		"https://example.com/repo/projects",
+		"https://example.com/repo/curiosidades/rick-and-morty",
+	} {
+		if locations[unwanted] {
+			t.Fatalf("sitemap.xml contains non-canonical route %q", unwanted)
+		}
 	}
 }
 
