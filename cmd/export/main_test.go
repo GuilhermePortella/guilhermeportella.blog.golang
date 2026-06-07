@@ -1,10 +1,15 @@
 package main
 
 import (
+	"bytes"
+	"net/url"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"golang.org/x/net/html"
 )
 
 func TestNormalizeInternalRoute(t *testing.T) {
@@ -117,6 +122,86 @@ func TestRewriteRootRelativeURLs(t *testing.T) {
 	}
 }
 
+func TestExportedSiteHasNoBrokenLocalReferences(t *testing.T) {
+	projectRoot, err := findProjectRoot()
+	if err != nil {
+		t.Fatal(err)
+	}
+	cwd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chdir(projectRoot); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := os.Chdir(cwd); err != nil {
+			t.Fatalf("restore cwd: %v", err)
+		}
+	})
+
+	outputDir := filepath.Join(projectRoot, "tmp", "export-smoke")
+	defer os.RemoveAll(outputDir)
+
+	if err := run([]string{"-output", outputDir, "-base-path", "/"}); err != nil {
+		t.Fatal(err)
+	}
+
+	var checked int
+	err = filepath.WalkDir(outputDir, func(filePath string, entry os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if entry.IsDir() || filepath.Ext(filePath) != ".html" {
+			return nil
+		}
+
+		raw, err := os.ReadFile(filePath)
+		if err != nil {
+			return err
+		}
+
+		for _, legacy := range []string{
+			"https://guilhermeportella.github.io/guilhermeportella.blog.golang",
+			"estado-de-espirito",
+		} {
+			if bytes.Contains(raw, []byte(legacy)) {
+				t.Fatalf("%s contains legacy reference %q", filePath, legacy)
+			}
+		}
+
+		root, err := html.Parse(bytes.NewReader(raw))
+		if err != nil {
+			return err
+		}
+
+		for _, ref := range localHTMLReferences(root) {
+			targetPath, ok := localReferencePath(ref)
+			if !ok {
+				continue
+			}
+			checked++
+
+			outputPath := localReferenceOutputPath(outputDir, targetPath)
+			info, err := os.Stat(outputPath)
+			if err != nil {
+				t.Fatalf("%s references missing local target %q (%s)", filePath, ref, outputPath)
+			}
+			if info.IsDir() {
+				t.Fatalf("%s references directory target %q (%s)", filePath, ref, outputPath)
+			}
+		}
+
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if checked == 0 {
+		t.Fatal("checked 0 local references")
+	}
+}
+
 func TestNormalizeBasePath(t *testing.T) {
 	tests := []struct {
 		raw  string
@@ -140,6 +225,69 @@ func TestNormalizeBasePath(t *testing.T) {
 			}
 		})
 	}
+}
+
+func localHTMLReferences(root *html.Node) []string {
+	var refs []string
+	var walk func(*html.Node)
+	walk = func(node *html.Node) {
+		if node == nil {
+			return
+		}
+
+		for _, attr := range node.Attr {
+			if isReferenceAttr(node, attr.Key) {
+				refs = append(refs, attr.Val)
+			}
+		}
+
+		for child := node.FirstChild; child != nil; child = child.NextSibling {
+			walk(child)
+		}
+	}
+	walk(root)
+
+	return refs
+}
+
+func isReferenceAttr(node *html.Node, key string) bool {
+	switch key {
+	case "href", "src", "poster", "data-url":
+		return true
+	case "content":
+		return node.Type == html.ElementNode && node.Data == "meta"
+	default:
+		return false
+	}
+}
+
+func localReferencePath(raw string) (string, bool) {
+	value := strings.TrimSpace(raw)
+	if value == "" || strings.HasPrefix(value, "#") {
+		return "", false
+	}
+
+	parsed, err := url.Parse(value)
+	if err != nil {
+		return "", false
+	}
+	if parsed.Scheme != "" || parsed.Host != "" {
+		if parsed.Scheme != "https" || parsed.Host != "guilhermeportella.github.io" {
+			return "", false
+		}
+	}
+	if parsed.Path == "" || !strings.HasPrefix(parsed.Path, "/") || strings.HasPrefix(parsed.Path, "//") {
+		return "", false
+	}
+
+	return path.Clean(parsed.Path), true
+}
+
+func localReferenceOutputPath(outputDir string, targetPath string) string {
+	if filepath.Ext(targetPath) != "" {
+		return filepath.Join(outputDir, filepath.FromSlash(strings.TrimPrefix(targetPath, "/")))
+	}
+	return routeOutputPath(outputDir, targetPath)
 }
 
 func TestCleanOutputDirAcceptsSafeProjectPaths(t *testing.T) {

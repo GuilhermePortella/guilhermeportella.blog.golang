@@ -17,8 +17,8 @@ keywords:
 seo:
   title: "Monólito Modular vs Microsserviços — Agilidade, Escalabilidade e Trade-offs Arquiteturais"
   description: "Análise técnica aprofundada sobre Monólito Modular, comparando-o com Microsserviços em termos de desempenho, complexidade operacional, escalabilidade e estratégia de evolução arquitetural."
-  canonicalUrl: "https://www.guilhermeportella.com.br/#/blog/artigos/monolito-modular"
-  image: "/images/monolito-modular-architecture.png"
+  canonicalUrl: "https://guilhermeportella.github.io/blog/monolito-modular"
+  image: "/images/monolito_modular.png"
   locale: "pt-BR"
 jsonLd:
   "@context": "https://schema.org"
@@ -31,7 +31,7 @@ jsonLd:
   "publisher":
     "@type": "Organization"
     "name": "Guilherme Portella"
-    "url": "www.guilhermeportella.com.br"
+    "url": "https://guilhermeportella.github.io/"
   "inLanguage": "pt-BR"
   "keywords": "Arquitetura de Software, Monólito Modular, Microsserviços, Escalabilidade, Agilidade, Engenharia de Software"
 ---
