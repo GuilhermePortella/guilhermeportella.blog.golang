@@ -17,7 +17,7 @@ keywords:
 seo:
   title: "Model Context Protocol (MCP) — arquitetura, primitivas e segurança"
   description: "Artigo técnico sobre o MCP: Host/Client/Server, transportes, Resources/Prompts/Tools, lifecycle, sampling e considerações de segurança para integrações de IA."
-  canonicalUrl: "https://www.guilhermeportella.com.br/#/blog/artigos/model-context-protocol-mcp"
+  canonicalUrl: "https://guilhermeportella.github.io/blog/model-context-protocol-mcp"
   image: "/images/mcp_architecture.png"
   locale: "pt-BR"
 jsonLd:
@@ -31,7 +31,7 @@ jsonLd:
   "publisher":
     "@type": "Organization"
     "name": "Guilherme Portella"
-    "url": "https://www.guilhermeportella.com.br/"
+    "url": "https://guilhermeportella.github.io/"
   "inLanguage": "pt-BR"
   "datePublished": "2026-02-07"
   "keywords": "AI, LLM, Model Context Protocol, MCP, Agents, JSON-RPC, Integrations, Security, Architecture"

@@ -32,8 +32,8 @@ keywords:
 seo:
   title: "Modelos Multidimensionais de Vetores e RAG na Inteligência Artificial"
   description: "Entenda os fundamentos dos embeddings, suas aplicações práticas e como bancos de dados vetoriais e RAG estão moldando a IA moderna."
-  canonicalUrl: "https://www.zonarestrita.com.br/articles/modelos-multidimensionais-vetores/"
-  image: "/images/modelos-vetoriais-rag.jpg"
+  canonicalUrl: "https://guilhermeportella.github.io/blog/modelos-multidimensionais-vetores"
+  image: "/static/images/social-default.png"
   locale: "pt-BR"
 
 jsonLd:
@@ -47,7 +47,7 @@ jsonLd:
   "publisher":
     "@type": "Organization"
     "name": "Guilherme Portella"
-    "url": "https://www.zonarestrita.com.br/"
+    "url": "https://guilhermeportella.github.io/"
   "inLanguage": "pt-BR"
   "keywords": "Embeddings, Espaços Vetoriais, Representação de Dados, Processamento de Linguagem Natural, Bancos de Dados Vetoriais, RAG, Transformers, Machine Learning, Busca Semântica, Recuperação por Similaridade, Multimodalidade, Quantização, Indexação Vetorial, FAISS, HNSW, Pinecone, Milvus, Interpretabilidade, Viés Algorítmico"
 ---

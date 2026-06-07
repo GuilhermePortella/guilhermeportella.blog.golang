@@ -11,7 +11,7 @@ keywords:
   - Publicacao
 seoTitle: "Guia completo de publicacao de artigos | Guilherme Portella"
 seoDescription: "Guia detalhado sobre como publicar artigos em Markdown, organizar metadata e manter SEO basico no site."
-canonicalUrl: "https://www.guilhermeportella.com.br/#/blog/artigos/guia-publicacao-artigos"
+canonicalUrl: "https://guilhermeportella.github.io/blog/guia-publicacao-artigos"
 locale: "pt-BR"
 tags: ["Docs", "Blog", "Markdown"]
 ---
@@ -88,7 +88,7 @@ keywords:
   - SEO
 seoTitle: "Titulo para SEO | Guilherme Portella"
 seoDescription: "Descricao otimizada para buscadores."
-canonicalUrl: "https://www.guilhermeportella.com.br/blog/artigos/meu-artigo"
+canonicalUrl: "https://guilhermeportella.github.io/blog/meu-artigo"
 ogImage: "/images/meu-artigo.jpg"
 locale: "pt-BR"
 tags: ["Docs"]
@@ -103,7 +103,7 @@ summary: "Resumo curto."
 seo:
   title: "Titulo para SEO | Guilherme Portella"
   description: "Descricao otimizada para buscadores."
-  canonicalUrl: "https://www.guilhermeportella.com.br/blog/artigos/meu-artigo"
+  canonicalUrl: "https://guilhermeportella.github.io/blog/meu-artigo"
   image: "/images/meu-artigo.jpg"
   locale: "pt-BR"
 ---

@@ -24,8 +24,8 @@ keywords:
 seo:
   title: "Arquitetura de Software Moderna: Microserviços, Event-Driven, Observabilidade e FinOps"
   description: "Guia avançado para desenvolvedores sêniores sobre arquitetura moderna, DDD, Clean Architecture, SQS, Kafka, Serverless, FinOps e observabilidade com DataDog."
-  canonicalUrl: "https://www.zonarestrita.com.br/articles/arquitetura-software-moderna-desenvolvedores/"
-  image: "/images/arquitetura-software-moderna.jpg"
+  canonicalUrl: "https://guilhermeportella.github.io/blog/arquitetura-software-moderna-desenvolvedores"
+  image: "/images/diagrama_arquitetura.png"
   locale: "pt-BR"
 
 jsonLd:
@@ -39,7 +39,7 @@ jsonLd:
   "publisher":
     "@type": "Organization"
     "name": "Guilherme Portella"
-    "url": "https://www.zonarestrita.com.br/"
+    "url": "https://guilhermeportella.github.io/"
   "inLanguage": "pt-BR"
   "keywords": "Arquitetura de Software, Microserviços, Event-Driven, DDD, Clean Architecture, SQS, Kafka, Serverless, FinOps, Observabilidade, DataDog"
 ---
@@ -181,5 +181,4 @@ O desenvolvedor sênior moderno é um integrador de princípios. A aplicação r
 [5] Heroku. (n.d.). *The Twelve-Factor App*. Disponível em: [https://12factor.net/](https://12factor.net/)
 [6] Datadog. (n.d.). *Unify your FinOps and engineering workflows in Datadog*. Disponível em: [https://www.datadoghq.com/blog/cloud-cost-management-finops/](https://www.datadoghq.com/blog/cloud-cost-management-finops/)
 [7] Datadog. (n.d.). *Observability in Event-Driven Architectures*. Disponível em: [https://www.datadoghq.com/architecture/observability-in-event-driven-architecture/](https://www.datadoghq.com/architecture/observability-in-event-driven-architecture/)
-
 
