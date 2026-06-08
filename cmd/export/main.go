@@ -41,6 +41,7 @@ var staticPageRoutes = map[string]struct{}{
 type exportOptions struct {
 	outputDir string
 	basePath  string
+	siteURL   string
 }
 
 type exporter struct {
@@ -49,6 +50,7 @@ type exporter struct {
 	imagesDir string
 	staticDir string
 	basePath  string
+	siteURL   string
 }
 
 func main() {
@@ -87,6 +89,7 @@ func run(args []string) error {
 		imagesDir: cfg.Paths.ImagesDir,
 		staticDir: cfg.Paths.StaticDir,
 		basePath:  options.basePath,
+		siteURL:   options.siteURL,
 	}
 
 	return exporter.Export()
@@ -98,6 +101,7 @@ func parseOptions(args []string) (exportOptions, error) {
 
 	outputDir := flags.String("output", envString("EXPORT_DIR", "dist"), "directory that receives the static site")
 	basePath := flags.String("base-path", envString("SITE_BASE_PATH", ""), "base path used when publishing under a GitHub Pages project URL")
+	siteURL := flags.String("site-url", envString("SITE_URL", defaultSiteURL), "absolute site origin used for sitemap and robots.txt")
 
 	if err := flags.Parse(args); err != nil {
 		return exportOptions{}, err
@@ -112,10 +116,15 @@ func parseOptions(args []string) (exportOptions, error) {
 	if err != nil {
 		return exportOptions{}, err
 	}
+	normalizedSiteURL, err := normalizeSiteURL(*siteURL)
+	if err != nil {
+		return exportOptions{}, err
+	}
 
 	return exportOptions{
 		outputDir: cleanOutputDir,
 		basePath:  normalizedBasePath,
+		siteURL:   normalizedSiteURL,
 	}, nil
 }
 
@@ -166,6 +175,13 @@ func (exporter exporter) Export() error {
 		if err := os.WriteFile(outputPath, body, 0o644); err != nil {
 			return fmt.Errorf("write %q: %w", outputPath, err)
 		}
+	}
+
+	if err := exporter.writeSitemap(routes); err != nil {
+		return err
+	}
+	if err := exporter.writeRobots(); err != nil {
+		return err
 	}
 
 	return nil

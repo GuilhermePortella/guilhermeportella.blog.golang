@@ -108,6 +108,7 @@ Configuracoes iniciais sugeridas no repositorio:
 - Em Settings > Pages, selecione GitHub Actions como source.
 - Em Settings > Environments, mantenha o ambiente `github-pages` com as protecoes desejadas.
 - Para Project Pages, o workflow assume automaticamente `/<nome-do-repositorio>` quando `SITE_BASE_PATH` nao estiver definido.
+- `SITE_URL` define a origem absoluta usada em `sitemap.xml` e `robots.txt`.
 - Se este site for publicado como User Pages ou com dominio proprio na raiz, configure a variavel do repositorio `SITE_BASE_PATH` como `/`.
 - Mantenha segredos fora do repo; o deploy atual nao precisa de secrets.
 
@@ -139,6 +140,8 @@ As decisoes arquiteturais ficam em `docs/adr/`.
 - `GET /notas`
 - `GET /projects` (atalho para projetos)
 - `GET /projetos`
+- `GET /robots.txt` (gerado no export estatico)
+- `GET /sitemap.xml` (gerado no export estatico)
 - `GET /service-worker.js`
 - `GET /static/*`
 - `GET /healthz`
