@@ -147,7 +147,7 @@ func TestExportedSiteHasNoBrokenLocalReferences(t *testing.T) {
 	if err := run([]string{"-output", outputDir, "-base-path", "/"}); err != nil {
 		t.Fatal(err)
 	}
-	for _, generatedFile := range []string{"robots.txt", "sitemap.xml"} {
+	for _, generatedFile := range []string{"feed.xml", "robots.txt", "sitemap.xml"} {
 		if _, err := os.Stat(filepath.Join(outputDir, generatedFile)); err != nil {
 			t.Fatalf("export did not write %s: %v", generatedFile, err)
 		}
@@ -396,6 +396,56 @@ func TestWriteSitemapAndRobots(t *testing.T) {
 		if locations[unwanted] {
 			t.Fatalf("sitemap.xml contains non-canonical route %q", unwanted)
 		}
+	}
+}
+
+func TestWriteFeed(t *testing.T) {
+	projectRoot, err := findProjectRoot()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	outputDir := t.TempDir()
+	exporter := exporter{
+		outputDir:  outputDir,
+		contentDir: filepath.Join(projectRoot, "content", "articles"),
+		basePath:   "/repo",
+		siteURL:    "https://example.com",
+	}
+
+	if err := exporter.writeFeed(); err != nil {
+		t.Fatal(err)
+	}
+
+	raw, err := os.ReadFile(filepath.Join(outputDir, "feed.xml"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var parsed struct {
+		XMLName xml.Name `xml:"rss"`
+	}
+	if err := xml.Unmarshal(raw, &parsed); err != nil {
+		t.Fatalf("parse feed.xml: %v\n%s", err, raw)
+	}
+
+	output := string(raw)
+	for _, want := range []string{
+		`<title>Guilherme Portella - artigos</title>`,
+		`<link>https://example.com/repo/blog</link>`,
+		`<atom:link href="https://example.com/repo/feed.xml" rel="self" type="application/rss+xml"></atom:link>`,
+		`<title>Estruturando um serviço Go para crescer com segurança</title>`,
+		`<link>https://example.com/repo/blog/um-comeco-sem-pressa</link>`,
+		`<guid isPermaLink="true">https://example.com/repo/blog/um-comeco-sem-pressa</guid>`,
+		`<pubDate>Sun, 03 May 2026 00:00:00 +0000</pubDate>`,
+		`<category>Go</category>`,
+	} {
+		if !strings.Contains(output, want) {
+			t.Fatalf("feed.xml does not contain %q:\n%s", want, output)
+		}
+	}
+	if strings.Count(output, "<item>") == 0 {
+		t.Fatalf("feed.xml has no items:\n%s", output)
 	}
 }
 

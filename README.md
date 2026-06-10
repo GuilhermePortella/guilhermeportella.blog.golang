@@ -4,7 +4,7 @@ Estrutura inicial para um site estilo blog em Go. A base usa a biblioteca padrao
 
 ## Requisitos
 
-- Go 1.26.3
+- Go 1.26.4
 - Make opcional, apenas para atalhos locais
 
 ## Comandos
@@ -108,7 +108,8 @@ Configuracoes iniciais sugeridas no repositorio:
 - Em Settings > Pages, selecione GitHub Actions como source.
 - Em Settings > Environments, mantenha o ambiente `github-pages` com as protecoes desejadas.
 - Para Project Pages, o workflow assume automaticamente `/<nome-do-repositorio>` quando `SITE_BASE_PATH` nao estiver definido.
-- `SITE_URL` define a origem absoluta usada em `sitemap.xml` e `robots.txt`.
+- `SITE_URL` define a origem absoluta usada em `sitemap.xml`, `robots.txt` e `feed.xml`.
+- O export tambem gera `feed.xml` com os artigos publicados para leitores RSS.
 - Se este site for publicado como User Pages ou com dominio proprio na raiz, configure a variavel do repositorio `SITE_BASE_PATH` como `/`.
 - Mantenha segredos fora do repo; o deploy atual nao precisa de secrets.
 
@@ -130,6 +131,7 @@ As decisoes arquiteturais ficam em `docs/adr/`.
 - `GET /curiosidades`
 - `GET /curiosidades/rick-and-morty`
 - `GET /erro`
+- `GET /feed.xml` (gerado no export estatico)
 - `GET /rick-morty`
 - `GET /rick-morty/personagem/{id}`
 - `GET /rick-morty/local/{id}`
