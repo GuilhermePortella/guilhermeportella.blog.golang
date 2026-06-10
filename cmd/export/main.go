@@ -45,12 +45,13 @@ type exportOptions struct {
 }
 
 type exporter struct {
-	handler   http.Handler
-	outputDir string
-	imagesDir string
-	staticDir string
-	basePath  string
-	siteURL   string
+	handler    http.Handler
+	outputDir  string
+	imagesDir  string
+	contentDir string
+	staticDir  string
+	basePath   string
+	siteURL    string
 }
 
 func main() {
@@ -84,12 +85,13 @@ func run(args []string) error {
 	}
 
 	exporter := exporter{
-		handler:   handler,
-		outputDir: options.outputDir,
-		imagesDir: cfg.Paths.ImagesDir,
-		staticDir: cfg.Paths.StaticDir,
-		basePath:  options.basePath,
-		siteURL:   options.siteURL,
+		handler:    handler,
+		outputDir:  options.outputDir,
+		imagesDir:  cfg.Paths.ImagesDir,
+		contentDir: cfg.Paths.ContentDir,
+		staticDir:  cfg.Paths.StaticDir,
+		basePath:   options.basePath,
+		siteURL:    options.siteURL,
 	}
 
 	return exporter.Export()
@@ -101,7 +103,7 @@ func parseOptions(args []string) (exportOptions, error) {
 
 	outputDir := flags.String("output", envString("EXPORT_DIR", "dist"), "directory that receives the static site")
 	basePath := flags.String("base-path", envString("SITE_BASE_PATH", ""), "base path used when publishing under a GitHub Pages project URL")
-	siteURL := flags.String("site-url", envString("SITE_URL", defaultSiteURL), "absolute site origin used for sitemap and robots.txt")
+	siteURL := flags.String("site-url", envString("SITE_URL", defaultSiteURL), "absolute site origin used for sitemap, robots.txt, and feed.xml")
 
 	if err := flags.Parse(args); err != nil {
 		return exportOptions{}, err
@@ -181,6 +183,9 @@ func (exporter exporter) Export() error {
 		return err
 	}
 	if err := exporter.writeRobots(); err != nil {
+		return err
+	}
+	if err := exporter.writeFeed(); err != nil {
 		return err
 	}
 
