@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/xml"
+	"errors"
 	"net/url"
 	"os"
 	"path"
@@ -593,5 +594,54 @@ func TestCleanOutputDirRejectsExistingFile(t *testing.T) {
 
 	if got, err := cleanOutputDir(filePath); err == nil {
 		t.Fatalf("cleanOutputDir(%q) = %q, want error", filePath, got)
+	}
+}
+
+func TestCopyDirSkipsSymlinkedFiles(t *testing.T) {
+	sourceDir := t.TempDir()
+	destinationDir := filepath.Join(t.TempDir(), "public")
+	outsideDir := t.TempDir()
+
+	if err := os.WriteFile(filepath.Join(sourceDir, "site.css"), []byte("body{}"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	secretPath := filepath.Join(outsideDir, "secret.txt")
+	if err := os.WriteFile(secretPath, []byte("secret"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(secretPath, filepath.Join(sourceDir, "leak.txt")); err != nil {
+		t.Skipf("symlinks are not available: %v", err)
+	}
+
+	if err := copyDir(sourceDir, destinationDir); err != nil {
+		t.Fatal(err)
+	}
+
+	if _, err := os.Stat(filepath.Join(destinationDir, "site.css")); err != nil {
+		t.Fatalf("copied regular file missing: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(destinationDir, "leak.txt")); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("symlinked file was copied, err=%v", err)
+	}
+}
+
+func TestCopyFileIfExistsRejectsSymlink(t *testing.T) {
+	sourceDir := t.TempDir()
+	destination := filepath.Join(t.TempDir(), "copied.txt")
+	target := filepath.Join(sourceDir, "target.txt")
+	link := filepath.Join(sourceDir, "link.txt")
+
+	if err := os.WriteFile(target, []byte("secret"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(target, link); err != nil {
+		t.Skipf("symlinks are not available: %v", err)
+	}
+
+	if err := copyFileIfExists(link, destination); err == nil {
+		t.Fatal("copyFileIfExists(symlink) error = nil, want error")
+	}
+	if _, err := os.Stat(destination); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("symlink destination was written, err=%v", err)
 	}
 }

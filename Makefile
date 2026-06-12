@@ -3,7 +3,7 @@ EXPORT_DIR ?= dist
 GO ?= go
 PKG := ./...
 
-.PHONY: help fmt fmt-check vet test run build export ci clean
+.PHONY: help fmt fmt-check vet test vuln security run build export ci clean
 
 help: ## Lista os comandos disponiveis.
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "%-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -21,6 +21,15 @@ vet: ## Executa analise estatica basica do Go.
 test: ## Executa a suite de testes com detector de corrida.
 	$(GO) test -race $(PKG)
 
+vuln: ## Verifica CVEs conhecidas em dependencias e codigo Go alcancavel.
+	$(GO) run golang.org/x/vuln/cmd/govulncheck@latest $(PKG)
+
+security: ## Executa verificacoes locais de seguranca.
+	$(GO) mod verify
+	$(GO) vet $(PKG)
+	$(GO) run golang.org/x/vuln/cmd/govulncheck@latest $(PKG)
+	$(GO) run github.com/securego/gosec/v2/cmd/gosec@latest -quiet $(PKG)
+
 run: ## Inicia o servidor local.
 	$(GO) run ./cmd/blog
 
@@ -30,7 +39,7 @@ build: ## Gera binario otimizado em ./bin.
 export: ## Gera o site estatico em ./dist para publicacao no GitHub Pages.
 	EXPORT_DIR=$(EXPORT_DIR) $(GO) run ./cmd/export
 
-ci: fmt-check vet test build export ## Executa as validacoes usadas no CI.
+ci: fmt-check vet test vuln build export ## Executa as validacoes usadas no CI.
 
 clean: ## Remove artefatos locais.
 	rm -rf bin dist

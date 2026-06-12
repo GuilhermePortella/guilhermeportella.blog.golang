@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"os"
 	"path"
 	"path/filepath"
 	"strings"
@@ -74,7 +73,7 @@ func (exporter exporter) writeSitemap(routes []string) error {
 
 	body := append([]byte(xml.Header), payload...)
 	body = append(body, '\n')
-	if err := os.WriteFile(filepath.Join(exporter.outputDir, "sitemap.xml"), body, 0o644); err != nil {
+	if err := writePublicFile(filepath.Join(exporter.outputDir, "sitemap.xml"), body); err != nil {
 		return fmt.Errorf("write sitemap.xml: %w", err)
 	}
 	return nil
@@ -82,7 +81,7 @@ func (exporter exporter) writeSitemap(routes []string) error {
 
 func (exporter exporter) writeRobots() error {
 	body := fmt.Sprintf("User-agent: *\nAllow: /\nSitemap: %s\n", exporter.absoluteURL("/sitemap.xml"))
-	if err := os.WriteFile(filepath.Join(exporter.outputDir, "robots.txt"), []byte(body), 0o644); err != nil {
+	if err := writePublicFile(filepath.Join(exporter.outputDir, "robots.txt"), []byte(body)); err != nil {
 		return fmt.Errorf("write robots.txt: %w", err)
 	}
 	return nil

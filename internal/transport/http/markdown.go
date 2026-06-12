@@ -76,10 +76,19 @@ func getAllMarkdownArticles(contentDir string) ([]markdownArticle, error) {
 	if err != nil {
 		return nil, err
 	}
+	if len(files) == 0 {
+		return nil, nil
+	}
+
+	contentRoot, err := os.OpenRoot(contentDir)
+	if err != nil {
+		return nil, fmt.Errorf("open markdown dir %q: %w", contentDir, err)
+	}
+	defer contentRoot.Close()
 
 	articles := make([]markdownArticle, 0, len(files))
 	for _, filePath := range files {
-		article, err := readMarkdownArticle(filePath)
+		article, err := readMarkdownArticle(contentRoot, contentDir, filePath)
 		if err != nil {
 			return nil, err
 		}
@@ -99,6 +108,15 @@ func getMarkdownArticleBySlug(contentDir string, slug string) (markdownArticle, 
 	if wanted == "" {
 		return markdownArticle{}, errMarkdownArticleNotFound
 	}
+	if len(files) == 0 {
+		return markdownArticle{}, errMarkdownArticleNotFound
+	}
+
+	contentRoot, err := os.OpenRoot(contentDir)
+	if err != nil {
+		return markdownArticle{}, fmt.Errorf("open markdown dir %q: %w", contentDir, err)
+	}
+	defer contentRoot.Close()
 
 	for _, filePath := range files {
 		baseSlug := normalizeSlug(fileBase(filepath.Base(filePath)))
@@ -106,11 +124,11 @@ func getMarkdownArticleBySlug(contentDir string, slug string) (markdownArticle, 
 			continue
 		}
 
-		return readMarkdownArticle(filePath)
+		return readMarkdownArticle(contentRoot, contentDir, filePath)
 	}
 
 	for _, filePath := range files {
-		article, err := readMarkdownArticle(filePath)
+		article, err := readMarkdownArticle(contentRoot, contentDir, filePath)
 		if err != nil {
 			return markdownArticle{}, err
 		}
@@ -133,7 +151,11 @@ func listMarkdownFiles(dir string) ([]string, error) {
 			return nil
 		}
 		if entry.Type().IsRegular() && strings.EqualFold(filepath.Ext(entry.Name()), ".md") {
-			files = append(files, path)
+			relativePath, err := filepath.Rel(dir, path)
+			if err != nil {
+				return err
+			}
+			files = append(files, relativePath)
 		}
 		return nil
 	})
@@ -148,19 +170,20 @@ func listMarkdownFiles(dir string) ([]string, error) {
 	return files, nil
 }
 
-func readMarkdownArticle(filePath string) (markdownArticle, error) {
-	raw, err := os.ReadFile(filePath)
+func readMarkdownArticle(contentRoot *os.Root, contentDir string, filePath string) (markdownArticle, error) {
+	raw, err := contentRoot.ReadFile(filePath)
+	displayPath := filepath.Join(contentDir, filePath)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			return markdownArticle{}, errMarkdownArticleNotFound
 		}
-		return markdownArticle{}, fmt.Errorf("read markdown article %q: %w", filePath, err)
+		return markdownArticle{}, fmt.Errorf("read markdown article %q: %w", displayPath, err)
 	}
 
 	frontmatterRaw, content := splitFrontmatter(string(raw))
 	frontmatterData, err := parseFrontmatter(frontmatterRaw)
 	if err != nil {
-		return markdownArticle{}, fmt.Errorf("parse markdown frontmatter %q: %w", filePath, err)
+		return markdownArticle{}, fmt.Errorf("parse markdown frontmatter %q: %w", displayPath, err)
 	}
 
 	fm := normalizeArticleFrontmatter(frontmatterData)
@@ -177,7 +200,7 @@ func readMarkdownArticle(filePath string) (markdownArticle, error) {
 		FrontmatterData: frontmatterData,
 		Content:         content,
 		HTML:            htmlContent,
-		SourcePath:      filePath,
+		SourcePath:      displayPath,
 	}, nil
 }
 
@@ -450,7 +473,7 @@ func markdownToHTML(md string) template.HTML {
 	htmlContent = hardenArticleLinks(htmlContent)
 	htmlContent = renderKatex(htmlContent)
 
-	return template.HTML(htmlContent)
+	return template.HTML(htmlContent) // #nosec G203 -- Markdown HTML is sanitized with bluemonday before template trust.
 }
 
 type markdownIDs struct {

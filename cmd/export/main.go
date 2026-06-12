@@ -38,6 +38,11 @@ var staticPageRoutes = map[string]struct{}{
 	"/projetos":                    {},
 }
 
+const (
+	publicDirMode  os.FileMode = 0o755
+	publicFileMode os.FileMode = 0o644
+)
+
 type exportOptions struct {
 	outputDir string
 	basePath  string
@@ -147,7 +152,7 @@ func (exporter exporter) Export() error {
 		return fmt.Errorf("copy image assets: %w", err)
 	}
 
-	if err := os.WriteFile(filepath.Join(exporter.outputDir, ".nojekyll"), nil, 0o644); err != nil {
+	if err := writePublicFile(filepath.Join(exporter.outputDir, ".nojekyll"), nil); err != nil {
 		return fmt.Errorf("write .nojekyll: %w", err)
 	}
 
@@ -170,11 +175,7 @@ func (exporter exporter) Export() error {
 		}
 
 		outputPath := routeOutputPath(exporter.outputDir, route)
-		if err := os.MkdirAll(filepath.Dir(outputPath), 0o755); err != nil {
-			return fmt.Errorf("create output dir for %q: %w", route, err)
-		}
-
-		if err := os.WriteFile(outputPath, body, 0o644); err != nil {
+		if err := writePublicFile(outputPath, body); err != nil {
 			return fmt.Errorf("write %q: %w", outputPath, err)
 		}
 	}
@@ -302,15 +303,19 @@ func shouldExportRoute(route string) bool {
 }
 
 func routeOutputPath(outputDir string, route string) string {
-	if route == "/" {
-		return filepath.Join(outputDir, "index.html")
-	}
-	if route == "/404" {
-		return filepath.Join(outputDir, "404.html")
-	}
+	return filepath.Join(outputDir, routeOutputRelativePath(route))
+}
 
-	parts := strings.Split(strings.TrimPrefix(path.Clean(route), "/"), "/")
-	return filepath.Join(append([]string{outputDir}, append(parts, "index.html")...)...)
+func routeOutputRelativePath(route string) string {
+	switch route {
+	case "/":
+		return "index.html"
+	case "/404":
+		return "404.html"
+	default:
+		parts := strings.Split(strings.TrimPrefix(path.Clean(route), "/"), "/")
+		return filepath.Join(append(parts, "index.html")...)
+	}
 }
 
 func rewriteRootRelativeURLs(body []byte, basePath string) ([]byte, error) {
@@ -471,13 +476,37 @@ func resetOutputDir(outputDir string) error {
 	if err := os.RemoveAll(cleanedOutputDir); err != nil {
 		return fmt.Errorf("remove output dir %q: %w", cleanedOutputDir, err)
 	}
-	if err := os.MkdirAll(cleanedOutputDir, 0o755); err != nil {
+	if err := mkdirPublicAll(cleanedOutputDir); err != nil {
 		return fmt.Errorf("create output dir %q: %w", cleanedOutputDir, err)
 	}
 	return nil
 }
 
 func copyDir(source string, destination string) error {
+	info, err := os.Lstat(source)
+	if err != nil {
+		return err
+	}
+	if !info.IsDir() {
+		return fmt.Errorf("%q is not a directory", source)
+	}
+
+	if err := mkdirPublicAll(destination); err != nil {
+		return err
+	}
+
+	sourceRoot, err := os.OpenRoot(source)
+	if err != nil {
+		return err
+	}
+	defer sourceRoot.Close()
+
+	destinationRoot, err := os.OpenRoot(destination)
+	if err != nil {
+		return err
+	}
+	defer destinationRoot.Close()
+
 	return filepath.WalkDir(source, func(sourcePath string, entry os.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -487,17 +516,19 @@ func copyDir(source string, destination string) error {
 		if err != nil {
 			return err
 		}
+		if relativePath == "." {
+			return nil
+		}
 
-		destinationPath := filepath.Join(destination, relativePath)
 		if entry.IsDir() {
-			return os.MkdirAll(destinationPath, 0o755)
+			return mkdirPublicRootAll(destinationRoot, relativePath)
 		}
 
 		if !entry.Type().IsRegular() {
 			return nil
 		}
 
-		return copyFile(sourcePath, destinationPath)
+		return copyRootFile(sourceRoot, relativePath, destinationRoot, relativePath)
 	})
 }
 
@@ -517,7 +548,7 @@ func copyDirIfExists(source string, destination string) error {
 }
 
 func copyFileIfExists(source string, destination string) error {
-	info, err := os.Stat(source)
+	info, err := os.Lstat(source)
 	if err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			return nil
@@ -527,27 +558,59 @@ func copyFileIfExists(source string, destination string) error {
 	if info.IsDir() {
 		return fmt.Errorf("%q is a directory", source)
 	}
+	if !info.Mode().IsRegular() {
+		return fmt.Errorf("%q is not a regular file", source)
+	}
 
 	return copyFile(source, destination)
 }
 
 func copyFile(source string, destination string) error {
-	if err := os.MkdirAll(filepath.Dir(destination), 0o755); err != nil {
+	source = filepath.Clean(source)
+	destination = filepath.Clean(destination)
+
+	sourceRoot, err := os.OpenRoot(filepath.Dir(source))
+	if err != nil {
+		return err
+	}
+	defer sourceRoot.Close()
+
+	if err := mkdirPublicAll(filepath.Dir(destination)); err != nil {
 		return err
 	}
 
-	sourceFile, err := os.Open(source)
+	destinationRoot, err := os.OpenRoot(filepath.Dir(destination))
+	if err != nil {
+		return err
+	}
+	defer destinationRoot.Close()
+
+	return copyRootFile(sourceRoot, filepath.Base(source), destinationRoot, filepath.Base(destination))
+}
+
+func copyRootFile(sourceRoot *os.Root, source string, destinationRoot *os.Root, destination string) error {
+	source = filepath.Clean(source)
+	destination = filepath.Clean(destination)
+
+	info, err := sourceRoot.Lstat(source)
+	if err != nil {
+		return err
+	}
+	if !info.Mode().IsRegular() {
+		return fmt.Errorf("%q is not a regular file", source)
+	}
+
+	if err := mkdirPublicRootAll(destinationRoot, filepath.Dir(destination)); err != nil {
+		return err
+	}
+
+	sourceFile, err := sourceRoot.Open(source)
 	if err != nil {
 		return err
 	}
 	defer sourceFile.Close()
 
-	info, err := sourceFile.Stat()
-	if err != nil {
-		return err
-	}
-
-	destinationFile, err := os.OpenFile(destination, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, info.Mode().Perm())
+	destinationFile, err := destinationRoot.OpenFile(destination, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, publicFileMode) // #nosec G304 G306 -- Root confines the path and exported site artifacts are intentionally public.
 	if err != nil {
 		return err
 	}
@@ -555,6 +618,29 @@ func copyFile(source string, destination string) error {
 
 	_, err = io.Copy(destinationFile, sourceFile)
 	return err
+}
+
+func writePublicFile(filePath string, body []byte) error {
+	cleanedPath := filepath.Clean(filePath)
+	if err := mkdirPublicAll(filepath.Dir(cleanedPath)); err != nil {
+		return err
+	}
+
+	root, err := os.OpenRoot(filepath.Dir(cleanedPath))
+	if err != nil {
+		return err
+	}
+	defer root.Close()
+
+	return root.WriteFile(filepath.Base(cleanedPath), body, publicFileMode) // #nosec G306 -- exported site artifacts are intentionally public.
+}
+
+func mkdirPublicAll(dir string) error {
+	return os.MkdirAll(dir, publicDirMode) // #nosec G301 -- exported site directories must be readable by GitHub Pages.
+}
+
+func mkdirPublicRootAll(root *os.Root, dir string) error {
+	return root.MkdirAll(filepath.Clean(dir), publicDirMode) // #nosec G301 -- exported site directories must be readable by GitHub Pages.
 }
 
 func envString(key string, fallback string) string {

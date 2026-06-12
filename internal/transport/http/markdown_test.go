@@ -1,6 +1,7 @@
 package httptransport
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"slices"
@@ -172,6 +173,25 @@ Texto.
 		if !strings.Contains(err.Error(), expected) {
 			t.Fatalf("error = %q, want it to contain %q", err.Error(), expected)
 		}
+	}
+}
+
+func TestMarkdownArticleIgnoresSymlinkedFiles(t *testing.T) {
+	contentDir := t.TempDir()
+	outsideDir := t.TempDir()
+	outsideArticle := filepath.Join(outsideDir, "vazamento.md")
+	linkedArticle := filepath.Join(contentDir, "vazamento.md")
+
+	if err := os.WriteFile(outsideArticle, []byte("---\ntitle: Vazamento\n---\n\nsegredo"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(outsideArticle, linkedArticle); err != nil {
+		t.Skipf("symlinks are not available: %v", err)
+	}
+
+	_, err := getMarkdownArticleBySlug(contentDir, "vazamento")
+	if !errors.Is(err, errMarkdownArticleNotFound) {
+		t.Fatalf("getMarkdownArticleBySlug(symlink) error = %v, want not found", err)
 	}
 }
 

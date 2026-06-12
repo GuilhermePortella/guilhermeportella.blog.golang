@@ -9,7 +9,16 @@ Esta base nasce com algumas escolhas conservadoras:
 - headers HTTP seguros por padrao no servidor Go;
 - CSP e politica de referrer embutidas no HTML exportado;
 - revisao de vulnerabilidades de dependencias com `govulncheck`;
+- verificacao local agregada com `make security`, incluindo integridade de modulos,
+  `go vet`, CVEs conhecidas com `govulncheck` e regras comuns do `gosec`;
 - ausencia de dependencias externas no bootstrap inicial.
+
+Comandos recomendados antes de publicar ou abrir PRs:
+
+```sh
+make ci
+make security
+```
 
 No deploy estatico em GitHub Pages, headers como `X-Frame-Options` e diretivas CSP
 que precisam ser enviadas pelo servidor nao acompanham o artefato HTML. Se essas

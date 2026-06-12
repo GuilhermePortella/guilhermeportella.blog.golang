@@ -133,7 +133,7 @@ func buildArticleJSONLD(article blogArticleFull, description string, canonicalUR
 		if err != nil {
 			return ""
 		}
-		return template.JS(raw)
+		return template.JS(raw) // #nosec G203 -- JSON-LD is emitted only after encoding/json escapes JS/HTML-significant bytes.
 	}
 
 	data := map[string]any{
@@ -165,5 +165,5 @@ func buildArticleJSONLD(article blogArticleFull, description string, canonicalUR
 		return ""
 	}
 
-	return template.JS(raw)
+	return template.JS(raw) // #nosec G203 -- JSON-LD is emitted only after encoding/json escapes JS/HTML-significant bytes.
 }
