@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log/slog"
 	"net/http"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -111,10 +112,19 @@ func loadNotes(notesDir string) ([]noteItem, error) {
 	if err != nil {
 		return nil, err
 	}
+	if len(files) == 0 {
+		return nil, nil
+	}
+
+	notesRoot, err := os.OpenRoot(notesDir)
+	if err != nil {
+		return nil, fmt.Errorf("open notes dir %q: %w", notesDir, err)
+	}
+	defer notesRoot.Close()
 
 	notes := make([]noteItem, 0, len(files))
 	for _, filePath := range files {
-		note, err := readNote(filePath)
+		note, err := readNote(notesRoot, notesDir, filePath)
 		if err != nil {
 			return nil, err
 		}
@@ -128,8 +138,8 @@ func loadNotes(notesDir string) ([]noteItem, error) {
 	return notes, nil
 }
 
-func readNote(filePath string) (noteItem, error) {
-	article, err := readMarkdownArticle(filePath)
+func readNote(notesRoot *os.Root, notesDir string, filePath string) (noteItem, error) {
+	article, err := readMarkdownArticle(notesRoot, notesDir, filePath)
 	if err != nil {
 		return noteItem{}, err
 	}
