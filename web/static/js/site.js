@@ -1135,7 +1135,7 @@
       context.fillStyle = "rgba(5, 13, 24, 0.62)";
       context.fillRect(0, 0, canvas.width, canvas.height);
       context.fillStyle = "#f8fafc";
-      context.font = "700 28px Inter, system-ui, sans-serif";
+      context.font = "700 28px system-ui, -apple-system, Segoe UI, sans-serif";
       context.textAlign = "center";
       context.textBaseline = "middle";
       context.fillText(label, canvas.width / 2, canvas.height / 2);

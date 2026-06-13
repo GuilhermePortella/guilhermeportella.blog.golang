@@ -23,9 +23,9 @@
   --link: #2563eb;
   --link-hover: #1d4ed8;
   --accent: #f59e0b;
-  --font-sans: "Inter";
+  --font-sans: system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-serif: var(--font-sans);
-  --font-body: var(--font-sans), system-ui, -apple-system, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-body: var(--font-sans);
   --font-display: var(--font-body);
   --shadow-route: 0 14px 35px rgb(15 23 42 / 8%);
   --shadow-map: 0 18px 45px rgb(15 23 42 / 10%);
@@ -239,4 +239,3 @@ h4 {
   overflow: hidden;
   background: transparent;
 }
-

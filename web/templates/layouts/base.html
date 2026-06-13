@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; form-action 'self'; connect-src 'self' https://api.github.com https://rickandmortyapi.com https://rickandmorty.fandom.com; script-src 'self'; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src 'self' data: https://cdn.jsdelivr.net https://fonts.gstatic.com; img-src 'self' data: https:; media-src 'self' data: https:; frame-src https://open.spotify.com; object-src 'none'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'none'; form-action 'self'; connect-src 'self' https://api.github.com https://rickandmortyapi.com https://rickandmorty.fandom.com; script-src 'self'; style-src 'self' https://cdn.jsdelivr.net; style-src-elem 'self' https://cdn.jsdelivr.net; style-src-attr 'unsafe-inline'; font-src 'self' data: https://cdn.jsdelivr.net; img-src 'self' data: https://avatars.githubusercontent.com https://cdn.jsdelivr.net https://rickandmortyapi.com; media-src 'self' data:; frame-src https://open.spotify.com; object-src 'none'">
     <meta name="referrer" content="no-referrer">
     <meta name="description" content="{{.Description}}">
     {{with .Keywords}}<meta name="keywords" content="{{.}}">{{end}}
@@ -33,9 +33,6 @@
     <meta name="twitter:title" content="{{.Title}}">
     <meta name="twitter:description" content="{{.Description}}">
     <title>{{.Title}}</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
     <link rel="stylesheet" href="/static/css/main.css?v=20260605-css-split">
     {{block "head-extra" .}}{{end}}
     <script src="/static/js/site.js?v=20260531-errors" defer></script>

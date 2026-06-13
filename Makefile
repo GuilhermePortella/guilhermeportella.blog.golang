@@ -3,7 +3,7 @@ EXPORT_DIR ?= dist
 GO ?= go
 PKG := ./...
 
-.PHONY: help fmt fmt-check vet test vuln secrets security run build export ci clean
+.PHONY: help fmt fmt-check vet staticcheck test test-shuffle cover vuln secrets security run build export ci clean
 
 help: ## Lista os comandos disponiveis.
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "%-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -18,8 +18,17 @@ fmt-check: ## Verifica se o codigo Go esta formatado.
 vet: ## Executa analise estatica basica do Go.
 	$(GO) vet $(PKG)
 
+staticcheck: ## Executa analise estatica avancada do Go.
+	$(GO) run honnef.co/go/tools/cmd/staticcheck@latest $(PKG)
+
 test: ## Executa a suite de testes com detector de corrida.
 	$(GO) test -race $(PKG)
+
+test-shuffle: ## Repete testes em ordem aleatoria para encontrar flakes.
+	$(GO) test -shuffle=on -count=3 $(PKG)
+
+cover: ## Executa testes com relatorio de cobertura por pacote.
+	$(GO) test -cover $(PKG)
 
 vuln: ## Verifica CVEs conhecidas em dependencias e codigo Go alcancavel.
 	$(GO) run golang.org/x/vuln/cmd/govulncheck@latest $(PKG)
@@ -43,7 +52,7 @@ build: ## Gera binario otimizado em ./bin.
 export: ## Gera o site estatico em ./dist para publicacao no GitHub Pages.
 	EXPORT_DIR=$(EXPORT_DIR) $(GO) run ./cmd/export
 
-ci: fmt-check security test build export ## Executa as validacoes usadas no CI.
+ci: fmt-check security staticcheck test build export ## Executa as validacoes usadas no CI.
 
 clean: ## Remove artefatos locais.
 	rm -rf bin dist

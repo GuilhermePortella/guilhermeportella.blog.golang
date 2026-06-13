@@ -12,6 +12,7 @@ Esta base nasce com algumas escolhas conservadoras:
 - verificacao local agregada com `make security`, incluindo integridade de modulos,
   `go vet`, CVEs conhecidas com `govulncheck`, regras comuns do `gosec` e
   varredura de segredos com `gitleaks`;
+- analise estatica avancada com `staticcheck` no `make ci`;
 - atualizacao recorrente de dependencias Go e GitHub Actions com Dependabot;
 - ausencia de dependencias externas no bootstrap inicial.
 
@@ -20,6 +21,13 @@ Comandos recomendados antes de publicar ou abrir PRs:
 ```sh
 make ci
 make security
+```
+
+Comandos complementares para rodadas periodicas:
+
+```sh
+make test-shuffle
+make cover
 ```
 
 No deploy estatico em GitHub Pages, headers como `X-Frame-Options` e diretivas CSP

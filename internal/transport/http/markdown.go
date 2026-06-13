@@ -1177,8 +1177,8 @@ func replaceNode(old *nethtml.Node, nodes []*nethtml.Node) {
 }
 
 func stripInlineMarkdown(input string) string {
-	input = regexp.MustCompile("!\\[([^\\]]*)\\]\\([^)]+\\)").ReplaceAllString(input, "$1")
-	input = regexp.MustCompile("\\[([^\\]]+)\\]\\([^)]+\\)").ReplaceAllString(input, "$1")
+	input = regexp.MustCompile(`!\[([^\]]*)\]\([^)]+\)`).ReplaceAllString(input, "$1")
+	input = regexp.MustCompile(`\[([^\]]+)\]\([^)]+\)`).ReplaceAllString(input, "$1")
 	input = strings.ReplaceAll(input, "`", "")
 	input = strings.ReplaceAll(input, "*", "")
 	input = strings.ReplaceAll(input, "_", "")
@@ -1188,11 +1188,11 @@ func stripInlineMarkdown(input string) string {
 func stripMarkdown(md string) string {
 	text := regexp.MustCompile("(?s)```.*?```").ReplaceAllString(md, " ")
 	text = regexp.MustCompile("`[^`]*`").ReplaceAllString(text, " ")
-	text = regexp.MustCompile("!\\[[^\\]]*\\]\\([^)]+\\)").ReplaceAllString(text, " ")
-	text = regexp.MustCompile("\\[([^\\]]+)\\]\\([^)]+\\)").ReplaceAllString(text, "$1")
-	text = regexp.MustCompile("(?m)^\\s{0,3}(#{1,6}|\\*|-|\\+|>|\\d+\\.)\\s+").ReplaceAllString(text, "")
+	text = regexp.MustCompile(`!\[[^\]]*\]\([^)]+\)`).ReplaceAllString(text, " ")
+	text = regexp.MustCompile(`\[([^\]]+)\]\([^)]+\)`).ReplaceAllString(text, "$1")
+	text = regexp.MustCompile(`(?m)^\s{0,3}(#{1,6}|\*|-|\+|>|\d+\.)\s+`).ReplaceAllString(text, "")
 	text = regexp.MustCompile("(?s)<[^>]*>").ReplaceAllString(text, " ")
-	text = regexp.MustCompile("[_*~>#+=|]").ReplaceAllString(text, " ")
-	text = regexp.MustCompile("\\s+").ReplaceAllString(text, " ")
+	text = regexp.MustCompile(`[_*~>#+=|]`).ReplaceAllString(text, " ")
+	text = regexp.MustCompile(`\s+`).ReplaceAllString(text, " ")
 	return strings.TrimSpace(text)
 }
