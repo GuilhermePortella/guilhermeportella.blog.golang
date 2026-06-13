@@ -10,7 +10,9 @@ Esta base nasce com algumas escolhas conservadoras:
 - CSP e politica de referrer embutidas no HTML exportado;
 - revisao de vulnerabilidades de dependencias com `govulncheck`;
 - verificacao local agregada com `make security`, incluindo integridade de modulos,
-  `go vet`, CVEs conhecidas com `govulncheck` e regras comuns do `gosec`;
+  `go vet`, CVEs conhecidas com `govulncheck`, regras comuns do `gosec` e
+  varredura de segredos com `gitleaks`;
+- atualizacao recorrente de dependencias Go e GitHub Actions com Dependabot;
 - ausencia de dependencias externas no bootstrap inicial.
 
 Comandos recomendados antes de publicar ou abrir PRs:

@@ -1,0 +1,12 @@
+title = "guilhermeportella.github.io"
+
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Ignore generated local artifacts."
+paths = [
+  '''^bin/''',
+  '''^dist/''',
+  '''^tmp/''',
+]
