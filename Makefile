@@ -3,7 +3,7 @@ EXPORT_DIR ?= dist
 GO ?= go
 PKG := ./...
 
-.PHONY: help fmt fmt-check vet test vuln security run build export ci clean
+.PHONY: help fmt fmt-check vet test vuln secrets security run build export ci clean
 
 help: ## Lista os comandos disponiveis.
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "%-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -24,11 +24,15 @@ test: ## Executa a suite de testes com detector de corrida.
 vuln: ## Verifica CVEs conhecidas em dependencias e codigo Go alcancavel.
 	$(GO) run golang.org/x/vuln/cmd/govulncheck@latest $(PKG)
 
+secrets: ## Procura segredos acidentais em arquivos versionaveis.
+	$(GO) run github.com/zricethezav/gitleaks/v8@latest detect --source . --no-git --redact --no-banner
+
 security: ## Executa verificacoes locais de seguranca.
 	$(GO) mod verify
 	$(GO) vet $(PKG)
 	$(GO) run golang.org/x/vuln/cmd/govulncheck@latest $(PKG)
 	$(GO) run github.com/securego/gosec/v2/cmd/gosec@latest -quiet $(PKG)
+	$(GO) run github.com/zricethezav/gitleaks/v8@latest detect --source . --no-git --redact --no-banner
 
 run: ## Inicia o servidor local.
 	$(GO) run ./cmd/blog
@@ -39,7 +43,7 @@ build: ## Gera binario otimizado em ./bin.
 export: ## Gera o site estatico em ./dist para publicacao no GitHub Pages.
 	EXPORT_DIR=$(EXPORT_DIR) $(GO) run ./cmd/export
 
-ci: fmt-check vet test vuln build export ## Executa as validacoes usadas no CI.
+ci: fmt-check security test build export ## Executa as validacoes usadas no CI.
 
 clean: ## Remove artefatos locais.
 	rm -rf bin dist

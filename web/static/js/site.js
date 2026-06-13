@@ -3516,7 +3516,7 @@
       [1, 1],
     ];
     const maxHistory = 300;
-    const storageKey = "dama_brasileira_wins_v1";
+    const checkersWinsStorageName = "dama_brasileira_wins_v1";
     const aiLevelStorageKey = "dama_brasileira_ai_level_v1";
     const machineColor = black;
     const files = "abcdefgh";
@@ -4517,7 +4517,7 @@
 
     function loadWins() {
       try {
-        const raw = window.localStorage.getItem(storageKey);
+        const raw = window.localStorage.getItem(checkersWinsStorageName);
 
         if (!raw) {
           return { [white]: 0, [black]: 0 };
@@ -4535,7 +4535,7 @@
 
     function saveWins(wins) {
       try {
-        window.localStorage.setItem(storageKey, JSON.stringify(wins));
+        window.localStorage.setItem(checkersWinsStorageName, JSON.stringify(wins));
       } catch {
         // A partida continua normalmente quando o navegador bloqueia storage.
       }

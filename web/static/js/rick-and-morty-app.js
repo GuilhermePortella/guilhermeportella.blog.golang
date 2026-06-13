@@ -98,7 +98,7 @@
 
   function siteURL(path) {
     if (!path.startsWith("/")) {
-      return path;
+      return "#";
     }
     return `${basePath}${path}`;
   }
@@ -190,10 +190,44 @@
       if (parsed.protocol !== "https:" || parsed.hostname !== "rickandmortyapi.com") {
         return "";
       }
+      if (!/^\/api\/character\/avatar\/\d+\.jpeg$/i.test(parsed.pathname)) {
+        return "";
+      }
+      parsed.search = "";
+      parsed.hash = "";
       return parsed.href;
     } catch {
       return "";
     }
+  }
+
+  function safeFandomWikiURL(value) {
+    if (!value) {
+      return "";
+    }
+
+    try {
+      const parsed = new URL(value);
+      if (parsed.protocol !== "https:" || parsed.hostname !== "rickandmorty.fandom.com") {
+        return "";
+      }
+      if (!parsed.pathname.startsWith("/wiki/")) {
+        return "";
+      }
+      parsed.search = "";
+      parsed.hash = "";
+      return parsed.href;
+    } catch {
+      return "";
+    }
+  }
+
+  function safeResourceID(value) {
+    const id = Number(value);
+    if (!Number.isInteger(id) || id < 1) {
+      return "";
+    }
+    return String(id);
   }
 
   async function fetchJSON(path, { signal, params } = {}) {
@@ -315,7 +349,7 @@
   function normalizeItem(resource, item) {
     if (resource === "character") {
       return {
-        id: item.id,
+        id: safeResourceID(item.id),
         name: readable(item.name),
         image: safeRickURL(item.image),
         fields: {
@@ -331,7 +365,7 @@
 
     if (resource === "location") {
       return {
-        id: item.id,
+        id: safeResourceID(item.id),
         name: readable(item.name),
         fields: {
           type: readable(item.type),
@@ -342,7 +376,7 @@
     }
 
     return {
-      id: item.id,
+      id: safeResourceID(item.id),
       name: readable(item.name),
       fields: {
         episode: readable(item.episode),
@@ -671,7 +705,7 @@
 
   function resultCardHTML(resource, item) {
     const config = RESOURCE_CONFIG[resource];
-    const href = siteURL(`${config.pathPrefix}/${item.id}`);
+    const href = item.id ? siteURL(`${config.pathPrefix}/${item.id}`) : "#";
     const media = resource === "character" && item.image
       ? `<img src="${item.image}" alt="" loading="lazy" width="300" height="300">`
       : `<span>${escapeHTML(config.singular)}</span>`;
@@ -1014,6 +1048,8 @@
       return '<p class="rick-related-status">Nenhuma pagina de wiki encontrada para este personagem.</p>';
     }
 
+    const sourceURL = safeFandomWikiURL(wiki.sourceURL);
+
     return `
       <article class="rick-wiki-panel">
         <div>
@@ -1022,9 +1058,9 @@
           <p class="rick-wiki-panel__translation">Status de traducao: ${escapeHTML(wiki.translationStatus)}</p>
         </div>
         <p class="rick-wiki-panel__text">${escapeHTML(wiki.text)}</p>
-        <a class="rick-wiki-panel__source arrow-shift" href="${escapeHTML(wiki.sourceURL)}" target="_blank" rel="noopener noreferrer">
+        ${sourceURL ? `<a class="rick-wiki-panel__source arrow-shift" href="${escapeHTML(sourceURL)}" target="_blank" rel="noopener noreferrer">
           Abrir fonte <span class="link-arrow" aria-hidden="true">-&gt;</span>
-        </a>
+        </a>` : ""}
       </article>
     `;
   }
@@ -1202,8 +1238,10 @@
   function personGridHTML(people) {
     return `
       <div class="rick-person-grid">
-        ${people.map((person) => `
-          <a class="rick-person-card" href="${siteURL(`/rick-morty/personagem/${person.id}`)}" data-app-link>
+        ${people.map((person) => {
+          const id = safeResourceID(person.id);
+          return `
+          <a class="rick-person-card" href="${id ? siteURL(`/rick-morty/personagem/${id}`) : "#"}" data-app-link>
             ${person.image ? `<img src="${safeRickURL(person.image)}" alt="" loading="lazy" width="160" height="160">` : ""}
             <div>
               <h3>${escapeHTML(readable(person.name))}</h3>
@@ -1211,7 +1249,8 @@
               <p>${escapeHTML(readable(person.species))}</p>
             </div>
           </a>
-        `).join("")}
+        `;
+        }).join("")}
       </div>
     `;
   }
