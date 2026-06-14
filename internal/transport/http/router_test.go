@@ -51,9 +51,12 @@ func TestNewRouterHome(t *testing.T) {
 	if !strings.Contains(body, `<meta http-equiv="Content-Security-Policy"`) || !strings.Contains(body, `<meta name="referrer" content="no-referrer">`) {
 		t.Fatalf("body does not contain static security metadata")
 	}
+	if strings.Contains(body, "img-src 'self' data: https:;") || strings.Contains(body, "style-src 'self' 'unsafe-inline'") {
+		t.Fatalf("body contains overly broad static CSP")
+	}
 
-	if !strings.Contains(body, `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">`) {
-		t.Fatalf("body does not contain Google Fonts stylesheet")
+	if strings.Contains(body, "fonts.googleapis.com") || strings.Contains(body, "fonts.gstatic.com") {
+		t.Fatalf("body contains external Google Fonts dependency")
 	}
 
 	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260531-errors" defer></script>`) {
@@ -879,6 +882,22 @@ func TestNewRouterHealthz(t *testing.T) {
 
 	if got := recorder.Header().Get("X-Content-Type-Options"); got != "nosniff" {
 		t.Fatalf("X-Content-Type-Options = %q, want nosniff", got)
+	}
+
+	if got := recorder.Header().Get("Cross-Origin-Opener-Policy"); got != "same-origin" {
+		t.Fatalf("Cross-Origin-Opener-Policy = %q, want same-origin", got)
+	}
+
+	if got := recorder.Header().Get("Cross-Origin-Resource-Policy"); got != "cross-origin" {
+		t.Fatalf("Cross-Origin-Resource-Policy = %q, want cross-origin", got)
+	}
+
+	if got := recorder.Header().Get("Cross-Origin-Embedder-Policy"); got != "credentialless" {
+		t.Fatalf("Cross-Origin-Embedder-Policy = %q, want credentialless", got)
+	}
+
+	if got := recorder.Header().Get("Permissions-Policy"); !strings.Contains(got, "geolocation=()") || !strings.Contains(got, "camera=()") {
+		t.Fatalf("Permissions-Policy = %q, want disabled sensitive features", got)
 	}
 
 	if got := recorder.Header().Get("X-Request-ID"); got == "" {

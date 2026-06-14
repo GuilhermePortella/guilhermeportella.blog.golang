@@ -142,8 +142,25 @@ func TestExportedSiteHasNoBrokenLocalReferences(t *testing.T) {
 		}
 	})
 
-	outputDir := filepath.Join(projectRoot, "tmp", "export-smoke")
-	defer os.RemoveAll(outputDir)
+	t.Setenv("CONTENT_DIR", filepath.Join(projectRoot, "content", "articles"))
+	t.Setenv("IMAGES_DIR", filepath.Join(projectRoot, "public", "images"))
+	t.Setenv("NOTES_DIR", filepath.Join(projectRoot, "content", "notes"))
+	t.Setenv("STATIC_DIR", filepath.Join(projectRoot, "web", "static"))
+	t.Setenv("TEMPLATES_DIR", filepath.Join(projectRoot, "web", "templates"))
+
+	tmpRoot := filepath.Join(projectRoot, "tmp")
+	if err := os.MkdirAll(tmpRoot, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	outputDir, err := os.MkdirTemp(tmpRoot, "export-smoke-*")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := os.RemoveAll(outputDir); err != nil {
+			t.Fatalf("remove export smoke dir: %v", err)
+		}
+	})
 
 	if err := run([]string{"-output", outputDir, "-base-path", "/"}); err != nil {
 		t.Fatal(err)

@@ -114,7 +114,7 @@ func newBlogArticlePageData(now time.Time, currentPath string, contentDir string
 
 func readingTimeFromHTML(value template.HTML) int {
 	text := regexp.MustCompile("<[^>]+>").ReplaceAllString(string(value), " ")
-	text = regexp.MustCompile("\\s+").ReplaceAllString(strings.TrimSpace(text), " ")
+	text = regexp.MustCompile(`\s+`).ReplaceAllString(strings.TrimSpace(text), " ")
 	if text == "" {
 		return 1
 	}
