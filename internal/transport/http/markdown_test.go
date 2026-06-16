@@ -8,6 +8,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/yuin/goldmark/ast"
 )
 
 func TestMarkdownToHTMLSupportsGFMAndControlledHTML(t *testing.T) {
@@ -221,6 +223,43 @@ func TestFrontmatterValueHelpers(t *testing.T) {
 	if got, want := stringSliceFromFrontmatter(data, "clean"), []string{"backend", "Go"}; !slices.Equal(got, want) {
 		t.Fatalf("clean = %#v, want %#v", got, want)
 	}
+
+	maps := map[string]any{
+		"seo":        map[string]string{"title": "Titulo SEO"},
+		"jsonLd":     map[string]any{"@type": "Article"},
+		"notAMap":    "texto",
+		"emptyValue": nil,
+	}
+	if got := mapFromFrontmatter(maps, "seo"); got["title"] != "Titulo SEO" {
+		t.Fatalf("mapFromFrontmatter(seo) = %#v, want converted map[string]string", got)
+	}
+	if got := mapFromFrontmatter(maps, "jsonLd"); got["@type"] != "Article" {
+		t.Fatalf("mapFromFrontmatter(jsonLd) = %#v, want map[string]any", got)
+	}
+	for _, key := range []string{"notAMap", "emptyValue", "missing"} {
+		if got := mapFromFrontmatter(maps, key); got != nil {
+			t.Fatalf("mapFromFrontmatter(%s) = %#v, want nil", key, got)
+		}
+	}
+
+	normalized := normalizeYAMLValue(map[any]any{
+		"nested": map[any]any{"title": "Titulo"},
+		"list":   []any{map[any]any{"name": "Go"}},
+	})
+	root, ok := normalized.(map[string]any)
+	if !ok {
+		t.Fatalf("normalizeYAMLValue() = %T, want map[string]any", normalized)
+	}
+	if nested, ok := root["nested"].(map[string]any); !ok || nested["title"] != "Titulo" {
+		t.Fatalf("normalized nested map = %#v, want string-keyed map", root["nested"])
+	}
+	list, ok := root["list"].([]any)
+	if !ok || len(list) != 1 {
+		t.Fatalf("normalized list = %#v, want one item", root["list"])
+	}
+	if item, ok := list[0].(map[string]any); !ok || item["name"] != "Go" {
+		t.Fatalf("normalized list item = %#v, want string-keyed map", list[0])
+	}
 }
 
 func TestNormalizeSlug(t *testing.T) {
@@ -239,6 +278,88 @@ func TestNormalizeSlug(t *testing.T) {
 				t.Fatalf("normalizeSlug(%q) = %q, want %q", test.raw, got, test.want)
 			}
 		})
+	}
+}
+
+func TestMarkdownIDsGenerateStableFallbacksAndDuplicates(t *testing.T) {
+	ids := newMarkdownIDs()
+
+	tests := []struct {
+		name string
+		raw  string
+		kind ast.NodeKind
+		want string
+	}{
+		{name: "normalized markdown text", raw: "Olá **Mundo**", kind: ast.KindHeading, want: "ola-mundo"},
+		{name: "duplicate normalized text", raw: "Olá mundo", kind: ast.KindHeading, want: "ola-mundo-1"},
+		{name: "empty heading", raw: "!!!", kind: ast.KindHeading, want: "heading"},
+		{name: "empty non heading", raw: "???", kind: ast.KindParagraph, want: "id"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if got := string(ids.Generate([]byte(test.raw), test.kind)); got != test.want {
+				t.Fatalf("Generate(%q) = %q, want %q", test.raw, got, test.want)
+			}
+		})
+	}
+
+	ids.Put([]byte("reserved"))
+	if got := string(ids.Generate([]byte("reserved"), ast.KindHeading)); got != "reserved-1" {
+		t.Fatalf("Generate(reserved) = %q, want reserved-1", got)
+	}
+}
+
+func TestEmojiSequenceEndRecognizesKeycapRegionalAndIncompleteZWJ(t *testing.T) {
+	tests := []struct {
+		name     string
+		text     string
+		sequence string
+	}{
+		{name: "keycap", text: "A 1️⃣ ok", sequence: "1️⃣"},
+		{name: "regional indicator pair", text: "A 🇧🇷 ok", sequence: "🇧🇷"},
+		{name: "emoji with modifier", text: "A 👍🏽 ok", sequence: "👍🏽"},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			start := strings.Index(test.text, test.sequence)
+			if start < 0 {
+				t.Fatalf("test text %q does not contain sequence %q", test.text, test.sequence)
+			}
+			if got := test.text[start:emojiSequenceEnd(test.text, start)]; got != test.sequence {
+				t.Fatalf("emojiSequenceEnd() captured %q, want %q", got, test.sequence)
+			}
+		})
+	}
+
+	incomplete := "👨‍ texto"
+	if got := incomplete[:emojiSequenceEnd(incomplete, 0)]; got != "👨" {
+		t.Fatalf("emojiSequenceEnd(incomplete ZWJ) captured %q, want 👨", got)
+	}
+	if got := emojiSequenceEnd("texto", 0); got != 0 {
+		t.Fatalf("emojiSequenceEnd(non emoji) = %d, want 0", got)
+	}
+}
+
+func TestIsEmojiStarterCoversSupportedRanges(t *testing.T) {
+	for _, value := range []rune{
+		0x1f642,
+		0x2600,
+		0x231a,
+		0x2b50,
+		0x2194,
+		0x2934,
+		0x25aa,
+		0x00a9,
+	} {
+		if !isEmojiStarter(value) {
+			t.Fatalf("isEmojiStarter(%U) = false, want true", value)
+		}
+	}
+
+	if isEmojiStarter('A') {
+		t.Fatal("isEmojiStarter('A') = true, want false")
 	}
 }
 
