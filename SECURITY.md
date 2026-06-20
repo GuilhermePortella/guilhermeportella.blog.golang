@@ -34,9 +34,11 @@ make test-shuffle
 make cover
 make semgrep
 make zap
+make docker-prune
 ```
 
 `make zap` requer Docker/Colima e grava os relatórios do OWASP ZAP em `tmp/zap/`.
+`make docker-prune` ajuda a limpar imagens e cache Docker criados por varreduras locais.
 
 No deploy estatico em GitHub Pages, headers como `X-Frame-Options` e diretivas CSP
 que precisam ser enviadas pelo servidor nao acompanham o artefato HTML. Se essas

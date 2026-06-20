@@ -11,9 +11,9 @@ ZAP_PORT ?= 18080
 ZAP_REPORT_DIR ?= tmp/zap
 COVER_HTTP_MIN ?= 85.0
 COVER_CONFIG_MIN ?= 90.0
-COVER_EXPORT_MIN ?= 75.0
+COVER_EXPORT_MIN ?= 80.0
 
-.PHONY: help fmt fmt-check vet staticcheck content-lint test test-shuffle cover cover-check vuln secrets security semgrep zap run build export ci clean
+.PHONY: help fmt fmt-check vet staticcheck content-lint test test-shuffle cover cover-check vuln secrets security semgrep zap docker-prune run build export ci clean
 
 help: ## Lista os comandos disponiveis.
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "%-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -100,6 +100,9 @@ zap: ## Executa OWASP ZAP baseline contra o servidor local em Docker.
 	done; \
 	if test "$$ready" != "1"; then cat "$(ZAP_REPORT_DIR)/server.log"; echo "server did not become ready"; exit 1; fi; \
 	$(DOCKER) run --rm --add-host=host.docker.internal:host-gateway -v "$(CURDIR)/$(ZAP_REPORT_DIR):/zap/wrk:rw" $(ZAP_IMAGE) zap-baseline.py -I -t "http://host.docker.internal:$(ZAP_PORT)" -r zap-baseline.html -J zap-baseline.json -w zap-baseline.md
+
+docker-prune: ## Remove imagens, containers, redes e cache Docker nao usados.
+	$(DOCKER) system prune -a -f
 
 run: ## Inicia o servidor local.
 	$(GO) run ./cmd/blog

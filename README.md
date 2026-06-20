@@ -109,9 +109,11 @@ make cover
 make cover-check
 make semgrep
 make zap
+make docker-prune
 ```
 
 `make semgrep` usa uma instalacao local do Semgrep quando existir, ou Docker como fallback. `make zap` sobe o servidor local, executa OWASP ZAP baseline via Docker e grava os relatórios em `tmp/zap/`.
+`make docker-prune` remove imagens, containers, redes e cache Docker nao usados, util depois de rodadas com ferramentas em container.
 
 ## Publicacao no GitHub Pages
 
