@@ -12,7 +12,9 @@ Estrutura inicial para um site estilo blog em Go. A base usa a biblioteca padrao
 ```sh
 make fmt
 make vet
+make content-lint
 make test
+make cover-check
 make run
 make build
 make export
@@ -71,6 +73,8 @@ Texto do artigo.
 
 O corpo dos artigos aceita Markdown padrao, GFM, tabelas, quebras de linha, HTML controlado, imagens, video/audio, emojis via Twemoji e formulas com KaTeX (`$inline$` ou `$$bloco$$`). O HTML final passa por sanitizacao antes de ser renderizado, e os headings `h2`/`h3` recebem ids para alimentar o sumario da pagina.
 
+Antes de publicar, `make content-lint` valida frontmatter, datas, slugs duplicados e corpo minimo dos artigos e notas.
+
 As notas curtas ficam em `content/notes/**/*.md`:
 
 ```text
@@ -92,6 +96,24 @@ Texto curto da nota.
 ## Configuracao
 
 Copie as variaveis de `.env.example` para o ambiente do processo quando necessario. O projeto nao carrega arquivos `.env` automaticamente para evitar dependencia externa no bootstrap.
+
+## Qualidade e seguranca
+
+`make ci` roda formatacao, lint de conteudo, verificacoes de seguranca, analise estatica, testes com race detector, limites minimos de cobertura, build e export.
+
+Comandos complementares:
+
+```sh
+make test-shuffle
+make cover
+make cover-check
+make semgrep
+make zap
+make docker-prune
+```
+
+`make semgrep` usa uma instalacao local do Semgrep quando existir, ou Docker como fallback. `make zap` sobe o servidor local, executa OWASP ZAP baseline via Docker e grava os relatórios em `tmp/zap/`.
+`make docker-prune` remove imagens, containers, redes e cache Docker nao usados, util depois de rodadas com ferramentas em container.
 
 ## Publicacao no GitHub Pages
 

@@ -467,6 +467,118 @@ func TestWriteFeed(t *testing.T) {
 	}
 }
 
+func TestRSSPubDateSupportsRFC3339AndInvalidValues(t *testing.T) {
+	tests := []struct {
+		name string
+		raw  string
+		want string
+	}{
+		{name: "date only", raw: "2026-05-04", want: "Mon, 04 May 2026 00:00:00 +0000"},
+		{name: "rfc3339", raw: "2026-05-04T18:20:30-03:00", want: "Mon, 04 May 2026 21:20:30 +0000"},
+		{name: "invalid", raw: "sem data", want: ""},
+		{name: "blank", raw: " ", want: ""},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			if got := rssPubDate(test.raw); got != test.want {
+				t.Fatalf("rssPubDate(%q) = %q, want %q", test.raw, got, test.want)
+			}
+		})
+	}
+}
+
+func TestCopyHelpersCopyFilesAndDirectories(t *testing.T) {
+	root := t.TempDir()
+	sourceDir := filepath.Join(root, "source")
+	if err := os.MkdirAll(filepath.Join(sourceDir, "nested"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(sourceDir, "nested", "file.txt"), []byte("conteudo"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	destinationDir := filepath.Join(root, "destination")
+	if err := copyDir(sourceDir, destinationDir); err != nil {
+		t.Fatalf("copyDir() error = %v", err)
+	}
+	assertFileContent(t, filepath.Join(destinationDir, "nested", "file.txt"), "conteudo")
+
+	if err := copyDirIfExists(filepath.Join(root, "missing-dir"), filepath.Join(root, "unused")); err != nil {
+		t.Fatalf("copyDirIfExists(missing) error = %v", err)
+	}
+	if err := copyDirIfExists(filepath.Join(sourceDir, "nested", "file.txt"), filepath.Join(root, "bad-dir")); err == nil {
+		t.Fatal("copyDirIfExists(file) error = nil, want error")
+	}
+
+	sourceFile := filepath.Join(root, "source-file.txt")
+	if err := os.WriteFile(sourceFile, []byte("arquivo"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	destinationFile := filepath.Join(root, "copied", "file.txt")
+	if err := copyFile(sourceFile, destinationFile); err != nil {
+		t.Fatalf("copyFile() error = %v", err)
+	}
+	assertFileContent(t, destinationFile, "arquivo")
+
+	if err := copyFileIfExists(filepath.Join(root, "missing-file.txt"), filepath.Join(root, "unused-file.txt")); err != nil {
+		t.Fatalf("copyFileIfExists(missing) error = %v", err)
+	}
+	if err := copyFileIfExists(sourceDir, filepath.Join(root, "bad-file.txt")); err == nil {
+		t.Fatal("copyFileIfExists(directory) error = nil, want error")
+	}
+}
+
+func TestResetOutputDirRecreatesDirectoryAndRejectsFiles(t *testing.T) {
+	projectRoot, err := findProjectRoot()
+	if err != nil {
+		t.Fatal(err)
+	}
+	tmpRoot := filepath.Join(projectRoot, "tmp")
+	if err := os.MkdirAll(tmpRoot, 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	outputDir, err := os.MkdirTemp(tmpRoot, "reset-output-*")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := os.RemoveAll(outputDir); err != nil {
+			t.Fatalf("remove output dir: %v", err)
+		}
+	})
+
+	staleFile := filepath.Join(outputDir, "stale.txt")
+	if err := os.WriteFile(staleFile, []byte("stale"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := resetOutputDir(outputDir); err != nil {
+		t.Fatalf("resetOutputDir() error = %v", err)
+	}
+	if _, err := os.Stat(staleFile); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("stale file stat error = %v, want not exist", err)
+	}
+	if info, err := os.Stat(outputDir); err != nil || !info.IsDir() {
+		t.Fatalf("output dir stat = (%v, %v), want existing dir", info, err)
+	}
+
+	outputFile := filepath.Join(tmpRoot, "reset-output-file")
+	if err := os.WriteFile(outputFile, []byte("not a dir"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := os.Remove(outputFile); err != nil && !errors.Is(err, os.ErrNotExist) {
+			t.Fatalf("remove output file: %v", err)
+		}
+	})
+
+	if err := resetOutputDir(outputFile); err == nil {
+		t.Fatal("resetOutputDir(file) error = nil, want error")
+	}
+}
+
 func localHTMLReferences(root *html.Node) []string {
 	var refs []string
 	var walk func(*html.Node)
@@ -488,6 +600,18 @@ func localHTMLReferences(root *html.Node) []string {
 	walk(root)
 
 	return refs
+}
+
+func assertFileContent(t *testing.T, path string, want string) {
+	t.Helper()
+
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("ReadFile(%q) error = %v", path, err)
+	}
+	if string(raw) != want {
+		t.Fatalf("ReadFile(%q) = %q, want %q", path, raw, want)
+	}
 }
 
 func isReferenceAttr(node *html.Node, key string) bool {
