@@ -96,6 +96,7 @@ func TestNewSiteNavigationActiveRoutes(t *testing.T) {
 		{name: "game page", path: "/jogos/memoria-relampago", wantActive: "Jogos"},
 		{name: "games alias", path: "/games/", wantActive: "Jogos"},
 		{name: "about", path: "/about/", wantActive: "Sobre"},
+		{name: "astronomy app", path: "/astronomia", wantActive: "Curiosidades"},
 		{name: "trailing slash", path: "/curiosidades/", wantActive: "Curiosidades"},
 		{name: "rick and morty curiosity", path: "/curiosidades/rick-and-morty", wantActive: "Curiosidades"},
 		{name: "rick and morty app", path: "/rick-morty/personagem/1", wantActive: "Curiosidades"},
@@ -474,6 +475,9 @@ func TestNewRouterCuriosidades(t *testing.T) {
 		`id="apis"`,
 		`Exploradores de dados`,
 		`Pequenas interfaces para brincar com APIs publicas sem sair do site.`,
+		`NASA APOD`,
+		`href="/astronomia" target="_blank" rel="noopener noreferrer"`,
+		`https://api.nasa.gov/planetary/apod`,
 		`Rick and Morty API`,
 		`id="colecao"`,
 		`Interstellar (Nolan)`,
@@ -512,6 +516,65 @@ func TestNewRouterCuriosidades(t *testing.T) {
 	}
 }
 
+func TestNewRouterAstronomia(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/astronomia", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+
+	body := recorder.Body.String()
+	for _, expected := range []string{
+		`<div class="astronomy-page" data-nasa-apod-app data-api-url="https://api.nasa.gov/planetary/apod" data-eonet-url="https://eonet.gsfc.nasa.gov/api/v3/events">`,
+		`<title>Astronomia</title>`,
+		`<link rel="canonical" href="/astronomia/">`,
+		`<a href="/curiosidades" class="active" aria-current="page">Curiosidades</a>`,
+		`/static/js/nasa-apod-app.js?v=20260620-apod-eonet`,
+		`Astronomy Picture of the Day`,
+		`EONET Natural Event Tracker`,
+		`data-eonet-category`,
+		`data-eonet-event-status`,
+		`data-eonet-events`,
+		`Amostras aleatorias`,
+		`Esta pagina precisa de JavaScript para consultar a API APOD da NASA.`,
+		`connect-src 'self' https://api.github.com https://api.nasa.gov https://eonet.gsfc.nasa.gov`,
+		`https://apod.nasa.gov`,
+		`https://img.youtube.com`,
+		`frame-src https://open.spotify.com https://www.youtube.com https://www.youtube-nocookie.com`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("body does not contain %q", expected)
+		}
+	}
+
+	for _, unwanted := range []string{
+		"DEMO" + "_KEY",
+		"data-apod-" + "key",
+		"data-apod-save-" + "key",
+		"API " + "key",
+	} {
+		if strings.Contains(body, unwanted) {
+			t.Fatalf("body contains %q", unwanted)
+		}
+	}
+
+	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "https://api.nasa.gov") || !strings.Contains(got, "https://eonet.gsfc.nasa.gov") {
+		t.Fatalf("Content-Security-Policy = %q, want NASA and EONET connect-src", got)
+	}
+
+	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "https://apod.nasa.gov") || !strings.Contains(got, "https://www.nasa.gov") {
+		t.Fatalf("Content-Security-Policy = %q, want NASA image domains", got)
+	}
+
+	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "frame-src https://open.spotify.com https://www.youtube.com https://www.youtube-nocookie.com") {
+		t.Fatalf("Content-Security-Policy = %q, want YouTube frame-src", got)
+	}
+}
+
 func TestNewRouterRickAndMorty(t *testing.T) {
 	handler := newTestRouter(t)
 	request := httptest.NewRequest(http.MethodGet, "/rick-morty", nil)
@@ -528,7 +591,8 @@ func TestNewRouterRickAndMorty(t *testing.T) {
 		`<div class="rick-app-root" data-rick-morty-app data-url="/rick-morty">`,
 		`<title>Rick and Morty API</title>`,
 		`<link rel="canonical" href="/rick-morty/">`,
-		`connect-src 'self' https://api.github.com https://rickandmortyapi.com https://rickandmorty.fandom.com`,
+		`https://rickandmortyapi.com`,
+		`https://rickandmorty.fandom.com`,
 		`<a href="/curiosidades" class="active" aria-current="page">Curiosidades</a>`,
 		`/static/js/rick-and-morty-app.js?v=20260522-go-static`,
 		`Rick and Morty API`,
@@ -539,7 +603,7 @@ func TestNewRouterRickAndMorty(t *testing.T) {
 		}
 	}
 
-	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "connect-src 'self' https://api.github.com https://rickandmortyapi.com https://rickandmorty.fandom.com") {
+	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "https://rickandmortyapi.com") || !strings.Contains(got, "https://rickandmorty.fandom.com") {
 		t.Fatalf("Content-Security-Policy = %q, want Rick and Morty and Fandom connect-src", got)
 	}
 }
