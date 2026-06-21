@@ -25,6 +25,7 @@ var staticPageRoutes = map[string]struct{}{
 	"/":                            {},
 	"/404":                         {},
 	"/about":                       {},
+	"/astronomia":                  {},
 	"/articles":                    {},
 	"/blog":                        {},
 	"/curiosidades":                {},

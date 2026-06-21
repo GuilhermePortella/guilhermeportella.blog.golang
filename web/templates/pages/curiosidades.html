@@ -100,7 +100,7 @@
             <li>{{.}}</li>
             {{end}}
           </ul>
-          <a class="curiosity-api-card__link arrow-shift" href="{{.URL}}">
+          <a class="curiosity-api-card__link arrow-shift" href="{{.URL}}"{{if .NewTab}} target="_blank" rel="noopener noreferrer"{{end}}>
             Abrir portal <span class="link-arrow" aria-hidden="true">-&gt;</span>
           </a>
         </div>

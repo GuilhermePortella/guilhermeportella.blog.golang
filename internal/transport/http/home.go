@@ -267,6 +267,9 @@ func newSiteNavigation(currentPath string) []siteNavLink {
 	if pathname == "/games" || strings.HasPrefix(pathname, "/games/") {
 		pathname = "/jogos"
 	}
+	if pathname == "/astronomia" || strings.HasPrefix(pathname, "/astronomia/") {
+		pathname = "/curiosidades"
+	}
 	if pathname == "/rick-morty" || strings.HasPrefix(pathname, "/rick-morty/") {
 		pathname = "/curiosidades"
 	}

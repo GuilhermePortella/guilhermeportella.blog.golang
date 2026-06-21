@@ -1,0 +1,120 @@
+{{define "astronomia"}}{{template "base" .}}{{end}}
+
+{{define "head-extra"}}
+    <script src="/static/js/nasa-apod-app.js?v=20260620-apod-eonet" defer></script>
+{{end}}
+
+{{define "content"}}
+<div class="astronomy-page" data-nasa-apod-app data-api-url="https://api.nasa.gov/planetary/apod" data-eonet-url="https://eonet.gsfc.nasa.gov/api/v3/events">
+  <section class="astronomy-hero" aria-labelledby="astronomy-title">
+    <div class="container astronomy-hero__grid">
+      <div class="astronomy-hero__copy">
+        <a class="astronomy-back arrow-shift" href="/curiosidades">Voltar para curiosidades <span class="link-arrow" aria-hidden="true">-&gt;</span></a>
+        <p class="astronomy-kicker">nasa apod</p>
+        <h1 id="astronomy-title">Astronomia como uma janela diaria para o universo.</h1>
+        <p class="astronomy-hero__lead">Fotos, videos e explicacoes da Astronomy Picture of the Day em uma interface mais direta, escura e feita para explorar sem pressa.</p>
+      </div>
+
+      <aside class="astronomy-command" aria-label="Resumo da missao">
+        <div class="astronomy-command__row">
+          <span>APOD</span>
+          <strong data-apod-status>Inicializando</strong>
+        </div>
+        <div class="astronomy-command__row">
+          <span>EONET</span>
+          <strong data-eonet-status>Inicializando</strong>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section class="astronomy-console" aria-labelledby="astronomy-console-title">
+    <div class="astronomy-console__header">
+      <div>
+        <p class="astronomy-kicker">controle</p>
+        <h2 id="astronomy-console-title">Astronomy Picture of the Day</h2>
+      </div>
+      <form class="astronomy-search" data-apod-form>
+        <label class="astronomy-field" for="apod-date">
+          <span>Data</span>
+          <input id="apod-date" type="date" min="1995-06-16" data-apod-date>
+        </label>
+        <button type="submit">Buscar</button>
+        <button type="button" data-apod-today>Hoje</button>
+      </form>
+    </div>
+
+    <div class="astronomy-message" role="status" data-apod-message>Carregando imagem do dia.</div>
+
+    <div class="astronomy-feature" data-apod-feature aria-live="polite">
+      <article class="astronomy-skeleton">
+        <div></div>
+        <div>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="astronomy-gallery-section" aria-labelledby="astronomy-gallery-title">
+    <div class="astronomy-gallery-section__header">
+      <div>
+        <p class="astronomy-kicker">arquivo</p>
+        <h2 id="astronomy-gallery-title">Amostras aleatorias</h2>
+      </div>
+      <button class="astronomy-refresh" type="button" data-apod-random>Atualizar amostras</button>
+    </div>
+    <div class="astronomy-gallery" data-apod-gallery>
+      <p class="astronomy-message">Preparando uma pequena galeria.</p>
+    </div>
+  </section>
+
+  <section class="astronomy-eonet-section" aria-labelledby="astronomy-eonet-title">
+    <div class="astronomy-eonet-section__header">
+      <div>
+        <p class="astronomy-kicker">terra em tempo quase real</p>
+        <h2 id="astronomy-eonet-title">EONET Natural Event Tracker</h2>
+        <p>Eventos naturais curados pela NASA, com categoria, fonte, localização e geometria mais recente.</p>
+      </div>
+      <form class="astronomy-eonet-controls" data-eonet-form>
+        <label class="astronomy-field" for="eonet-category">
+          <span>Categoria</span>
+          <select id="eonet-category" data-eonet-category>
+            <option value="">Todas</option>
+            <option value="wildfires">Wildfires</option>
+            <option value="severeStorms">Severe Storms</option>
+            <option value="volcanoes">Volcanoes</option>
+            <option value="floods">Floods</option>
+            <option value="seaLakeIce">Sea and Lake Ice</option>
+            <option value="earthquakes">Earthquakes</option>
+          </select>
+        </label>
+        <label class="astronomy-field" for="eonet-status">
+          <span>Status</span>
+          <select id="eonet-status" data-eonet-event-status>
+            <option value="open">Ativos</option>
+            <option value="all">Todos</option>
+            <option value="closed">Encerrados</option>
+          </select>
+        </label>
+        <button type="submit">Atualizar</button>
+      </form>
+    </div>
+
+    <div class="astronomy-eonet-summary" data-eonet-summary aria-live="polite">
+      <p class="astronomy-message">Carregando eventos naturais.</p>
+    </div>
+    <div class="astronomy-eonet-grid" data-eonet-events>
+      <article class="astronomy-eonet-card astronomy-eonet-card--skeleton"></article>
+      <article class="astronomy-eonet-card astronomy-eonet-card--skeleton"></article>
+      <article class="astronomy-eonet-card astronomy-eonet-card--skeleton"></article>
+    </div>
+  </section>
+</div>
+
+<noscript>
+  <p class="astronomy-noscript">Esta pagina precisa de JavaScript para consultar a API APOD da NASA.</p>
+</noscript>
+{{end}}
