@@ -51,6 +51,7 @@ func TestShouldExportRoute(t *testing.T) {
 		{route: "/", want: true},
 		{route: "/404", want: true},
 		{route: "/erro", want: true},
+		{route: "/astronomia", want: true},
 		{route: "/blog", want: true},
 		{route: "/blog/um-post", want: true},
 		{route: "/jogos", want: true},
@@ -87,6 +88,7 @@ func TestRouteOutputPath(t *testing.T) {
 		{route: "/", want: filepath.Join("dist", "index.html")},
 		{route: "/404", want: filepath.Join("dist", "404.html")},
 		{route: "/erro", want: filepath.Join("dist", "erro", "index.html")},
+		{route: "/astronomia", want: filepath.Join("dist", "astronomia", "index.html")},
 		{route: "/blog", want: filepath.Join("dist", "blog", "index.html")},
 		{route: "/blog/um-post", want: filepath.Join("dist", "blog", "um-post", "index.html")},
 		{route: "/jogos", want: filepath.Join("dist", "jogos", "index.html")},
@@ -318,6 +320,7 @@ func TestCanonicalSitemapRoute(t *testing.T) {
 	}{
 		{route: "/", want: "/"},
 		{route: "/about", want: "/about/"},
+		{route: "/astronomia", want: "/astronomia/"},
 		{route: "/curiosidades", want: "/curiosidades/"},
 		{route: "/jogos", want: "/jogos/"},
 		{route: "/jogos/snake", want: "/jogos/snake/"},
@@ -349,6 +352,7 @@ func TestWriteSitemapAndRobots(t *testing.T) {
 		"/",
 		"/404",
 		"/about",
+		"/astronomia",
 		"/articles",
 		"/blog",
 		"/blog/um-comeco-sem-pressa",
@@ -395,6 +399,7 @@ func TestWriteSitemapAndRobots(t *testing.T) {
 	}
 	for _, want := range []string{
 		"https://example.com/repo/",
+		"https://example.com/repo/astronomia/",
 		"https://example.com/repo/blog",
 		"https://example.com/repo/blog/um-comeco-sem-pressa",
 		"https://example.com/repo/jogos/snake/",

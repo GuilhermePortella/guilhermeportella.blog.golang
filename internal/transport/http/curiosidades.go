@@ -54,6 +54,7 @@ type curiosidadesAPICard struct {
 	Description string
 	URL         string
 	Source      string
+	NewTab      bool
 	Tags        []string
 }
 
@@ -166,6 +167,18 @@ func newCuriosidadesPageData(now time.Time, currentPath string) curiosidadesPage
 			},
 		},
 		APIs: []curiosidadesAPICard{
+			{
+				Title:       "NASA APOD",
+				Description: "Uma janela para fotos, videos e explicacoes astronomicas da Astronomy Picture of the Day.",
+				URL:         "/astronomia",
+				Source:      "https://api.nasa.gov/planetary/apod",
+				NewTab:      true,
+				Tags: []string{
+					"NASA",
+					"APOD",
+					"astronomia",
+				},
+			},
 			{
 				Title:       "Rick and Morty API",
 				Description: "Portal para explorar personagens, locais e episodios consumidos da API publica oficial.",

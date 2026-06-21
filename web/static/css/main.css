@@ -8,6 +8,7 @@
 @import url("./pages/games.css?v=20260605-css-split");
 @import url("./pages/notes.css?v=20260605-css-split");
 @import url("./pages/article.css?v=20260605-css-split");
+@import url("./pages/astronomy.css?v=20260620-apod");
 
 /* Shared components */
 @import url("./components/faq.css?v=20260605-css-split");
