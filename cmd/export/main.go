@@ -40,6 +40,8 @@ var staticPageRoutes = map[string]struct{}{
 	"/projetos":                    {},
 }
 
+var nasaAPODEndpoint = "https://api.nasa.gov/planetary/apod"
+
 const (
 	publicDirMode  os.FileMode = 0o755
 	publicFileMode os.FileMode = 0o644
@@ -249,12 +251,11 @@ func (exporter exporter) writeNASAData() error {
 }
 
 func fetchNASAData(client *http.Client, name string, params url.Values) ([]byte, error) {
-	endpoint := url.URL{
-		Scheme:   "https",
-		Host:     "api.nasa.gov",
-		Path:     "/planetary/apod",
-		RawQuery: params.Encode(),
+	endpoint, err := url.Parse(nasaAPODEndpoint)
+	if err != nil {
+		return nil, fmt.Errorf("parse NASA APOD endpoint: %w", err)
 	}
+	endpoint.RawQuery = params.Encode()
 
 	request, err := http.NewRequest(http.MethodGet, endpoint.String(), nil)
 	if err != nil {
