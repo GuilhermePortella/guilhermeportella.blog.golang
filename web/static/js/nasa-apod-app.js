@@ -5,7 +5,8 @@
     return;
   }
 
-  const API_URL = root.dataset.apiUrl || "https://api.nasa.gov/planetary/apod";
+  const APOD_TODAY_URL = root.dataset.apodTodayUrl || "/static/data/nasa/apod-today.json";
+  const APOD_RANDOM_URL = root.dataset.apodRandomUrl || "/static/data/nasa/apod-random.json";
   const EONET_URL = root.dataset.eonetUrl || "https://eonet.gsfc.nasa.gov/api/v3/events";
   const APOD_START = "1995-06-16";
   const CACHE_PREFIX = "gp:nasa-apod:";
@@ -70,8 +71,15 @@
     setMessage("Buscando o registro APOD selecionado.");
     feature?.replaceChildren(skeleton());
 
+    if (date !== today) {
+      setStatus("Arquivo");
+      setMessage("A busca por datas especificas usa o arquivo oficial da APOD para manter a chave fora do navegador.");
+      renderAPODArchiveState(date);
+      return;
+    }
+
     try {
-      const item = await fetchAPOD(`date:${date}`, { date, thumbs: "true" });
+      const item = await fetchAPODJSON("apod-today", APOD_TODAY_URL);
       renderFeature(item);
       setStatus("Online");
       setMessage(`Registro de ${formatDate(item.date || date)} carregado.`);
@@ -90,8 +98,7 @@
     gallery.replaceChildren(galleryLoading());
 
     try {
-      const key = forceRefresh ? `random:${Date.now()}` : "random:6";
-      const items = await fetchAPOD(key, { count: "6", thumbs: "true" });
+      const items = await fetchAPODJSON("apod-random", APOD_RANDOM_URL, forceRefresh);
       const list = Array.isArray(items) ? items : [items];
       renderGallery(list);
     } catch {
@@ -127,22 +134,21 @@
     }
   }
 
-  async function fetchAPOD(cacheKey, params) {
-    const cached = readCache(cacheKey);
+  async function fetchAPODJSON(cacheKey, sourceURL, forceRefresh = false) {
+    const cached = forceRefresh ? null : readCache(cacheKey);
 
     if (cached) {
       return cached;
     }
 
-    const url = new URL(API_URL);
-    for (const [key, value] of Object.entries(params)) {
-      url.searchParams.set(key, value);
+    const url = new URL(sourceURL, window.location.href);
+    if (forceRefresh) {
+      url.searchParams.set("v", String(Date.now()));
     }
-
     const response = await fetch(url.href, { headers: { Accept: "application/json" } });
 
     if (!response.ok) {
-      throw new Error(response.status === 429 ? "Limite temporario da NASA atingido." : "A NASA retornou uma resposta inesperada.");
+      throw new Error("Dados APOD ainda nao foram publicados no build estatico.");
     }
 
     const payload = await response.json();
@@ -408,8 +414,30 @@
 
     const empty = document.createElement("article");
     empty.className = "astronomy-state";
-    empty.innerHTML = "<h3>Contato perdido</h3><p>A consulta falhou. O limite publico da NASA pode ter sido atingido ou o servico pode estar indisponivel.</p>";
+    empty.innerHTML = "<h3>Dados nao publicados</h3><p>A APOD precisa ser gerada no export estatico com a chave da NASA configurada nos segredos do GitHub Actions.</p>";
     feature.replaceChildren(empty);
+  }
+
+  function renderAPODArchiveState(date) {
+    if (!feature) {
+      return;
+    }
+
+    const state = document.createElement("article");
+    state.className = "astronomy-state";
+
+    const title = document.createElement("h3");
+    title.textContent = "Arquivo APOD";
+
+    const text = document.createElement("p");
+    text.textContent = `Para ${formatDate(date)}, abra o artigo oficial da NASA. A busca dinamica por data precisa de um proxy para proteger a chave da API.`;
+
+    const links = document.createElement("div");
+    links.className = "astronomy-apod__links";
+    appendExternalLink(links, apodArticleURL(date), "Abrir artigo APOD");
+
+    state.append(title, text, links);
+    feature.replaceChildren(state);
   }
 
   function skeleton() {

@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"slices"
 	"strings"
+	"time"
 
 	"github.com/guilhermeportella/guilhermeportella.github.io/internal/config"
 	httptransport "github.com/guilhermeportella/guilhermeportella.github.io/internal/transport/http"
@@ -157,6 +158,10 @@ func (exporter exporter) Export() error {
 		return fmt.Errorf("write .nojekyll: %w", err)
 	}
 
+	if err := exporter.writeNASAData(); err != nil {
+		return err
+	}
+
 	routes, err := exporter.collectRoutes()
 	if err != nil {
 		return err
@@ -192,6 +197,100 @@ func (exporter exporter) Export() error {
 	}
 
 	return nil
+}
+
+func (exporter exporter) writeNASAData() error {
+	apiKey := strings.TrimSpace(os.Getenv("NASA_API_KEY"))
+	if apiKey == "" {
+		return nil
+	}
+
+	outputDir := filepath.Join(exporter.outputDir, "static", "data", "nasa")
+	client := &http.Client{Timeout: 30 * time.Second}
+	today := time.Now().UTC()
+	startDate := today.AddDate(0, 0, -5).Format("2006-01-02")
+	endDate := today.Format("2006-01-02")
+
+	requests := []struct {
+		name   string
+		path   string
+		params url.Values
+	}{
+		{
+			name: "today",
+			path: filepath.Join(outputDir, "apod-today.json"),
+			params: url.Values{
+				"thumbs": {"true"},
+			},
+		},
+		{
+			name: "random",
+			path: filepath.Join(outputDir, "apod-random.json"),
+			params: url.Values{
+				"end_date":   {endDate},
+				"start_date": {startDate},
+				"thumbs":     {"true"},
+			},
+		},
+	}
+
+	for _, item := range requests {
+		item.params.Set("api_key", apiKey)
+		body, err := fetchNASAData(client, item.name, item.params)
+		if err != nil {
+			return err
+		}
+		if err := writePublicFile(item.path, body); err != nil {
+			return fmt.Errorf("write NASA APOD %s data: %w", item.name, err)
+		}
+	}
+
+	return nil
+}
+
+func fetchNASAData(client *http.Client, name string, params url.Values) ([]byte, error) {
+	endpoint := url.URL{
+		Scheme:   "https",
+		Host:     "api.nasa.gov",
+		Path:     "/planetary/apod",
+		RawQuery: params.Encode(),
+	}
+
+	request, err := http.NewRequest(http.MethodGet, endpoint.String(), nil)
+	if err != nil {
+		return nil, fmt.Errorf("build NASA APOD %s request: %w", name, err)
+	}
+	request.Header.Set("Accept", "application/json")
+
+	var lastErr error
+	for attempt := 1; attempt <= 3; attempt++ {
+		response, err := client.Do(request.Clone(request.Context()))
+		if err != nil {
+			lastErr = err
+			time.Sleep(time.Duration(attempt) * time.Second)
+			continue
+		}
+
+		body, readErr := io.ReadAll(io.LimitReader(response.Body, 2<<20))
+		closeErr := response.Body.Close()
+		if readErr != nil {
+			return nil, fmt.Errorf("read NASA APOD %s data: %w", name, readErr)
+		}
+		if closeErr != nil {
+			return nil, fmt.Errorf("close NASA APOD %s response: %w", name, closeErr)
+		}
+		if response.StatusCode == http.StatusOK {
+			return body, nil
+		}
+
+		lastErr = fmt.Errorf("unexpected status %d", response.StatusCode)
+		if response.StatusCode != http.StatusTooManyRequests && response.StatusCode < http.StatusInternalServerError {
+			break
+		}
+		time.Sleep(time.Duration(attempt) * time.Second)
+	}
+
+	return nil, fmt.Errorf("fetch NASA APOD %s data: %w", name, lastErr)
 }
 
 func (exporter exporter) collectRoutes() ([]string, error) {
@@ -359,7 +458,7 @@ func shouldRewriteAttribute(node *html.Node, key string) bool {
 	case "content":
 		return node.Data == "meta"
 	default:
-		return false
+		return strings.HasPrefix(key, "data-") && strings.HasSuffix(key, "-url")
 	}
 }
 
