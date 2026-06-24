@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"encoding/xml"
 	"errors"
+	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"os"
 	"path"
@@ -112,17 +114,95 @@ func TestRouteOutputPath(t *testing.T) {
 }
 
 func TestRewriteRootRelativeURLs(t *testing.T) {
-	raw := []byte(`<html><head><link rel="canonical" href="/blog"></head><body><a href="/">Home</a><img src="/static/img.png"><a data-url="/blog/post" href="#fim">Fim</a></body></html>`)
+	raw := []byte(`<html><head><link rel="canonical" href="/blog"></head><body><a href="/">Home</a><img src="/static/img.png"><section data-apod-today-url="/static/data/nasa/apod-today.json"></section><a data-url="/blog/post" href="#fim">Fim</a></body></html>`)
 	got, err := rewriteRootRelativeURLs(raw, "/repo")
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	output := string(got)
-	for _, want := range []string{`href="/repo/blog"`, `href="/repo/"`, `src="/repo/static/img.png"`, `data-url="/repo/blog/post"`, `href="#fim"`} {
+	for _, want := range []string{`href="/repo/blog"`, `href="/repo/"`, `src="/repo/static/img.png"`, `data-apod-today-url="/repo/static/data/nasa/apod-today.json"`, `data-url="/repo/blog/post"`, `href="#fim"`} {
 		if !strings.Contains(output, want) {
 			t.Fatalf("rewritten HTML does not contain %q: %s", want, output)
 		}
+	}
+}
+
+func TestWriteNASADataSkipsWhenAPIKeyIsMissing(t *testing.T) {
+	t.Setenv("NASA_API_KEY", "")
+	outputDir := t.TempDir()
+	exporter := exporter{outputDir: outputDir}
+
+	if err := exporter.writeNASAData(); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := os.Stat(filepath.Join(outputDir, "static", "data", "nasa", "apod-today.json")); !errors.Is(err, os.ErrNotExist) {
+		t.Fatalf("apod-today.json stat error = %v, want not exist", err)
+	}
+}
+
+func TestWriteNASADataWritesStaticAPODPayloads(t *testing.T) {
+	t.Setenv("NASA_API_KEY", "secret-test-key")
+
+	var requests []url.Values
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if got := r.Header.Get("Accept"); got != "application/json" {
+			t.Fatalf("Accept = %q, want application/json", got)
+		}
+		requests = append(requests, r.URL.Query())
+		w.Header().Set("Content-Type", "application/json")
+
+		if r.URL.Query().Get("start_date") != "" {
+			_, _ = w.Write([]byte(`[{"title":"Recent APOD","date":"2026-06-20"}]`))
+			return
+		}
+		_, _ = w.Write([]byte(`{"title":"Today APOD","date":"2026-06-24"}`))
+	}))
+	defer server.Close()
+	restore := withNASAAPODEndpoint(t, server.URL)
+
+	outputDir := t.TempDir()
+	exporter := exporter{outputDir: outputDir}
+	if err := exporter.writeNASAData(); err != nil {
+		t.Fatal(err)
+	}
+	restore()
+
+	assertFileContent(t, filepath.Join(outputDir, "static", "data", "nasa", "apod-today.json"), `{"title":"Today APOD","date":"2026-06-24"}`)
+	assertFileContent(t, filepath.Join(outputDir, "static", "data", "nasa", "apod-random.json"), `[{"title":"Recent APOD","date":"2026-06-20"}]`)
+
+	if len(requests) != 2 {
+		t.Fatalf("requests = %d, want 2", len(requests))
+	}
+	for _, query := range requests {
+		if got := query.Get("api_key"); got != "secret-test-key" {
+			t.Fatalf("api_key = %q, want secret-test-key", got)
+		}
+		if got := query.Get("thumbs"); got != "true" {
+			t.Fatalf("thumbs = %q, want true", got)
+		}
+	}
+	if got := requests[1].Get("start_date"); got == "" {
+		t.Fatal("second NASA request did not include start_date")
+	}
+	if got := requests[1].Get("end_date"); got == "" {
+		t.Fatal("second NASA request did not include end_date")
+	}
+}
+
+func TestFetchNASADataReturnsStatusError(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "forbidden", http.StatusForbidden)
+	}))
+	defer server.Close()
+	withNASAAPODEndpoint(t, server.URL)
+
+	_, err := fetchNASAData(server.Client(), "today", url.Values{"api_key": {"secret"}})
+	if err == nil {
+		t.Fatal("fetchNASAData() error = nil, want error")
+	}
+	if !strings.Contains(err.Error(), "unexpected status 403") {
+		t.Fatalf("fetchNASAData() error = %v, want status 403", err)
 	}
 }
 
@@ -790,4 +870,15 @@ func TestCopyFileIfExistsRejectsSymlink(t *testing.T) {
 	if _, err := os.Stat(destination); !errors.Is(err, os.ErrNotExist) {
 		t.Fatalf("symlink destination was written, err=%v", err)
 	}
+}
+
+func withNASAAPODEndpoint(t *testing.T, endpoint string) func() {
+	t.Helper()
+	previous := nasaAPODEndpoint
+	nasaAPODEndpoint = endpoint
+	restore := func() {
+		nasaAPODEndpoint = previous
+	}
+	t.Cleanup(restore)
+	return restore
 }

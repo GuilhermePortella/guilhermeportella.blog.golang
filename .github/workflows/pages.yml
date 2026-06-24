@@ -37,6 +37,7 @@ jobs:
         env:
           APP_ENV: production
           EXPORT_DIR: dist
+          NASA_API_KEY: ${{ secrets.NASA_API_KEY }}
           SITE_BASE_PATH: ${{ vars.SITE_BASE_PATH || format('/{0}', github.event.repository.name) }}
         run: make ci
 

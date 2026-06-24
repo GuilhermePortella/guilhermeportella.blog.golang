@@ -1,11 +1,11 @@
 {{define "astronomia"}}{{template "base" .}}{{end}}
 
 {{define "head-extra"}}
-    <script src="/static/js/nasa-apod-app.js?v=20260620-apod-eonet" defer></script>
+    <script src="/static/js/nasa-apod-app.js?v=20260623-apod-static" defer></script>
 {{end}}
 
 {{define "content"}}
-<div class="astronomy-page" data-nasa-apod-app data-api-url="https://api.nasa.gov/planetary/apod" data-eonet-url="https://eonet.gsfc.nasa.gov/api/v3/events">
+<div class="astronomy-page" data-nasa-apod-app data-apod-today-url="/static/data/nasa/apod-today.json" data-apod-random-url="/static/data/nasa/apod-random.json" data-eonet-url="https://eonet.gsfc.nasa.gov/api/v3/events">
   <section class="astronomy-hero" aria-labelledby="astronomy-title">
     <div class="container astronomy-hero__grid">
       <div class="astronomy-hero__copy">
@@ -62,12 +62,12 @@
     <div class="astronomy-gallery-section__header">
       <div>
         <p class="astronomy-kicker">arquivo</p>
-        <h2 id="astronomy-gallery-title">Amostras aleatorias</h2>
+        <h2 id="astronomy-gallery-title">Amostras recentes</h2>
       </div>
-      <button class="astronomy-refresh" type="button" data-apod-random>Atualizar amostras</button>
+      <button class="astronomy-refresh" type="button" data-apod-random>Recarregar arquivo</button>
     </div>
     <div class="astronomy-gallery" data-apod-gallery>
-      <p class="astronomy-message">Preparando uma pequena galeria.</p>
+      <p class="astronomy-message">Preparando uma pequena galeria recente.</p>
     </div>
   </section>
 

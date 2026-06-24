@@ -529,17 +529,17 @@ func TestNewRouterAstronomia(t *testing.T) {
 
 	body := recorder.Body.String()
 	for _, expected := range []string{
-		`<div class="astronomy-page" data-nasa-apod-app data-api-url="https://api.nasa.gov/planetary/apod" data-eonet-url="https://eonet.gsfc.nasa.gov/api/v3/events">`,
+		`<div class="astronomy-page" data-nasa-apod-app data-apod-today-url="/static/data/nasa/apod-today.json" data-apod-random-url="/static/data/nasa/apod-random.json" data-eonet-url="https://eonet.gsfc.nasa.gov/api/v3/events">`,
 		`<title>Astronomia</title>`,
 		`<link rel="canonical" href="/astronomia/">`,
 		`<a href="/curiosidades" class="active" aria-current="page">Curiosidades</a>`,
-		`/static/js/nasa-apod-app.js?v=20260620-apod-eonet`,
+		`/static/js/nasa-apod-app.js?v=20260623-apod-static`,
 		`Astronomy Picture of the Day`,
 		`EONET Natural Event Tracker`,
 		`data-eonet-category`,
 		`data-eonet-event-status`,
 		`data-eonet-events`,
-		`Amostras aleatorias`,
+		`Amostras recentes`,
 		`Esta pagina precisa de JavaScript para consultar a API APOD da NASA.`,
 		`connect-src 'self' https://api.github.com https://api.nasa.gov https://eonet.gsfc.nasa.gov`,
 		`https://apod.nasa.gov`,
