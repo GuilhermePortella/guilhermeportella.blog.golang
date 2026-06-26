@@ -27,6 +27,7 @@
   const eonetEventStatus = root.querySelector("[data-eonet-event-status]");
   const eonetSummary = root.querySelector("[data-eonet-summary]");
   const eonetEvents = root.querySelector("[data-eonet-events]");
+  let mediaDialog = null;
 
   const today = localISODate(new Date());
 
@@ -379,6 +380,11 @@
         return iframe;
       }
 
+      const videoURL = safeVideoURL(item.url);
+      if (videoURL) {
+        return videoPreview(videoURL, item.title || alt);
+      }
+
       const thumbnail = safeImageURL(item.thumbnail_url);
       if (thumbnail) {
         const link = mediaLink(item.url || thumbnail, item.title || "Abrir video");
@@ -485,6 +491,99 @@
     link.className = "astronomy-media-link";
     link.setAttribute("aria-label", label);
     return link;
+  }
+
+  function videoPreview(sourceURL, title) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "astronomy-video-preview";
+    button.setAttribute("aria-label", `Abrir video ${title}`);
+
+    const video = document.createElement("video");
+    video.src = sourceURL;
+    video.muted = true;
+    video.playsInline = true;
+    video.preload = "metadata";
+
+    const overlay = document.createElement("span");
+    overlay.className = "astronomy-video-preview__overlay";
+    overlay.textContent = "Assistir em tela maior";
+
+    button.append(video, overlay);
+    button.addEventListener("click", () => {
+      openMediaDialog(sourceURL, title);
+    });
+    return button;
+  }
+
+  function openMediaDialog(sourceURL, title) {
+    const dialog = ensureMediaDialog();
+    const titleElement = dialog.querySelector("[data-media-dialog-title]");
+    const stage = dialog.querySelector("[data-media-dialog-stage]");
+
+    if (titleElement) {
+      titleElement.textContent = title || "Video APOD";
+    }
+    if (stage) {
+      const video = document.createElement("video");
+      video.src = sourceURL;
+      video.controls = true;
+      video.autoplay = true;
+      video.playsInline = true;
+      stage.replaceChildren(video);
+    }
+
+    document.documentElement.classList.add("has-astronomy-dialog");
+    dialog.hidden = false;
+    dialog.querySelector("[data-media-dialog-close]")?.focus();
+  }
+
+  function ensureMediaDialog() {
+    if (mediaDialog) {
+      return mediaDialog;
+    }
+
+    mediaDialog = document.createElement("div");
+    mediaDialog.className = "astronomy-media-dialog";
+    mediaDialog.hidden = true;
+    mediaDialog.setAttribute("role", "dialog");
+    mediaDialog.setAttribute("aria-modal", "true");
+    mediaDialog.setAttribute("aria-labelledby", "astronomy-media-dialog-title");
+    mediaDialog.innerHTML = `
+      <div class="astronomy-media-dialog__backdrop" data-media-dialog-close></div>
+      <div class="astronomy-media-dialog__panel">
+        <div class="astronomy-media-dialog__header">
+          <h2 id="astronomy-media-dialog-title" data-media-dialog-title>Video APOD</h2>
+          <button type="button" data-media-dialog-close>Fechar</button>
+        </div>
+        <div class="astronomy-media-dialog__stage" data-media-dialog-stage></div>
+      </div>
+    `;
+
+    mediaDialog.addEventListener("click", (event) => {
+      if (event.target instanceof HTMLElement && event.target.hasAttribute("data-media-dialog-close")) {
+        closeMediaDialog();
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && mediaDialog && !mediaDialog.hidden) {
+        closeMediaDialog();
+      }
+    });
+
+    document.body.append(mediaDialog);
+    return mediaDialog;
+  }
+
+  function closeMediaDialog() {
+    if (!mediaDialog) {
+      return;
+    }
+
+    mediaDialog.querySelector("[data-media-dialog-stage]")?.replaceChildren();
+    mediaDialog.hidden = true;
+    document.documentElement.classList.remove("has-astronomy-dialog");
   }
 
   function apodArticleURL(date) {
@@ -676,6 +775,23 @@
       }
 
       return parsed.hostname === "www.youtube-nocookie.com" && parsed.pathname.startsWith("/embed/") ? parsed.href : "";
+    } catch {
+      return "";
+    }
+  }
+
+  function safeVideoURL(value) {
+    const safeURL = safeHTTPURL(value);
+
+    if (!safeURL) {
+      return "";
+    }
+
+    try {
+      const parsed = new URL(safeURL);
+      const allowed = new Set(["apod.nasa.gov", "www.nasa.gov"]);
+      const videoPath = /\.(mp4|webm|mov)$/i.test(parsed.pathname);
+      return allowed.has(parsed.hostname) && videoPath ? parsed.href : "";
     } catch {
       return "";
     }

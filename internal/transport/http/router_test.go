@@ -533,7 +533,7 @@ func TestNewRouterAstronomia(t *testing.T) {
 		`<title>Astronomia</title>`,
 		`<link rel="canonical" href="/astronomia/">`,
 		`<a href="/curiosidades" class="active" aria-current="page">Curiosidades</a>`,
-		`/static/js/nasa-apod-app.js?v=20260623-apod-static`,
+		`/static/js/nasa-apod-app.js?v=20260625-apod-video-modal`,
 		`Astronomy Picture of the Day`,
 		`EONET Natural Event Tracker`,
 		`data-eonet-category`,
@@ -544,6 +544,7 @@ func TestNewRouterAstronomia(t *testing.T) {
 		`connect-src 'self' https://api.github.com https://api.nasa.gov https://eonet.gsfc.nasa.gov`,
 		`https://apod.nasa.gov`,
 		`https://img.youtube.com`,
+		`media-src 'self' data: https://apod.nasa.gov https://www.nasa.gov`,
 		`frame-src https://open.spotify.com https://www.youtube.com https://www.youtube-nocookie.com`,
 	} {
 		if !strings.Contains(body, expected) {
@@ -568,6 +569,10 @@ func TestNewRouterAstronomia(t *testing.T) {
 
 	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "https://apod.nasa.gov") || !strings.Contains(got, "https://www.nasa.gov") {
 		t.Fatalf("Content-Security-Policy = %q, want NASA image domains", got)
+	}
+
+	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "media-src 'self' data: https://apod.nasa.gov https://www.nasa.gov") {
+		t.Fatalf("Content-Security-Policy = %q, want NASA media-src", got)
 	}
 
 	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "frame-src https://open.spotify.com https://www.youtube.com https://www.youtube-nocookie.com") {
