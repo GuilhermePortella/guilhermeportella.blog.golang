@@ -4,6 +4,8 @@
 
 Aceita
 
+Nota de evolucao: esta ADR registra o bootstrap do projeto. Decisoes posteriores adicionaram dependencias externas pontuais, leitura de conteudo Markdown, export estatico e integracoes client-side. Ver ADR 0003, ADR 0004 e ADR 0005.
+
 ## Data
 
 2026-05-03
