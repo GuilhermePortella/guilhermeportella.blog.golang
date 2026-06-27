@@ -226,6 +226,7 @@ func TestExportedSiteHasNoBrokenLocalReferences(t *testing.T) {
 
 	t.Setenv("CONTENT_DIR", filepath.Join(projectRoot, "content", "articles"))
 	t.Setenv("IMAGES_DIR", filepath.Join(projectRoot, "public", "images"))
+	t.Setenv("NASA_API_KEY", "")
 	t.Setenv("NOTES_DIR", filepath.Join(projectRoot, "content", "notes"))
 	t.Setenv("STATIC_DIR", filepath.Join(projectRoot, "web", "static"))
 	t.Setenv("TEMPLATES_DIR", filepath.Join(projectRoot, "web", "templates"))
