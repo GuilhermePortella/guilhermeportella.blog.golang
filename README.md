@@ -141,6 +141,9 @@ As decisoes arquiteturais ficam em `docs/adr/`.
 
 - `docs/adr/0001-estrutura-inicial-do-projeto.md`: estrutura inicial do projeto.
 - `docs/adr/0002-home-com-templates-go.md`: primeira Home renderizada por templates Go.
+- `docs/adr/0003-conteudo-markdown-sanitizado.md`: artigos e notas em Markdown com frontmatter e HTML sanitizado.
+- `docs/adr/0004-export-estatico-para-github-pages.md`: export de rotas HTML, assets, sitemap, robots e feed para GitHub Pages.
+- `docs/adr/0005-integracoes-client-side-com-apis-publicas.md`: integracoes frontend com APIs publicas, dados pregerados e CSP explicita.
 
 ## Rotas
 

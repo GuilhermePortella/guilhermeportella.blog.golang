@@ -4,6 +4,8 @@
 
 Aceita
 
+Nota de evolucao: a diretriz de separar paginas, layout, partials, assets e handlers foi mantida. O renderer evoluiu para parsear cada pagina isoladamente com os templates compartilhados, reduzindo colisoes entre blocos globais. Ver ADR 0003 e ADR 0004 para conteudo Markdown e export estatico.
+
 ## Data
 
 2026-05-03
