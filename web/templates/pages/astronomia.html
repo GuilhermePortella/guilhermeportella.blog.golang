@@ -5,7 +5,12 @@
 {{end}}
 
 {{define "content"}}
-<div class="astronomy-page" data-nasa-apod-app data-apod-today-url="/static/data/nasa/apod-today.json" data-apod-random-url="/static/data/nasa/apod-random.json" data-eonet-url="https://eonet.gsfc.nasa.gov/api/v3/events">
+<div
+  class="astronomy-page"
+  data-nasa-apod-app
+  data-apod-today-url="/static/data/nasa/apod-today.json"
+  data-apod-random-url="/static/data/nasa/apod-random.json"
+  data-eonet-url="https://eonet.gsfc.nasa.gov/api/v3/events">
   <section class="astronomy-hero" aria-labelledby="astronomy-title">
     <div class="container astronomy-hero__grid">
       <div class="astronomy-hero__copy">
@@ -34,19 +39,19 @@
         <p class="astronomy-kicker">controle</p>
         <h2 id="astronomy-console-title">Astronomy Picture of the Day</h2>
       </div>
-      <form class="astronomy-search" data-apod-form>
+      <form class="astronomy-search" data-apod-form aria-describedby="apod-message" aria-controls="apod-feature">
         <label class="astronomy-field" for="apod-date">
           <span>Data</span>
           <input id="apod-date" type="date" min="1995-06-16" data-apod-date>
         </label>
         <button type="submit">Buscar</button>
-        <button type="button" data-apod-today>Hoje</button>
+        <button type="button" data-apod-today aria-controls="apod-feature">Hoje</button>
       </form>
     </div>
 
-    <div class="astronomy-message" role="status" data-apod-message>Carregando imagem do dia.</div>
+    <div id="apod-message" class="astronomy-message" role="status" data-apod-message>Carregando imagem do dia.</div>
 
-    <div class="astronomy-feature" data-apod-feature aria-live="polite">
+    <div id="apod-feature" class="astronomy-feature" data-apod-feature aria-live="polite">
       <article class="astronomy-skeleton">
         <div></div>
         <div>
@@ -64,9 +69,9 @@
         <p class="astronomy-kicker">arquivo</p>
         <h2 id="astronomy-gallery-title">Amostras recentes</h2>
       </div>
-      <button class="astronomy-refresh" type="button" data-apod-random>Recarregar arquivo</button>
+      <button class="astronomy-refresh" type="button" data-apod-random aria-controls="apod-gallery">Recarregar arquivo</button>
     </div>
-    <div class="astronomy-gallery" data-apod-gallery>
+    <div id="apod-gallery" class="astronomy-gallery" data-apod-gallery>
       <p class="astronomy-message">Preparando uma pequena galeria recente.</p>
     </div>
   </section>
@@ -78,7 +83,7 @@
         <h2 id="astronomy-eonet-title">EONET Natural Event Tracker</h2>
         <p>Eventos naturais curados pela NASA, com categoria, fonte, localização e geometria mais recente.</p>
       </div>
-      <form class="astronomy-eonet-controls" data-eonet-form>
+      <form class="astronomy-eonet-controls" data-eonet-form aria-describedby="eonet-summary" aria-controls="eonet-events">
         <label class="astronomy-field" for="eonet-category">
           <span>Categoria</span>
           <select id="eonet-category" data-eonet-category>
@@ -103,10 +108,10 @@
       </form>
     </div>
 
-    <div class="astronomy-eonet-summary" data-eonet-summary aria-live="polite">
+    <div id="eonet-summary" class="astronomy-eonet-summary" data-eonet-summary aria-live="polite">
       <p class="astronomy-message">Carregando eventos naturais.</p>
     </div>
-    <div class="astronomy-eonet-grid" data-eonet-events>
+    <div id="eonet-events" class="astronomy-eonet-grid" data-eonet-events>
       <article class="astronomy-eonet-card astronomy-eonet-card--skeleton"></article>
       <article class="astronomy-eonet-card astronomy-eonet-card--skeleton"></article>
       <article class="astronomy-eonet-card astronomy-eonet-card--skeleton"></article>
