@@ -1139,6 +1139,52 @@ func TestNewRouterServiceWorker(t *testing.T) {
 	}
 }
 
+func TestRouterOptionsWithDefaults(t *testing.T) {
+	options := RouterOptions{}.withDefaults()
+
+	if options.ImagesDir != "public/images" {
+		t.Fatalf("ImagesDir = %q, want public/images", options.ImagesDir)
+	}
+	if options.StaticDir != "web/static" {
+		t.Fatalf("StaticDir = %q, want web/static", options.StaticDir)
+	}
+	if options.TemplatesDir != "web/templates" {
+		t.Fatalf("TemplatesDir = %q, want web/templates", options.TemplatesDir)
+	}
+	if options.ContentDir != "content/articles" {
+		t.Fatalf("ContentDir = %q, want content/articles", options.ContentDir)
+	}
+	if options.NotesDir != "content/notes" {
+		t.Fatalf("NotesDir = %q, want content/notes", options.NotesDir)
+	}
+}
+
+func TestRouterOptionsWithDefaultsKeepsCustomValues(t *testing.T) {
+	options := RouterOptions{
+		ImagesDir:    "custom/images",
+		StaticDir:    "custom/static",
+		TemplatesDir: "custom/templates",
+		ContentDir:   "custom/articles",
+		NotesDir:     "custom/notes",
+	}.withDefaults()
+
+	if options.ImagesDir != "custom/images" {
+		t.Fatalf("ImagesDir = %q, want custom/images", options.ImagesDir)
+	}
+	if options.StaticDir != "custom/static" {
+		t.Fatalf("StaticDir = %q, want custom/static", options.StaticDir)
+	}
+	if options.TemplatesDir != "custom/templates" {
+		t.Fatalf("TemplatesDir = %q, want custom/templates", options.TemplatesDir)
+	}
+	if options.ContentDir != "custom/articles" {
+		t.Fatalf("ContentDir = %q, want custom/articles", options.ContentDir)
+	}
+	if options.NotesDir != "custom/notes" {
+		t.Fatalf("NotesDir = %q, want custom/notes", options.NotesDir)
+	}
+}
+
 func newTestRouter(t *testing.T) http.Handler {
 	t.Helper()
 
