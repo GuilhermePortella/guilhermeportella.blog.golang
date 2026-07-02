@@ -101,6 +101,8 @@ Copie as variaveis de `.env.example` para o ambiente do processo quando necessar
 
 `make ci` roda formatacao, lint de conteudo, verificacoes de seguranca, analise estatica, testes com race detector, limites minimos de cobertura, build e export.
 
+As intencoes de evolucao e os criterios de qualidade ficam em `docs/evolucao-e-qualidade.md`.
+
 Comandos complementares:
 
 ```sh
@@ -139,6 +141,7 @@ Configuracoes iniciais sugeridas no repositorio:
 
 As decisoes arquiteturais ficam em `docs/adr/`.
 
+- `docs/evolucao-e-qualidade.md`: intencoes de evolucao, guardrails de qualidade e proximos passos sugeridos.
 - `docs/adr/0001-estrutura-inicial-do-projeto.md`: estrutura inicial do projeto.
 - `docs/adr/0002-home-com-templates-go.md`: primeira Home renderizada por templates Go.
 - `docs/adr/0003-conteudo-markdown-sanitizado.md`: artigos e notas em Markdown com frontmatter e HTML sanitizado.
