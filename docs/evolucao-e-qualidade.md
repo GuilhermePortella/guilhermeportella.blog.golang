@@ -89,6 +89,16 @@ Antes de abrir PR ou publicar uma mudanca relevante, rode:
 make ci
 ```
 
+### Gates automatizados
+
+O projeto adota tres cercas para evitar regressao em commits novos:
+
+- `make architecture`: protege dependencias entre pacotes Go. O pacote `internal/blog` nao deve depender de HTTP, `internal/config` nao deve depender de outros pacotes do projeto, `internal/transport/http` nao deve carregar configuracao nem iniciar servidor, e `cmd` continua sendo a borda de composicao.
+- `make quality-gate`: compara a branch com `origin/main` e bloqueia mudancas sensiveis sem teste relacionado. Alteracoes em handlers/templates exigem teste HTTP ou export, mudancas no export exigem teste em `cmd/export`, mudancas de configuracao exigem teste em `internal/config`, e mudancas em conteudo/modelo de blog exigem teste de blog, lint de conteudo ou contrato HTTP.
+- Contratos HTTP e de export: rotas publicas, canonicidade, CSP, navegacao ativa, sitemap, robots, feed e reescrita de `SITE_BASE_PATH` devem ser protegidos por testes existentes antes de mudar comportamento publico.
+
+Essas regras devem comecar simples e evoluir junto com o projeto. Quando uma excecao for realmente necessaria, prefira ajustar o teste ou documentar a decisao em ADR em vez de contornar o CI.
+
 Para mudancas em conteudo:
 
 ```sh

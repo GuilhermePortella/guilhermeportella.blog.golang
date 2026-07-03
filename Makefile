@@ -13,7 +13,7 @@ COVER_HTTP_MIN ?= 85.0
 COVER_CONFIG_MIN ?= 90.0
 COVER_EXPORT_MIN ?= 80.0
 
-.PHONY: help fmt fmt-check vet staticcheck content-lint test test-shuffle cover cover-check vuln secrets security semgrep zap docker-prune run build export ci clean
+.PHONY: help fmt fmt-check vet staticcheck content-lint architecture quality-gate test test-shuffle cover cover-check vuln secrets security semgrep zap docker-prune run build export ci clean
 
 help: ## Lista os comandos disponiveis.
 	@awk 'BEGIN {FS = ":.*##"} /^[a-zA-Z_-]+:.*##/ {printf "%-12s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -33,6 +33,12 @@ staticcheck: ## Executa analise estatica avancada do Go.
 
 content-lint: ## Valida frontmatter e estrutura minima dos arquivos Markdown.
 	$(GO) run ./cmd/contentlint
+
+architecture: ## Valida regras arquiteturais dos pacotes Go.
+	$(GO) test ./internal/architecture
+
+quality-gate: ## Bloqueia mudancas sensiveis sem teste relacionado em PRs.
+	./scripts/quality-gate.sh
 
 test: ## Executa a suite de testes com detector de corrida.
 	$(GO) test -race $(PKG)
@@ -113,7 +119,7 @@ build: ## Gera binario otimizado em ./bin.
 export: ## Gera o site estatico em ./dist para publicacao no GitHub Pages.
 	EXPORT_DIR=$(EXPORT_DIR) $(GO) run ./cmd/export
 
-ci: fmt-check content-lint security staticcheck test cover-check build export ## Executa as validacoes usadas no CI.
+ci: fmt-check content-lint architecture quality-gate security staticcheck test cover-check build export ## Executa as validacoes usadas no CI.
 
 clean: ## Remove artefatos locais.
 	rm -rf bin dist
