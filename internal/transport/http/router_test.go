@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -77,6 +78,22 @@ func TestNewRouterHome(t *testing.T) {
 
 	if strings.Contains(body, "HomeAboutSection") {
 		t.Fatalf("body contains old analysis content")
+	}
+}
+
+func TestStaticCSPMatchesStaticPolicy(t *testing.T) {
+	raw, err := os.ReadFile(filepath.Join("..", "..", "..", "web", "templates", "layouts", "base.html"))
+	if err != nil {
+		t.Fatalf("read base template: %v", err)
+	}
+
+	matches := regexp.MustCompile(`<meta http-equiv="Content-Security-Policy" content="([^"]+)">`).FindSubmatch(raw)
+	if len(matches) != 2 {
+		t.Fatalf("base template does not contain CSP meta tag")
+	}
+
+	if got := string(matches[1]); got != staticContentSecurityPolicy {
+		t.Fatalf("static CSP differs from static policy\nstatic: %s\npolicy: %s", got, staticContentSecurityPolicy)
 	}
 }
 

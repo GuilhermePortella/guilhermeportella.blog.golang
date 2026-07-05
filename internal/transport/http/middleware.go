@@ -24,7 +24,7 @@ func chain(handler http.Handler, middlewares ...middleware) http.Handler {
 func securityHeaders(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		header := w.Header()
-		header.Set("Content-Security-Policy", "default-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'; connect-src 'self' https://api.github.com https://api.nasa.gov https://eonet.gsfc.nasa.gov https://rickandmortyapi.com https://rickandmorty.fandom.com; script-src 'self'; style-src 'self' https://cdn.jsdelivr.net; style-src-elem 'self' https://cdn.jsdelivr.net; style-src-attr 'unsafe-inline'; font-src 'self' data: https://cdn.jsdelivr.net; img-src 'self' data: https://apod.nasa.gov https://api.nasa.gov https://avatars.githubusercontent.com https://cdn.jsdelivr.net https://img.youtube.com https://i.ytimg.com https://rickandmortyapi.com https://www.nasa.gov; media-src 'self' data: https://apod.nasa.gov https://www.nasa.gov; frame-src https://open.spotify.com https://www.youtube.com https://www.youtube-nocookie.com; object-src 'none'")
+		header.Set("Content-Security-Policy", contentSecurityPolicy)
 		header.Set("Cross-Origin-Embedder-Policy", "credentialless")
 		header.Set("Cross-Origin-Opener-Policy", "same-origin")
 		header.Set("Cross-Origin-Resource-Policy", "cross-origin")
