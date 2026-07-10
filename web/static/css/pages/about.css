@@ -172,6 +172,41 @@
   text-align: center;
 }
 
+.about-profile-card__image-button {
+  position: relative;
+  display: block;
+  width: 220px;
+  height: 220px;
+  max-width: 100%;
+  border: 0;
+  border-radius: 9999px;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  perspective: 900px;
+}
+
+.about-profile-card__image-button::after {
+  position: absolute;
+  inset: -8px;
+  border: 1px solid rgb(192 132 90 / 0%);
+  border-radius: inherit;
+  content: "";
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.92);
+}
+
+.about-profile-card__image-button:hover .about-profile-card__image,
+.about-profile-card__image-button:focus-visible .about-profile-card__image {
+  box-shadow: 0 0 0 3px rgb(192 132 90 / 45%), 0 18px 36px rgb(15 23 42 / 16%);
+}
+
+.about-profile-card__image-button:focus-visible {
+  outline: 3px solid rgb(192 132 90 / 45%);
+  outline-offset: 6px;
+}
+
 .about-profile-card__image {
   width: 220px;
   height: 220px;
@@ -179,6 +214,98 @@
   border-radius: 9999px;
   object-fit: cover;
   box-shadow: 0 0 0 2px rgb(192 132 90 / 40%);
+  transform-origin: center;
+  transition: box-shadow 180ms ease, transform 180ms ease;
+  will-change: transform;
+}
+
+.about-profile-card__image-button.is-mirrored .about-profile-card__image {
+  transform: rotateY(180deg);
+}
+
+.about-profile-card__image-button.is-spinning-to-mirrored .about-profile-card__image {
+  animation: aboutAvatarCarouselToMirrored 760ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.about-profile-card__image-button.is-spinning-to-normal .about-profile-card__image {
+  animation: aboutAvatarCarouselToNormal 760ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+.about-profile-card__image-button.is-spinning-to-mirrored::after,
+.about-profile-card__image-button.is-spinning-to-normal::after {
+  animation: aboutAvatarPulse 760ms ease-out both;
+}
+
+@keyframes aboutAvatarCarouselToMirrored {
+  0% {
+    transform: rotateY(0deg) scale(1);
+  }
+
+  42% {
+    transform: rotateY(205deg) scale(1.045);
+  }
+
+  70% {
+    transform: rotateY(150deg) scale(1.02);
+  }
+
+  100% {
+    transform: rotateY(180deg) scale(1);
+  }
+}
+
+@keyframes aboutAvatarCarouselToNormal {
+  0% {
+    transform: rotateY(180deg) scale(1);
+  }
+
+  42% {
+    transform: rotateY(385deg) scale(1.045);
+  }
+
+  70% {
+    transform: rotateY(330deg) scale(1.02);
+  }
+
+  100% {
+    transform: rotateY(360deg) scale(1);
+  }
+}
+
+@keyframes aboutAvatarPulse {
+  0% {
+    border-color: rgb(192 132 90 / 0%);
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  35% {
+    border-color: rgb(192 132 90 / 45%);
+    opacity: 1;
+  }
+
+  100% {
+    border-color: rgb(192 132 90 / 0%);
+    opacity: 0;
+    transform: scale(1.14);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-profile-card__image {
+    transition: box-shadow 180ms ease;
+    will-change: auto;
+  }
+
+  .about-profile-card__image-button.is-spinning-to-mirrored .about-profile-card__image,
+  .about-profile-card__image-button.is-spinning-to-normal .about-profile-card__image {
+    animation: none;
+  }
+
+  .about-profile-card__image-button.is-spinning-to-mirrored::after,
+  .about-profile-card__image-button.is-spinning-to-normal::after {
+    animation: aboutAvatarPulse 420ms ease-out both;
+  }
 }
 
 .about-profile-card__copy {
@@ -364,4 +491,3 @@
   max-width: 672px;
   margin: 12px auto 0;
 }
-
