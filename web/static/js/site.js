@@ -4991,17 +4991,38 @@
       return;
     }
 
+    const spinClasses = ["is-spinning-to-mirrored", "is-spinning-to-normal"];
+
     avatarButton.addEventListener("click", () => {
-      avatarButton.classList.remove("is-spinning");
+      const shouldMirror = !avatarButton.classList.contains("is-mirrored");
+      const spinClass = shouldMirror ? "is-spinning-to-mirrored" : "is-spinning-to-normal";
+
+      avatarButton.classList.remove(...spinClasses);
+      avatarButton.dataset.avatarSpinTarget = shouldMirror ? "mirrored" : "normal";
+
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        avatarButton.classList.toggle("is-mirrored", shouldMirror);
+        avatarButton.classList.add(spinClass);
+        window.setTimeout(() => {
+          avatarButton.classList.remove(spinClass);
+          delete avatarButton.dataset.avatarSpinTarget;
+        }, 420);
+        return;
+      }
+
       window.requestAnimationFrame(() => {
-        avatarButton.classList.add("is-spinning");
+        avatarButton.classList.add(spinClass);
       });
     });
 
     avatarButton.addEventListener("animationend", (event) => {
-      if (event.animationName === "aboutAvatarCarousel") {
-        avatarButton.classList.remove("is-spinning");
+      if (event.animationName !== "aboutAvatarCarouselToMirrored" && event.animationName !== "aboutAvatarCarouselToNormal") {
+        return;
       }
+
+      avatarButton.classList.remove(...spinClasses);
+      avatarButton.classList.toggle("is-mirrored", avatarButton.dataset.avatarSpinTarget === "mirrored");
+      delete avatarButton.dataset.avatarSpinTarget;
     });
   }
 
