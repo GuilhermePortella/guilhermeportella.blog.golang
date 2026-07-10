@@ -4984,6 +4984,27 @@
     applyFilter();
   }
 
+  function setupAboutAvatarSpin() {
+    const avatarButton = document.querySelector("[data-about-avatar-spin]");
+
+    if (!avatarButton) {
+      return;
+    }
+
+    avatarButton.addEventListener("click", () => {
+      avatarButton.classList.remove("is-spinning");
+      window.requestAnimationFrame(() => {
+        avatarButton.classList.add("is-spinning");
+      });
+    });
+
+    avatarButton.addEventListener("animationend", (event) => {
+      if (event.animationName === "aboutAvatarCarousel") {
+        avatarButton.classList.remove("is-spinning");
+      }
+    });
+  }
+
   setupNotFoundPath();
   setupErrorPage();
   setupServiceWorker();
@@ -4995,4 +5016,5 @@
   setupNotesWall();
   setupArticleCodeCopy();
   setupArticleTOC();
+  setupAboutAvatarSpin();
 })();
