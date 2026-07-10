@@ -4,7 +4,7 @@ Estrutura inicial para um site estilo blog em Go. A base usa a biblioteca padrao
 
 ## Requisitos
 
-- Go 1.26.4
+- Go 1.26.5
 - Make opcional, apenas para atalhos locais
 
 ## Comandos

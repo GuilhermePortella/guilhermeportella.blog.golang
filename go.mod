@@ -1,6 +1,6 @@
 module github.com/guilhermeportella/guilhermeportella.github.io
 
-go 1.26.4
+go 1.26.5
 
 require (
 	github.com/FurqanSoftware/goldmark-katex v0.0.0-20260328091149-1897eb7a41e4
