@@ -53,6 +53,19 @@
       ],
     },
   };
+  const SITE_NAME = "Guilherme Portella";
+  const APP_TITLE = "Rick and Morty API";
+
+  function pageTitle(title) {
+    const cleanTitle = String(title || "").trim();
+    if (!cleanTitle) {
+      return SITE_NAME;
+    }
+    if (cleanTitle === SITE_NAME || cleanTitle.endsWith(` | ${SITE_NAME}`)) {
+      return cleanTitle;
+    }
+    return `${cleanTitle} | ${SITE_NAME}`;
+  }
 
   const emptyData = {
     items: [],
@@ -644,7 +657,7 @@
     `;
 
     bindExplorerEvents();
-    document.title = "Rick and Morty API";
+    document.title = pageTitle(APP_TITLE);
   }
 
   function resourceTab([key, config]) {
@@ -967,7 +980,7 @@
         </article>
       `);
 
-      document.title = `${readable(character.name)} | Rick and Morty API`;
+      document.title = pageTitle(`${readable(character.name)} | ${APP_TITLE}`);
       root.querySelectorAll("[data-rick-tab]").forEach((button) => {
         button.addEventListener("click", () => {
           tab = button.dataset.rickTab || "resumo";
@@ -1112,7 +1125,7 @@
         </section>
       `);
 
-      document.title = `${readable(episode.name)} | Rick and Morty API`;
+      document.title = pageTitle(`${readable(episode.name)} | ${APP_TITLE}`);
     };
 
     render();
@@ -1196,7 +1209,7 @@
         </section>
       `);
 
-      document.title = `${readable(location.name)} | Rick and Morty API`;
+      document.title = pageTitle(`${readable(location.name)} | ${APP_TITLE}`);
     };
 
     render();
