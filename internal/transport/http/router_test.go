@@ -64,6 +64,15 @@ func TestNewRouterHome(t *testing.T) {
 		t.Fatalf("body does not contain footer script")
 	}
 
+	for _, expected := range []string{
+		`<link rel="icon" type="image/png" sizes="32x32" href="/static/images/favicon-32.png?v=20260712-avatar">`,
+		`<link rel="apple-touch-icon" sizes="180x180" href="/static/images/apple-touch-icon.png?v=20260712-avatar">`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("body does not contain favicon metadata %q", expected)
+		}
+	}
+
 	if !strings.Contains(body, `<nav class="site-nav sticky-top" aria-label="Primary">`) {
 		t.Fatalf("body does not contain site navigation")
 	}
