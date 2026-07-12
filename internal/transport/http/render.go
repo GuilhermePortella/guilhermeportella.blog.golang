@@ -36,7 +36,9 @@ func NewRenderer(templatesDir string) (*Renderer, error) {
 		pageFiles := append([]string(nil), shared...)
 		pageFiles = append(pageFiles, page)
 
-		templates, err := template.ParseFiles(pageFiles...)
+		templates, err := template.New("").Funcs(template.FuncMap{
+			"pageTitle": pageTitle,
+		}).ParseFiles(pageFiles...)
 		if err != nil {
 			return nil, fmt.Errorf("parse template page %q: %w", name, err)
 		}
@@ -51,6 +53,20 @@ func NewRenderer(templatesDir string) (*Renderer, error) {
 	return &Renderer{
 		templates: templatesByName,
 	}, nil
+}
+
+func pageTitle(title string, siteName string) string {
+	title = strings.TrimSpace(title)
+	siteName = strings.TrimSpace(siteName)
+
+	if title == "" {
+		return siteName
+	}
+	if siteName == "" || title == siteName || strings.HasSuffix(title, " | "+siteName) {
+		return title
+	}
+
+	return title + " | " + siteName
 }
 
 func (renderer *Renderer) Render(w http.ResponseWriter, name string, data any) error {

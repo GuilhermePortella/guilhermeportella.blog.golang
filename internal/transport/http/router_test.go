@@ -189,7 +189,7 @@ func TestNewRouterProjetos(t *testing.T) {
 	body := recorder.Body.String()
 	for _, expected := range []string{
 		`<div class="projects-page" aria-label="Projetos">`,
-		`<title>Projetos</title>`,
+		`<title>Projetos | Guilherme Portella</title>`,
 		`<link rel="canonical" href="/projetos/">`,
 		`<a href="/projetos" class="active" aria-current="page">Projetos</a>`,
 		`<h1 id="projects-title">Repositórios públicos, experimentos e ferramentas em construção.</h1>`,
@@ -223,7 +223,7 @@ func TestNewRouterProjectsAlias(t *testing.T) {
 
 	body := recorder.Body.String()
 	for _, expected := range []string{
-		`<title>Projetos</title>`,
+		`<title>Projetos | Guilherme Portella</title>`,
 		`<link rel="canonical" href="/projetos/">`,
 		`<a href="/projetos" class="active" aria-current="page">Projetos</a>`,
 	} {
@@ -247,7 +247,7 @@ func TestNewRouterJogos(t *testing.T) {
 	body := recorder.Body.String()
 	for _, expected := range []string{
 		`<div class="games-page" aria-label="Jogos">`,
-		`<title>Jogos</title>`,
+		`<title>Jogos | Guilherme Portella</title>`,
 		`<link rel="canonical" href="/jogos/">`,
 		`<a href="/jogos" class="active" aria-current="page">Jogos</a>`,
 		`<h1 id="games-title">Um pequeno hub para jogar, testar ideias e descansar a cabeça.</h1>`,
@@ -284,7 +284,7 @@ func TestNewRouterGamesAlias(t *testing.T) {
 
 	body := recorder.Body.String()
 	for _, expected := range []string{
-		`<title>Jogos</title>`,
+		`<title>Jogos | Guilherme Portella</title>`,
 		`<link rel="canonical" href="/jogos/">`,
 		`<a href="/jogos" class="active" aria-current="page">Jogos</a>`,
 	} {
@@ -308,7 +308,7 @@ func TestNewRouterJogo(t *testing.T) {
 	body := recorder.Body.String()
 	for _, expected := range []string{
 		`<div class="game-page game-page--teal" aria-label="Memória Relâmpago">`,
-		`<title>Memória Relâmpago | Jogos</title>`,
+		`<title>Memória Relâmpago | Jogos | Guilherme Portella</title>`,
 		`<link rel="canonical" href="/jogos/memoria-relampago/">`,
 		`<a href="/jogos" class="active" aria-current="page">Jogos</a>`,
 		`<h1 id="game-title">Memória Relâmpago</h1>`,
@@ -339,7 +339,7 @@ func TestNewRouterJogoMath(t *testing.T) {
 	body := recorder.Body.String()
 	for _, expected := range []string{
 		`<div class="game-page game-page--blue" aria-label="Soma Rápida">`,
-		`<title>Soma Rápida | Jogos</title>`,
+		`<title>Soma Rápida | Jogos | Guilherme Portella</title>`,
 		`<link rel="canonical" href="/jogos/soma-rapida/">`,
 		`<h1 id="game-title">Soma Rápida</h1>`,
 		`data-game="soma-rapida"`,
@@ -369,7 +369,7 @@ func TestNewRouterJogoSolitaire(t *testing.T) {
 	body := recorder.Body.String()
 	for _, expected := range []string{
 		`<div class="game-page game-page--blue" aria-label="Paciência Klondike">`,
-		`<title>Paciência Klondike | Jogos</title>`,
+		`<title>Paciência Klondike | Jogos | Guilherme Portella</title>`,
 		`<link rel="canonical" href="/jogos/paciencia-klondike/">`,
 		`<h1 id="game-title">Paciência Klondike</h1>`,
 		`data-game="paciencia-klondike"`,
@@ -399,7 +399,7 @@ func TestNewRouterJogoSnake(t *testing.T) {
 	body := recorder.Body.String()
 	for _, expected := range []string{
 		`<div class="game-page game-page--green" aria-label="Snake Classic">`,
-		`<title>Snake Classic | Jogos</title>`,
+		`<title>Snake Classic | Jogos | Guilherme Portella</title>`,
 		`<link rel="canonical" href="/jogos/snake/">`,
 		`<h1 id="game-title">Snake Classic</h1>`,
 		`data-game="snake"`,
@@ -430,7 +430,7 @@ func TestNewRouterJogoCheckers(t *testing.T) {
 	body := recorder.Body.String()
 	for _, expected := range []string{
 		`<div class="game-page game-page--green" aria-label="Dama Brasileira">`,
-		`<title>Dama Brasileira | Jogos</title>`,
+		`<title>Dama Brasileira | Jogos | Guilherme Portella</title>`,
 		`<link rel="canonical" href="/jogos/dama-brasileira/">`,
 		`<h1 id="game-title">Dama Brasileira</h1>`,
 		`data-game="dama-brasileira"`,
@@ -459,7 +459,7 @@ func TestNewRouterJogoNotFound(t *testing.T) {
 
 	body := recorder.Body.String()
 	for _, expected := range []string{
-		`<title>Página não encontrada</title>`,
+		`<title>Página não encontrada | Guilherme Portella</title>`,
 		`<h1 id="not-found-title">Esta página não existe.</h1>`,
 		`<code data-not-found-path>/jogos/nao-existe</code>`,
 	} {
@@ -483,7 +483,7 @@ func TestNewRouterCuriosidades(t *testing.T) {
 	body := recorder.Body.String()
 	for _, expected := range []string{
 		`<div class="curiosity-page" aria-label="Curiosidades">`,
-		`<title>Curiosidades</title>`,
+		`<title>Curiosidades | Guilherme Portella</title>`,
 		`<link rel="canonical" href="/curiosidades/">`,
 		`<a href="/curiosidades" class="active" aria-current="page">Curiosidades</a>`,
 		`<h1 id="curiosity-title">Um inventário de gostos para lembrar quem eu sou quando fecho o notebook.</h1>`,
@@ -551,7 +551,7 @@ func TestNewRouterAstronomia(t *testing.T) {
 		`data-apod-today-url="/static/data/nasa/apod-today.json"`,
 		`data-apod-random-url="/static/data/nasa/apod-random.json"`,
 		`data-eonet-url="https://eonet.gsfc.nasa.gov/api/v3/events"`,
-		`<title>Astronomia</title>`,
+		`<title>Astronomia | Guilherme Portella</title>`,
 		`<link rel="canonical" href="/astronomia/">`,
 		`<a href="/curiosidades" class="active" aria-current="page">Curiosidades</a>`,
 		`/static/js/nasa-apod-app.js?v=20260625-apod-video-modal`,
@@ -618,7 +618,7 @@ func TestNewRouterRickAndMorty(t *testing.T) {
 	body := recorder.Body.String()
 	for _, expected := range []string{
 		`<div class="rick-app-root" data-rick-morty-app data-url="/rick-morty">`,
-		`<title>Rick and Morty API</title>`,
+		`<title>Rick and Morty API | Guilherme Portella</title>`,
 		`<link rel="canonical" href="/rick-morty/">`,
 		`https://rickandmortyapi.com`,
 		`https://rickandmorty.fandom.com`,
@@ -715,7 +715,7 @@ func TestNewRouterAbout(t *testing.T) {
 	body := recorder.Body.String()
 	for _, expected := range []string{
 		`<div class="about-page" aria-label="Sobre">`,
-		`<title>Sobre</title>`,
+		`<title>Sobre | Guilherme Portella</title>`,
 		`<meta name="description" content="Perfil técnico de Guilherme Portella, com foco em carreira, engenharia de software e aprendizados de desenvolvimento web.">`,
 		`<link rel="canonical" href="/about/">`,
 		`<meta property="og:type" content="website">`,
@@ -902,7 +902,7 @@ func TestNewRouterBlogArticleNotFound(t *testing.T) {
 
 	body := recorder.Body.String()
 	for _, expected := range []string{
-		`<title>Página não encontrada</title>`,
+		`<title>Página não encontrada | Guilherme Portella</title>`,
 		`<h1 id="not-found-title">Esta página não existe.</h1>`,
 		`<code data-not-found-path>/blog/nao-existe</code>`,
 	} {
