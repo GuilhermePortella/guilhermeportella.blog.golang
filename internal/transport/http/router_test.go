@@ -199,7 +199,7 @@ func TestNewRouterProjetos(t *testing.T) {
 	for _, expected := range []string{
 		`<div class="projects-page" aria-label="Projetos">`,
 		`<title>Projetos | Guilherme Portella</title>`,
-		`<link rel="canonical" href="/projetos/">`,
+		`<link rel="canonical" href="https://guilhermeportella.github.io/projetos/">`,
 		`<a href="/projetos" class="active" aria-current="page">Projetos</a>`,
 		`<h1 id="projects-title">Repositórios públicos, experimentos e ferramentas em construção.</h1>`,
 		`data-projects-catalog`,
@@ -233,7 +233,7 @@ func TestNewRouterProjectsAlias(t *testing.T) {
 	body := recorder.Body.String()
 	for _, expected := range []string{
 		`<title>Projetos | Guilherme Portella</title>`,
-		`<link rel="canonical" href="/projetos/">`,
+		`<link rel="canonical" href="https://guilhermeportella.github.io/projetos/">`,
 		`<a href="/projetos" class="active" aria-current="page">Projetos</a>`,
 	} {
 		if !strings.Contains(body, expected) {
@@ -257,7 +257,7 @@ func TestNewRouterJogos(t *testing.T) {
 	for _, expected := range []string{
 		`<div class="games-page" aria-label="Jogos">`,
 		`<title>Jogos | Guilherme Portella</title>`,
-		`<link rel="canonical" href="/jogos/">`,
+		`<link rel="canonical" href="https://guilhermeportella.github.io/jogos/">`,
 		`<a href="/jogos" class="active" aria-current="page">Jogos</a>`,
 		`<h1 id="games-title">Um pequeno hub para jogar, testar ideias e descansar a cabeça.</h1>`,
 		`href="/jogos/memoria-relampago"`,
@@ -294,7 +294,7 @@ func TestNewRouterGamesAlias(t *testing.T) {
 	body := recorder.Body.String()
 	for _, expected := range []string{
 		`<title>Jogos | Guilherme Portella</title>`,
-		`<link rel="canonical" href="/jogos/">`,
+		`<link rel="canonical" href="https://guilhermeportella.github.io/jogos/">`,
 		`<a href="/jogos" class="active" aria-current="page">Jogos</a>`,
 	} {
 		if !strings.Contains(body, expected) {
@@ -318,7 +318,7 @@ func TestNewRouterJogo(t *testing.T) {
 	for _, expected := range []string{
 		`<div class="game-page game-page--teal" aria-label="Memória Relâmpago">`,
 		`<title>Memória Relâmpago | Jogos | Guilherme Portella</title>`,
-		`<link rel="canonical" href="/jogos/memoria-relampago/">`,
+		`<link rel="canonical" href="https://guilhermeportella.github.io/jogos/memoria-relampago/">`,
 		`<a href="/jogos" class="active" aria-current="page">Jogos</a>`,
 		`<h1 id="game-title">Memória Relâmpago</h1>`,
 		`data-game="memoria-relampago"`,
@@ -349,7 +349,7 @@ func TestNewRouterJogoMath(t *testing.T) {
 	for _, expected := range []string{
 		`<div class="game-page game-page--blue" aria-label="Soma Rápida">`,
 		`<title>Soma Rápida | Jogos | Guilherme Portella</title>`,
-		`<link rel="canonical" href="/jogos/soma-rapida/">`,
+		`<link rel="canonical" href="https://guilhermeportella.github.io/jogos/soma-rapida/">`,
 		`<h1 id="game-title">Soma Rápida</h1>`,
 		`data-game="soma-rapida"`,
 		`data-math-game`,
@@ -379,7 +379,7 @@ func TestNewRouterJogoSolitaire(t *testing.T) {
 	for _, expected := range []string{
 		`<div class="game-page game-page--blue" aria-label="Paciência Klondike">`,
 		`<title>Paciência Klondike | Jogos | Guilherme Portella</title>`,
-		`<link rel="canonical" href="/jogos/paciencia-klondike/">`,
+		`<link rel="canonical" href="https://guilhermeportella.github.io/jogos/paciencia-klondike/">`,
 		`<h1 id="game-title">Paciência Klondike</h1>`,
 		`data-game="paciencia-klondike"`,
 		`data-solitaire-game`,
@@ -409,7 +409,7 @@ func TestNewRouterJogoSnake(t *testing.T) {
 	for _, expected := range []string{
 		`<div class="game-page game-page--green" aria-label="Snake Classic">`,
 		`<title>Snake Classic | Jogos | Guilherme Portella</title>`,
-		`<link rel="canonical" href="/jogos/snake/">`,
+		`<link rel="canonical" href="https://guilhermeportella.github.io/jogos/snake/">`,
 		`<h1 id="game-title">Snake Classic</h1>`,
 		`data-game="snake"`,
 		`data-snake-game`,
@@ -440,7 +440,7 @@ func TestNewRouterJogoCheckers(t *testing.T) {
 	for _, expected := range []string{
 		`<div class="game-page game-page--green" aria-label="Dama Brasileira">`,
 		`<title>Dama Brasileira | Jogos | Guilherme Portella</title>`,
-		`<link rel="canonical" href="/jogos/dama-brasileira/">`,
+		`<link rel="canonical" href="https://guilhermeportella.github.io/jogos/dama-brasileira/">`,
 		`<h1 id="game-title">Dama Brasileira</h1>`,
 		`data-game="dama-brasileira"`,
 		`data-checkers-game`,
@@ -493,7 +493,7 @@ func TestNewRouterCuriosidades(t *testing.T) {
 	for _, expected := range []string{
 		`<div class="curiosity-page" aria-label="Curiosidades">`,
 		`<title>Curiosidades | Guilherme Portella</title>`,
-		`<link rel="canonical" href="/curiosidades/">`,
+		`<link rel="canonical" href="https://guilhermeportella.github.io/curiosidades/">`,
 		`<a href="/curiosidades" class="active" aria-current="page">Curiosidades</a>`,
 		`<h1 id="curiosity-title">Um inventário de gostos para lembrar quem eu sou quando fecho o notebook.</h1>`,
 		`id="mapa"`,
@@ -561,7 +561,7 @@ func TestNewRouterAstronomia(t *testing.T) {
 		`data-apod-random-url="/static/data/nasa/apod-random.json"`,
 		`data-eonet-url="https://eonet.gsfc.nasa.gov/api/v3/events"`,
 		`<title>Astronomia | Guilherme Portella</title>`,
-		`<link rel="canonical" href="/astronomia/">`,
+		`<link rel="canonical" href="https://guilhermeportella.github.io/astronomia/">`,
 		`<a href="/curiosidades" class="active" aria-current="page">Curiosidades</a>`,
 		`/static/js/nasa-apod-app.js?v=20260625-apod-video-modal`,
 		`Astronomy Picture of the Day`,
@@ -628,7 +628,7 @@ func TestNewRouterRickAndMorty(t *testing.T) {
 	for _, expected := range []string{
 		`<div class="rick-app-root" data-rick-morty-app data-url="/rick-morty">`,
 		`<title>Rick and Morty API | Guilherme Portella</title>`,
-		`<link rel="canonical" href="/rick-morty/">`,
+		`<link rel="canonical" href="https://guilhermeportella.github.io/rick-morty/">`,
 		`https://rickandmortyapi.com`,
 		`https://rickandmorty.fandom.com`,
 		`<a href="/curiosidades" class="active" aria-current="page">Curiosidades</a>`,
@@ -726,7 +726,7 @@ func TestNewRouterAbout(t *testing.T) {
 		`<div class="about-page" aria-label="Sobre">`,
 		`<title>Sobre | Guilherme Portella</title>`,
 		`<meta name="description" content="Perfil técnico de Guilherme Portella, com foco em carreira, engenharia de software e aprendizados de desenvolvimento web.">`,
-		`<link rel="canonical" href="/about/">`,
+		`<link rel="canonical" href="https://guilhermeportella.github.io/about/">`,
 		`<meta property="og:type" content="website">`,
 		`<meta property="og:locale" content="pt_BR">`,
 		`<meta property="og:image" content="https://guilhermeportella.github.io/static/images/social-default.png?v=20260518">`,

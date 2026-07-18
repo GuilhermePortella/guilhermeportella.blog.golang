@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/xml"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -306,6 +307,78 @@ func TestExportedSiteHasNoBrokenLocalReferences(t *testing.T) {
 	}
 	if checked == 0 {
 		t.Fatal("checked 0 local references")
+	}
+}
+
+func TestExportedSiteHasSEOContracts(t *testing.T) {
+	outputDir := exportSiteForTest(t)
+	sitemapLocations := readSitemapLocations(t, filepath.Join(outputDir, "sitemap.xml"))
+
+	err := filepath.WalkDir(outputDir, func(filePath string, entry os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if entry.IsDir() || filepath.Ext(filePath) != ".html" {
+			return nil
+		}
+
+		route := routeFromExportedHTML(t, outputDir, filePath)
+		raw, err := os.ReadFile(filePath)
+		if err != nil {
+			return err
+		}
+		root, err := html.Parse(bytes.NewReader(raw))
+		if err != nil {
+			return fmt.Errorf("parse %s: %w", filePath, err)
+		}
+
+		meta := extractSEOMetadata(root)
+		if meta.Lang != "pt-BR" {
+			t.Fatalf("%s lang = %q, want pt-BR", filePath, meta.Lang)
+		}
+		if strings.TrimSpace(meta.Title) == "" {
+			t.Fatalf("%s is missing <title>", filePath)
+		}
+		if strings.TrimSpace(meta.Description) == "" {
+			t.Fatalf("%s is missing meta description", filePath)
+		}
+		if meta.H1Count != 1 {
+			t.Fatalf("%s has %d h1 elements, want 1", filePath, meta.H1Count)
+		}
+
+		requiredSocial := map[string]string{
+			"og:type":             meta.OpenGraphType,
+			"og:site_name":        meta.OpenGraphSiteName,
+			"og:title":            meta.OpenGraphTitle,
+			"og:description":      meta.OpenGraphDescription,
+			"og:url":              meta.OpenGraphURL,
+			"og:image":            meta.OpenGraphImage,
+			"twitter:card":        meta.TwitterCard,
+			"twitter:title":       meta.TwitterTitle,
+			"twitter:description": meta.TwitterDescription,
+			"twitter:image":       meta.TwitterImage,
+		}
+		for name, value := range requiredSocial {
+			if strings.TrimSpace(value) == "" {
+				t.Fatalf("%s is missing %s metadata", filePath, name)
+			}
+		}
+
+		canonical, err := url.Parse(meta.CanonicalURL)
+		if err != nil || canonical.Scheme != "https" || canonical.Host != "guilhermeportella.github.io" {
+			t.Fatalf("%s canonical = %q, want absolute production HTTPS URL", filePath, meta.CanonicalURL)
+		}
+		if meta.OpenGraphURL != meta.CanonicalURL {
+			t.Fatalf("%s og:url = %q, want canonical %q", filePath, meta.OpenGraphURL, meta.CanonicalURL)
+		}
+		if shouldIndexRoute(route) && !sitemapLocations[meta.CanonicalURL] {
+			t.Fatalf("%s canonical %q is missing from sitemap.xml", filePath, meta.CanonicalURL)
+		}
+
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 
@@ -686,6 +759,213 @@ func localHTMLReferences(root *html.Node) []string {
 	walk(root)
 
 	return refs
+}
+
+type seoMetadata struct {
+	Lang                 string
+	Title                string
+	Description          string
+	CanonicalURL         string
+	OpenGraphType        string
+	OpenGraphSiteName    string
+	OpenGraphTitle       string
+	OpenGraphDescription string
+	OpenGraphURL         string
+	OpenGraphImage       string
+	TwitterCard          string
+	TwitterTitle         string
+	TwitterDescription   string
+	TwitterImage         string
+	H1Count              int
+}
+
+func exportSiteForTest(t *testing.T) string {
+	t.Helper()
+
+	projectRoot, err := findProjectRoot()
+	if err != nil {
+		t.Fatal(err)
+	}
+	cwd, err := os.Getwd()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chdir(projectRoot); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := os.Chdir(cwd); err != nil {
+			t.Fatalf("restore cwd: %v", err)
+		}
+	})
+
+	t.Setenv("CONTENT_DIR", filepath.Join(projectRoot, "content", "articles"))
+	t.Setenv("IMAGES_DIR", filepath.Join(projectRoot, "public", "images"))
+	t.Setenv("NASA_API_KEY", "")
+	t.Setenv("NOTES_DIR", filepath.Join(projectRoot, "content", "notes"))
+	t.Setenv("STATIC_DIR", filepath.Join(projectRoot, "web", "static"))
+	t.Setenv("TEMPLATES_DIR", filepath.Join(projectRoot, "web", "templates"))
+
+	tmpRoot := filepath.Join(projectRoot, "tmp")
+	if err := os.MkdirAll(tmpRoot, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	outputDir, err := os.MkdirTemp(tmpRoot, "export-seo-*")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		if err := os.RemoveAll(outputDir); err != nil {
+			t.Fatalf("remove export seo dir: %v", err)
+		}
+	})
+
+	if err := run([]string{"-output", outputDir, "-base-path", "/"}); err != nil {
+		t.Fatal(err)
+	}
+
+	return outputDir
+}
+
+func readSitemapLocations(t *testing.T, sitemapPath string) map[string]bool {
+	t.Helper()
+
+	raw, err := os.ReadFile(sitemapPath)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var parsed struct {
+		URLs []struct {
+			Location string `xml:"loc"`
+		} `xml:"url"`
+	}
+	if err := xml.Unmarshal(raw, &parsed); err != nil {
+		t.Fatalf("parse sitemap.xml: %v\n%s", err, raw)
+	}
+
+	locations := make(map[string]bool, len(parsed.URLs))
+	for _, item := range parsed.URLs {
+		locations[item.Location] = true
+	}
+	return locations
+}
+
+func routeFromExportedHTML(t *testing.T, outputDir string, filePath string) string {
+	t.Helper()
+
+	relative, err := filepath.Rel(outputDir, filePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	relative = filepath.ToSlash(relative)
+	switch {
+	case relative == "index.html":
+		return "/"
+	case relative == "404.html":
+		return "/404"
+	case strings.HasSuffix(relative, "/index.html"):
+		return "/" + strings.TrimSuffix(relative, "/index.html")
+	default:
+		return "/" + strings.TrimSuffix(relative, ".html")
+	}
+}
+
+func extractSEOMetadata(root *html.Node) seoMetadata {
+	var metadata seoMetadata
+	var walk func(*html.Node)
+	walk = func(node *html.Node) {
+		if node == nil {
+			return
+		}
+		if node.Type == html.ElementNode {
+			switch node.Data {
+			case "html":
+				metadata.Lang = attrValue(node, "lang")
+			case "title":
+				metadata.Title = strings.TrimSpace(nodeText(node))
+			case "meta":
+				applySEOMeta(&metadata, node)
+			case "link":
+				if linkRelContains(node, "canonical") {
+					metadata.CanonicalURL = attrValue(node, "href")
+				}
+			case "h1":
+				metadata.H1Count++
+			}
+		}
+		for child := node.FirstChild; child != nil; child = child.NextSibling {
+			walk(child)
+		}
+	}
+	walk(root)
+	return metadata
+}
+
+func applySEOMeta(metadata *seoMetadata, node *html.Node) {
+	content := attrValue(node, "content")
+	switch attrValue(node, "name") {
+	case "description":
+		metadata.Description = content
+	case "twitter:card":
+		metadata.TwitterCard = content
+	case "twitter:title":
+		metadata.TwitterTitle = content
+	case "twitter:description":
+		metadata.TwitterDescription = content
+	case "twitter:image":
+		metadata.TwitterImage = content
+	}
+	switch attrValue(node, "property") {
+	case "og:type":
+		metadata.OpenGraphType = content
+	case "og:site_name":
+		metadata.OpenGraphSiteName = content
+	case "og:title":
+		metadata.OpenGraphTitle = content
+	case "og:description":
+		metadata.OpenGraphDescription = content
+	case "og:url":
+		metadata.OpenGraphURL = content
+	case "og:image":
+		metadata.OpenGraphImage = content
+	}
+}
+
+func attrValue(node *html.Node, name string) string {
+	for _, attr := range node.Attr {
+		if attr.Key == name {
+			return strings.TrimSpace(attr.Val)
+		}
+	}
+	return ""
+}
+
+func linkRelContains(node *html.Node, rel string) bool {
+	for _, item := range strings.Fields(attrValue(node, "rel")) {
+		if item == rel {
+			return true
+		}
+	}
+	return false
+}
+
+func nodeText(node *html.Node) string {
+	var builder strings.Builder
+	var walk func(*html.Node)
+	walk = func(current *html.Node) {
+		if current == nil {
+			return
+		}
+		if current.Type == html.TextNode {
+			builder.WriteString(current.Data)
+		}
+		for child := current.FirstChild; child != nil; child = child.NextSibling {
+			walk(child)
+		}
+	}
+	walk(node)
+	return builder.String()
 }
 
 func assertFileContent(t *testing.T, path string, want string) {

@@ -36,7 +36,7 @@ func newAstronomiaPageData(now time.Time, currentPath string) astronomiaPageData
 	return astronomiaPageData{
 		Title:         "Astronomia",
 		Description:   "Uma central para explorar a Astronomy Picture of the Day da NASA com imagens, videos e contexto astronomico.",
-		CanonicalURL:  "/astronomia/",
+		CanonicalURL:  publicSiteURL + "/astronomia/",
 		OpenGraphType: "website",
 		TwitterCard:   "summary_large_image",
 		Keywords:      "astronomia, nasa, apod, espaço, fotografia astronomica, ciência",

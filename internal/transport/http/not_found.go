@@ -52,7 +52,7 @@ func newNotFoundPageData(now time.Time, currentPath string) notFoundPageData {
 	return notFoundPageData{
 		Title:         "Página não encontrada",
 		Description:   "A página solicitada não existe ou mudou de endereço.",
-		CanonicalURL:  "/404",
+		CanonicalURL:  publicSiteURL + "/404",
 		OpenGraphType: "website",
 		TwitterCard:   "summary",
 		Locale:        "pt_BR",

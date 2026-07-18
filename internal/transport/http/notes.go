@@ -81,7 +81,7 @@ func newNotesPageData(now time.Time, currentPath string, notesDir string) (notes
 	return notesPageData{
 		Title:        "Notas",
 		Description:  "Bilhetes curtos e frases soltas que aparecem no dia a dia.",
-		CanonicalURL: "https://guilhermeportella.github.io/notas",
+		CanonicalURL: publicSiteURL + "/notas",
 		TwitterCard:  "summary_large_image",
 		SiteName:     "Guilherme Portella",
 		CurrentYear:  now.Year(),

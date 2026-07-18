@@ -102,7 +102,7 @@ func newJogosPageData(now time.Time, currentPath string) jogosPageData {
 	return jogosPageData{
 		Title:         "Jogos",
 		Description:   "Hub de jogos rápidos e experimentos interativos de Guilherme Portella.",
-		CanonicalURL:  "/jogos/",
+		CanonicalURL:  publicSiteURL + "/jogos/",
 		OpenGraphType: "website",
 		TwitterCard:   "summary_large_image",
 		Keywords:      "jogos, games, experimentos, interativo, web",
@@ -134,7 +134,7 @@ func newJogoPageData(now time.Time, currentPath string, slug string) (jogoPageDa
 	return jogoPageData{
 		Title:         game.Title + " | Jogos",
 		Description:   game.Description,
-		CanonicalURL:  game.URL + "/",
+		CanonicalURL:  publicSiteURL + game.URL + "/",
 		OpenGraphType: "website",
 		TwitterCard:   "summary_large_image",
 		Keywords:      "jogo, game, " + game.ShortTitle + ", interativo",

@@ -71,7 +71,7 @@ func newBlogArticlePageData(now time.Time, currentPath string, contentDir string
 	fm := article.Frontmatter
 	title := fallbackString(fm.SEO.Title, fm.Title)
 	description := fallbackString(fm.SEO.Description, fallbackString(fm.Summary, "Texto do blog."))
-	canonicalURL := fallbackString(fm.SEO.CanonicalURL, "https://guilhermeportella.github.io/blog/"+article.Slug)
+	canonicalURL := fallbackString(fm.SEO.CanonicalURL, publicSiteURL+"/blog/"+article.Slug)
 	locale := fallbackString(fm.SEO.Locale, "pt-BR")
 	parsed, hasDate := parseBlogDate(fm.PublishedAt)
 	dateLabel := "Sem data"

@@ -468,12 +468,29 @@ func markdownToHTML(md string) template.HTML {
 	htmlContent := out.String()
 	htmlContent = rewriteHTMLAssetURLs(htmlContent)
 	htmlContent = renderTwemoji(htmlContent)
+	htmlContent = demoteMarkdownH1(htmlContent)
 	htmlContent = autolinkHeadings(htmlContent)
 	htmlContent = sanitizeArticleHTML(htmlContent)
 	htmlContent = hardenArticleLinks(htmlContent)
 	htmlContent = renderKatex(htmlContent)
 
 	return template.HTML(htmlContent) // #nosec G203 -- Markdown HTML is sanitized with bluemonday before template trust.
+}
+
+func demoteMarkdownH1(raw string) string {
+	container, err := parseHTMLFragment(raw)
+	if err != nil {
+		return raw
+	}
+
+	walkHTML(container, func(node *nethtml.Node) {
+		if node.Type == nethtml.ElementNode && strings.EqualFold(node.Data, "h1") {
+			node.Data = "h2"
+			node.DataAtom = atom.H2
+		}
+	})
+
+	return renderHTMLFragment(container)
 }
 
 type markdownIDs struct {

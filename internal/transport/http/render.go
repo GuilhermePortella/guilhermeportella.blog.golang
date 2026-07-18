@@ -11,6 +11,8 @@ import (
 	"strings"
 )
 
+const publicSiteURL = "https://guilhermeportella.github.io"
+
 type Renderer struct {
 	templates map[string]*template.Template
 }

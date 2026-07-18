@@ -50,6 +50,22 @@ func TestMarkdownToHTMLSupportsGFMAndControlledHTML(t *testing.T) {
 	}
 }
 
+func TestMarkdownToHTMLDemotesTopLevelHeadings(t *testing.T) {
+	html := string(markdownToHTML("# Titulo do markdown\n\n## Secao"))
+
+	for _, expected := range []string{
+		`<h2 id="titulo-do-markdown"><a class="heading-anchor" href="#titulo-do-markdown">Titulo do markdown</a></h2>`,
+		`<h2 id="secao"><a class="heading-anchor" href="#secao">Secao</a></h2>`,
+	} {
+		if !strings.Contains(html, expected) {
+			t.Fatalf("HTML does not contain %q:\n%s", expected, html)
+		}
+	}
+	if strings.Contains(html, "<h1") || strings.Contains(html, "</h1>") {
+		t.Fatalf("HTML contains top-level heading:\n%s", html)
+	}
+}
+
 func TestMarkdownToHTMLStripsUnsafeURLsAndHardensBlankTargets(t *testing.T) {
 	html := string(markdownToHTML(`
 [link ruim](javascript:alert(1))
