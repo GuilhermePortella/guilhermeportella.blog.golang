@@ -133,7 +133,7 @@ func newCuriosidadesPageData(now time.Time, currentPath string) curiosidadesPage
 	return curiosidadesPageData{
 		Title:         "Curiosidades",
 		Description:   "Inventário pessoal de filmes, séries, jogos, livros, músicas e tecnologia de Guilherme Portella.",
-		CanonicalURL:  "/curiosidades/",
+		CanonicalURL:  publicSiteURL + "/curiosidades/",
 		OpenGraphType: "website",
 		TwitterCard:   "summary_large_image",
 		Keywords:      "curiosidades, filmes, séries, jogos, livros, músicas, tecnologia",
@@ -341,7 +341,7 @@ func newRickAndMortyPageData(now time.Time, currentPath string) rickAndMortyPage
 	return rickAndMortyPageData{
 		Title:         "Rick and Morty API",
 		Description:   "Portal interativo para explorar personagens, lugares e episódios da Rick and Morty API.",
-		CanonicalURL:  "/rick-morty/",
+		CanonicalURL:  publicSiteURL + "/rick-morty/",
 		OpenGraphType: "website",
 		TwitterCard:   "summary_large_image",
 		Keywords:      "rick and morty, api, curiosidades, personagens, episódios, rest",

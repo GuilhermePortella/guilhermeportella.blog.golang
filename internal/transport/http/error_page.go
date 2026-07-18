@@ -47,7 +47,7 @@ func newErrorPageData(now time.Time, currentPath string) errorPageData {
 	return errorPageData{
 		Title:         "Problema ao carregar",
 		Description:   "Uma página de apoio para erros inesperados ou falhas de conexão.",
-		CanonicalURL:  "/erro",
+		CanonicalURL:  publicSiteURL + "/erro",
 		OpenGraphType: "website",
 		TwitterCard:   "summary",
 		Locale:        "pt_BR",

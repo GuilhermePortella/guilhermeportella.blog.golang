@@ -103,7 +103,7 @@ func newBlogPageData(now time.Time, currentPath string, contentDir string) (blog
 	return blogPageData{
 		Title:        "Blog",
 		Description:  "Arquivo de textos longos sobre engenharia de software, backend, arquitetura e decisões técnicas.",
-		CanonicalURL: "https://guilhermeportella.github.io/blog",
+		CanonicalURL: publicSiteURL + "/blog",
 		TwitterCard:  "summary_large_image",
 		SiteName:     "Guilherme Portella",
 		CurrentYear:  now.Year(),

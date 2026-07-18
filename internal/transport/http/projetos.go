@@ -46,7 +46,7 @@ func newProjetosPageData(now time.Time, currentPath string) projetosPageData {
 	return projetosPageData{
 		Title:         "Projetos",
 		Description:   "Catálogo de repositórios públicos, experimentos e projetos de Guilherme Portella.",
-		CanonicalURL:  "/projetos/",
+		CanonicalURL:  publicSiteURL + "/projetos/",
 		OpenGraphType: "website",
 		TwitterCard:   "summary_large_image",
 		Keywords:      "projetos, github, repositórios, desenvolvimento, software",

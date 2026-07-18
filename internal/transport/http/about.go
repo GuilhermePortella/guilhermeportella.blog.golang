@@ -43,7 +43,7 @@ func newAboutPageData(now time.Time, currentPath string) aboutPageData {
 	return aboutPageData{
 		Title:         "Sobre",
 		Description:   "Perfil técnico de Guilherme Portella, com foco em carreira, engenharia de software e aprendizados de desenvolvimento web.",
-		CanonicalURL:  "/about/",
+		CanonicalURL:  publicSiteURL + "/about/",
 		OpenGraphType: "website",
 		TwitterCard:   "summary_large_image",
 		Locale:        "pt_BR",
