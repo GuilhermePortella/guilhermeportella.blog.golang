@@ -15,6 +15,7 @@ type curiosidadesPageData struct {
 	TwitterCard    string
 	Keywords       string
 	Locale         string
+	Robots         string
 	SiteName       string
 	CurrentYear    int
 
@@ -37,6 +38,7 @@ type rickAndMortyPageData struct {
 	TwitterCard    string
 	Keywords       string
 	Locale         string
+	Robots         string
 	SiteName       string
 	CurrentYear    int
 

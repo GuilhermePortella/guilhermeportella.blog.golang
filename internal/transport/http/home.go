@@ -16,6 +16,7 @@ type homePageData struct {
 	TwitterCard    string
 	Keywords       string
 	Locale         string
+	Robots         string
 	SiteName       string
 	CurrentYear    int
 

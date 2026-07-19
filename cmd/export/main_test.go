@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"encoding/xml"
 	"errors"
 	"fmt"
@@ -374,11 +375,76 @@ func TestExportedSiteHasSEOContracts(t *testing.T) {
 		if shouldIndexRoute(route) && !sitemapLocations[meta.CanonicalURL] {
 			t.Fatalf("%s canonical %q is missing from sitemap.xml", filePath, meta.CanonicalURL)
 		}
+		if route == "/404" || route == "/erro" {
+			if meta.Robots != "noindex, nofollow" {
+				t.Fatalf("%s robots = %q, want noindex, nofollow", filePath, meta.Robots)
+			}
+		}
 
 		return nil
 	})
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestExportedBlogArticlesHaveValidJSONLD(t *testing.T) {
+	outputDir := exportSiteForTest(t)
+	var checked int
+
+	err := filepath.WalkDir(filepath.Join(outputDir, "blog"), func(filePath string, entry os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if entry.IsDir() || filepath.Base(filePath) != "index.html" || filepath.Dir(filePath) == filepath.Join(outputDir, "blog") {
+			return nil
+		}
+
+		raw, err := os.ReadFile(filePath)
+		if err != nil {
+			return err
+		}
+		root, err := html.Parse(bytes.NewReader(raw))
+		if err != nil {
+			return fmt.Errorf("parse %s: %w", filePath, err)
+		}
+
+		scripts := jsonLDScripts(root)
+		if len(scripts) != 1 {
+			t.Fatalf("%s has %d JSON-LD scripts, want 1", filePath, len(scripts))
+		}
+
+		var data map[string]any
+		if err := json.Unmarshal([]byte(scripts[0]), &data); err != nil {
+			t.Fatalf("%s has invalid JSON-LD: %v\n%s", filePath, err, scripts[0])
+		}
+
+		for key, want := range map[string]string{
+			"@context": "https://schema.org",
+			"@type":    "Article",
+		} {
+			if data[key] != want {
+				t.Fatalf("%s JSON-LD[%s] = %#v, want %q", filePath, key, data[key], want)
+			}
+		}
+		for _, key := range []string{"headline", "description", "mainEntityOfPage", "datePublished"} {
+			if strings.TrimSpace(stringFromJSONLD(data[key])) == "" {
+				t.Fatalf("%s JSON-LD is missing %s: %#v", filePath, key, data)
+			}
+		}
+
+		author, ok := data["author"].(map[string]any)
+		if !ok || strings.TrimSpace(stringFromJSONLD(author["name"])) == "" {
+			t.Fatalf("%s JSON-LD author is missing name: %#v", filePath, data["author"])
+		}
+		checked++
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if checked == 0 {
+		t.Fatal("checked 0 blog article JSON-LD scripts")
 	}
 }
 
@@ -765,6 +831,7 @@ type seoMetadata struct {
 	Lang                 string
 	Title                string
 	Description          string
+	Robots               string
 	CanonicalURL         string
 	OpenGraphType        string
 	OpenGraphSiteName    string
@@ -907,6 +974,8 @@ func applySEOMeta(metadata *seoMetadata, node *html.Node) {
 	switch attrValue(node, "name") {
 	case "description":
 		metadata.Description = content
+	case "robots":
+		metadata.Robots = content
 	case "twitter:card":
 		metadata.TwitterCard = content
 	case "twitter:title":
@@ -930,6 +999,34 @@ func applySEOMeta(metadata *seoMetadata, node *html.Node) {
 	case "og:image":
 		metadata.OpenGraphImage = content
 	}
+}
+
+func jsonLDScripts(root *html.Node) []string {
+	var scripts []string
+	var walk func(*html.Node)
+	walk = func(node *html.Node) {
+		if node == nil {
+			return
+		}
+		if node.Type == html.ElementNode && node.Data == "script" && attrValue(node, "type") == "application/ld+json" {
+			scripts = append(scripts, strings.TrimSpace(nodeText(node)))
+		}
+		for child := node.FirstChild; child != nil; child = child.NextSibling {
+			walk(child)
+		}
+	}
+	walk(root)
+	return scripts
+}
+
+func stringFromJSONLD(value any) string {
+	if value == nil {
+		return ""
+	}
+	if text, ok := value.(string); ok {
+		return text
+	}
+	return fmt.Sprint(value)
 }
 
 func attrValue(node *html.Node, name string) string {

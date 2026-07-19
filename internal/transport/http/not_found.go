@@ -15,6 +15,7 @@ type notFoundPageData struct {
 	TwitterCard    string
 	Keywords       string
 	Locale         string
+	Robots         string
 	SiteName       string
 	CurrentYear    int
 
@@ -56,6 +57,7 @@ func newNotFoundPageData(now time.Time, currentPath string) notFoundPageData {
 		OpenGraphType: "website",
 		TwitterCard:   "summary",
 		Locale:        "pt_BR",
+		Robots:        "noindex, nofollow",
 		SiteName:      "Guilherme Portella",
 		CurrentYear:   now.Year(),
 		Navigation:    newSiteNavigation(currentPath),
