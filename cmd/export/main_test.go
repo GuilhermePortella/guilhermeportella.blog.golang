@@ -816,6 +816,10 @@ type seoMetadata struct {
 func exportSiteForTest(t *testing.T) string {
 	t.Helper()
 
+	if raceDetectorEnabled {
+		t.Skip("export contract tests run without -race via cover-check; full static export is too slow under the race detector")
+	}
+
 	exportedSiteOnce.Do(func() {
 		projectRoot, err := findProjectRoot()
 		if err != nil {
