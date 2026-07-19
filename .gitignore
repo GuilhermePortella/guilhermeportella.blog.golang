@@ -9,6 +9,7 @@
 /bin/
 /dist/
 /tmp/
+/.lighthouseci/
 *.test
 
 # Coverage and profiling
