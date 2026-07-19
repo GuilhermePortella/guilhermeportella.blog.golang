@@ -9,6 +9,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/static/images/favicon-32.png?v=20260712-avatar">
     <link rel="apple-touch-icon" sizes="180x180" href="/static/images/apple-touch-icon.png?v=20260712-avatar">
     <meta name="description" content="{{.Description}}">
+    {{with .Robots}}<meta name="robots" content="{{.}}">{{end}}
     {{with .Keywords}}<meta name="keywords" content="{{.}}">{{end}}
     {{with .CanonicalURL}}<link rel="canonical" href="{{.}}">{{end}}
     <link rel="alternate" type="application/rss+xml" title="Guilherme Portella - artigos" href="/feed.xml">

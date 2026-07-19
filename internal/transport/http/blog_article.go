@@ -20,6 +20,7 @@ type blogArticlePageData struct {
 	TwitterCard    string
 	Keywords       string
 	Locale         string
+	Robots         string
 	SiteName       string
 	CurrentYear    int
 
@@ -128,7 +129,15 @@ func readingTimeFromHTML(value template.HTML) int {
 }
 
 func buildArticleJSONLD(article blogArticleFull, description string, canonicalURL string, image string, frontmatterJSONLD map[string]any) template.JS {
+	defaults := defaultArticleJSONLD(article, description, canonicalURL, image)
+
 	if len(frontmatterJSONLD) > 0 {
+		for key, value := range defaults {
+			if _, exists := frontmatterJSONLD[key]; !exists {
+				frontmatterJSONLD[key] = value
+			}
+		}
+
 		raw, err := json.Marshal(frontmatterJSONLD)
 		if err != nil {
 			return ""
@@ -136,6 +145,15 @@ func buildArticleJSONLD(article blogArticleFull, description string, canonicalUR
 		return template.JS(raw) // #nosec G203 -- JSON-LD is emitted only after encoding/json escapes JS/HTML-significant bytes.
 	}
 
+	raw, err := json.Marshal(defaults)
+	if err != nil {
+		return ""
+	}
+
+	return template.JS(raw) // #nosec G203 -- JSON-LD is emitted only after encoding/json escapes JS/HTML-significant bytes.
+}
+
+func defaultArticleJSONLD(article blogArticleFull, description string, canonicalURL string, image string) map[string]any {
 	data := map[string]any{
 		"@context":         "https://schema.org",
 		"@type":            "Article",
@@ -160,10 +178,5 @@ func buildArticleJSONLD(article blogArticleFull, description string, canonicalUR
 		data["image"] = image
 	}
 
-	raw, err := json.Marshal(data)
-	if err != nil {
-		return ""
-	}
-
-	return template.JS(raw) // #nosec G203 -- JSON-LD is emitted only after encoding/json escapes JS/HTML-significant bytes.
+	return data
 }

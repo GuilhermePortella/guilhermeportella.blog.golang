@@ -1067,6 +1067,7 @@ func TestNewRouterNotFound(t *testing.T) {
 		`<div class="not-found-page" aria-label="Página não encontrada">`,
 		`erro 404`,
 		`<h1 id="not-found-title">Esta página não existe.</h1>`,
+		`<meta name="robots" content="noindex, nofollow">`,
 		`<code data-not-found-path>/missing</code>`,
 		`Voltar ao início`,
 		`Ver artigos`,
@@ -1109,6 +1110,7 @@ func TestNewRouterErrorPreview(t *testing.T) {
 		`<div class="not-found-page error-page" aria-label="Problema ao carregar">`,
 		`erro 500`,
 		`<h1 id="error-page-title" data-error-title>Não consegui carregar isso agora.</h1>`,
+		`<meta name="robots" content="noindex, nofollow">`,
 		`<code data-error-path>/erro</code>`,
 		`Tentar de novo`,
 	} {

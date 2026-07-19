@@ -18,6 +18,7 @@ type jogosPageData struct {
 	TwitterCard    string
 	Keywords       string
 	Locale         string
+	Robots         string
 	SiteName       string
 	CurrentYear    int
 
@@ -35,6 +36,7 @@ type jogoPageData struct {
 	TwitterCard    string
 	Keywords       string
 	Locale         string
+	Robots         string
 	SiteName       string
 	CurrentYear    int
 

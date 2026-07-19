@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"encoding/xml"
 	"errors"
 	"fmt"
@@ -12,10 +13,17 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 
 	"golang.org/x/net/html"
 )
+
+var exportedSiteOnce struct {
+	sync.Once
+	outputDir string
+	err       error
+}
 
 func TestNormalizeInternalRoute(t *testing.T) {
 	tests := []struct {
@@ -208,47 +216,7 @@ func TestFetchNASADataReturnsStatusError(t *testing.T) {
 }
 
 func TestExportedSiteHasNoBrokenLocalReferences(t *testing.T) {
-	projectRoot, err := findProjectRoot()
-	if err != nil {
-		t.Fatal(err)
-	}
-	cwd, err := os.Getwd()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := os.Chdir(projectRoot); err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() {
-		if err := os.Chdir(cwd); err != nil {
-			t.Fatalf("restore cwd: %v", err)
-		}
-	})
-
-	t.Setenv("CONTENT_DIR", filepath.Join(projectRoot, "content", "articles"))
-	t.Setenv("IMAGES_DIR", filepath.Join(projectRoot, "public", "images"))
-	t.Setenv("NASA_API_KEY", "")
-	t.Setenv("NOTES_DIR", filepath.Join(projectRoot, "content", "notes"))
-	t.Setenv("STATIC_DIR", filepath.Join(projectRoot, "web", "static"))
-	t.Setenv("TEMPLATES_DIR", filepath.Join(projectRoot, "web", "templates"))
-
-	tmpRoot := filepath.Join(projectRoot, "tmp")
-	if err := os.MkdirAll(tmpRoot, 0o755); err != nil {
-		t.Fatal(err)
-	}
-	outputDir, err := os.MkdirTemp(tmpRoot, "export-smoke-*")
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() {
-		if err := os.RemoveAll(outputDir); err != nil {
-			t.Fatalf("remove export smoke dir: %v", err)
-		}
-	})
-
-	if err := run([]string{"-output", outputDir, "-base-path", "/"}); err != nil {
-		t.Fatal(err)
-	}
+	outputDir := exportSiteForTest(t)
 	for _, generatedFile := range []string{"feed.xml", "robots.txt", "sitemap.xml"} {
 		if _, err := os.Stat(filepath.Join(outputDir, generatedFile)); err != nil {
 			t.Fatalf("export did not write %s: %v", generatedFile, err)
@@ -256,7 +224,7 @@ func TestExportedSiteHasNoBrokenLocalReferences(t *testing.T) {
 	}
 
 	var checked int
-	err = filepath.WalkDir(outputDir, func(filePath string, entry os.DirEntry, err error) error {
+	err := filepath.WalkDir(outputDir, func(filePath string, entry os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -374,11 +342,76 @@ func TestExportedSiteHasSEOContracts(t *testing.T) {
 		if shouldIndexRoute(route) && !sitemapLocations[meta.CanonicalURL] {
 			t.Fatalf("%s canonical %q is missing from sitemap.xml", filePath, meta.CanonicalURL)
 		}
+		if route == "/404" || route == "/erro" {
+			if meta.Robots != "noindex, nofollow" {
+				t.Fatalf("%s robots = %q, want noindex, nofollow", filePath, meta.Robots)
+			}
+		}
 
 		return nil
 	})
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestExportedBlogArticlesHaveValidJSONLD(t *testing.T) {
+	outputDir := exportSiteForTest(t)
+	var checked int
+
+	err := filepath.WalkDir(filepath.Join(outputDir, "blog"), func(filePath string, entry os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if entry.IsDir() || filepath.Base(filePath) != "index.html" || filepath.Dir(filePath) == filepath.Join(outputDir, "blog") {
+			return nil
+		}
+
+		raw, err := os.ReadFile(filePath)
+		if err != nil {
+			return err
+		}
+		root, err := html.Parse(bytes.NewReader(raw))
+		if err != nil {
+			return fmt.Errorf("parse %s: %w", filePath, err)
+		}
+
+		scripts := jsonLDScripts(root)
+		if len(scripts) != 1 {
+			t.Fatalf("%s has %d JSON-LD scripts, want 1", filePath, len(scripts))
+		}
+
+		var data map[string]any
+		if err := json.Unmarshal([]byte(scripts[0]), &data); err != nil {
+			t.Fatalf("%s has invalid JSON-LD: %v\n%s", filePath, err, scripts[0])
+		}
+
+		for key, want := range map[string]string{
+			"@context": "https://schema.org",
+			"@type":    "Article",
+		} {
+			if data[key] != want {
+				t.Fatalf("%s JSON-LD[%s] = %#v, want %q", filePath, key, data[key], want)
+			}
+		}
+		for _, key := range []string{"headline", "description", "mainEntityOfPage", "datePublished"} {
+			if strings.TrimSpace(stringFromJSONLD(data[key])) == "" {
+				t.Fatalf("%s JSON-LD is missing %s: %#v", filePath, key, data)
+			}
+		}
+
+		author, ok := data["author"].(map[string]any)
+		if !ok || strings.TrimSpace(stringFromJSONLD(author["name"])) == "" {
+			t.Fatalf("%s JSON-LD author is missing name: %#v", filePath, data["author"])
+		}
+		checked++
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if checked == 0 {
+		t.Fatal("checked 0 blog article JSON-LD scripts")
 	}
 }
 
@@ -765,6 +798,7 @@ type seoMetadata struct {
 	Lang                 string
 	Title                string
 	Description          string
+	Robots               string
 	CanonicalURL         string
 	OpenGraphType        string
 	OpenGraphSiteName    string
@@ -782,49 +816,52 @@ type seoMetadata struct {
 func exportSiteForTest(t *testing.T) string {
 	t.Helper()
 
-	projectRoot, err := findProjectRoot()
-	if err != nil {
-		t.Fatal(err)
+	if raceDetectorEnabled {
+		t.Skip("export contract tests run without -race via cover-check; full static export is too slow under the race detector")
 	}
-	cwd, err := os.Getwd()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := os.Chdir(projectRoot); err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() {
-		if err := os.Chdir(cwd); err != nil {
-			t.Fatalf("restore cwd: %v", err)
+
+	exportedSiteOnce.Do(func() {
+		projectRoot, err := findProjectRoot()
+		if err != nil {
+			exportedSiteOnce.err = err
+			return
 		}
+
+		setExportTestEnv(projectRoot)
+
+		tmpRoot := filepath.Join(projectRoot, "tmp")
+		if err := os.MkdirAll(tmpRoot, 0o755); err != nil {
+			exportedSiteOnce.err = err
+			return
+		}
+		outputDir, err := os.MkdirTemp(tmpRoot, "export-contract-*")
+		if err != nil {
+			exportedSiteOnce.err = err
+			return
+		}
+
+		if err := run([]string{"-output", outputDir, "-base-path", "/"}); err != nil {
+			_ = os.RemoveAll(outputDir)
+			exportedSiteOnce.err = err
+			return
+		}
+
+		exportedSiteOnce.outputDir = outputDir
 	})
 
-	t.Setenv("CONTENT_DIR", filepath.Join(projectRoot, "content", "articles"))
-	t.Setenv("IMAGES_DIR", filepath.Join(projectRoot, "public", "images"))
-	t.Setenv("NASA_API_KEY", "")
-	t.Setenv("NOTES_DIR", filepath.Join(projectRoot, "content", "notes"))
-	t.Setenv("STATIC_DIR", filepath.Join(projectRoot, "web", "static"))
-	t.Setenv("TEMPLATES_DIR", filepath.Join(projectRoot, "web", "templates"))
-
-	tmpRoot := filepath.Join(projectRoot, "tmp")
-	if err := os.MkdirAll(tmpRoot, 0o755); err != nil {
-		t.Fatal(err)
+	if exportedSiteOnce.err != nil {
+		t.Fatal(exportedSiteOnce.err)
 	}
-	outputDir, err := os.MkdirTemp(tmpRoot, "export-seo-*")
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() {
-		if err := os.RemoveAll(outputDir); err != nil {
-			t.Fatalf("remove export seo dir: %v", err)
-		}
-	})
+	return exportedSiteOnce.outputDir
+}
 
-	if err := run([]string{"-output", outputDir, "-base-path", "/"}); err != nil {
-		t.Fatal(err)
-	}
-
-	return outputDir
+func setExportTestEnv(projectRoot string) {
+	_ = os.Setenv("CONTENT_DIR", filepath.Join(projectRoot, "content", "articles"))
+	_ = os.Setenv("IMAGES_DIR", filepath.Join(projectRoot, "public", "images"))
+	_ = os.Setenv("NASA_API_KEY", "")
+	_ = os.Setenv("NOTES_DIR", filepath.Join(projectRoot, "content", "notes"))
+	_ = os.Setenv("STATIC_DIR", filepath.Join(projectRoot, "web", "static"))
+	_ = os.Setenv("TEMPLATES_DIR", filepath.Join(projectRoot, "web", "templates"))
 }
 
 func readSitemapLocations(t *testing.T, sitemapPath string) map[string]bool {
@@ -907,6 +944,8 @@ func applySEOMeta(metadata *seoMetadata, node *html.Node) {
 	switch attrValue(node, "name") {
 	case "description":
 		metadata.Description = content
+	case "robots":
+		metadata.Robots = content
 	case "twitter:card":
 		metadata.TwitterCard = content
 	case "twitter:title":
@@ -930,6 +969,34 @@ func applySEOMeta(metadata *seoMetadata, node *html.Node) {
 	case "og:image":
 		metadata.OpenGraphImage = content
 	}
+}
+
+func jsonLDScripts(root *html.Node) []string {
+	var scripts []string
+	var walk func(*html.Node)
+	walk = func(node *html.Node) {
+		if node == nil {
+			return
+		}
+		if node.Type == html.ElementNode && node.Data == "script" && attrValue(node, "type") == "application/ld+json" {
+			scripts = append(scripts, strings.TrimSpace(nodeText(node)))
+		}
+		for child := node.FirstChild; child != nil; child = child.NextSibling {
+			walk(child)
+		}
+	}
+	walk(root)
+	return scripts
+}
+
+func stringFromJSONLD(value any) string {
+	if value == nil {
+		return ""
+	}
+	if text, ok := value.(string); ok {
+		return text
+	}
+	return fmt.Sprint(value)
 }
 
 func attrValue(node *html.Node, name string) string {

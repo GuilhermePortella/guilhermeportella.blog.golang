@@ -62,3 +62,35 @@ func TestBuildArticleJSONLDReturnsEmptyForInvalidFrontmatterJSONLD(t *testing.T)
 		t.Fatalf("buildArticleJSONLD(invalid frontmatter) = %q, want empty", raw)
 	}
 }
+
+func TestBuildArticleJSONLDFillsMissingDefaultsForFrontmatterJSONLD(t *testing.T) {
+	article := blogArticleFull{
+		Title:    "Titulo original",
+		Author:   "Guilherme",
+		DateAttr: "2026-05-04",
+	}
+
+	raw := buildArticleJSONLD(article, "Descricao curta.", "https://example.com/blog/artigo", "", map[string]any{
+		"@context": "https://schema.org",
+		"@type":    "Article",
+		"headline": "Titulo customizado",
+	})
+
+	var got map[string]any
+	if err := json.Unmarshal([]byte(raw), &got); err != nil {
+		t.Fatalf("json.Unmarshal(JSONLD) error = %v: %s", err, raw)
+	}
+
+	if got["headline"] != "Titulo customizado" {
+		t.Fatalf("headline = %#v, want custom value", got["headline"])
+	}
+	for key, want := range map[string]string{
+		"description":      "Descricao curta.",
+		"mainEntityOfPage": "https://example.com/blog/artigo",
+		"datePublished":    "2026-05-04",
+	} {
+		if got[key] != want {
+			t.Fatalf("JSONLD[%s] = %#v, want %q", key, got[key], want)
+		}
+	}
+}
