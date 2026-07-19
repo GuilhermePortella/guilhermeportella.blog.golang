@@ -15,6 +15,7 @@ make vet
 make content-lint
 make test
 make cover-check
+make lighthouse
 make run
 make build
 make export
@@ -109,11 +110,13 @@ Comandos complementares:
 make test-shuffle
 make cover
 make cover-check
+make lighthouse
 make semgrep
 make zap
 make docker-prune
 ```
 
+`make lighthouse` gera `dist/`, sobe um servidor estatico local e executa Lighthouse CI nas paginas inicial, blog, um artigo e projetos. Os relatorios ficam em `tmp/lighthouse/`. O workflow `.github/workflows/lighthouse.yml` executa o mesmo gate em pull requests e pushes para `main`.
 `make semgrep` usa uma instalacao local do Semgrep quando existir, ou Docker como fallback. `make zap` sobe o servidor local, executa OWASP ZAP baseline via Docker e grava os relatórios em `tmp/zap/`.
 `make docker-prune` remove imagens, containers, redes e cache Docker nao usados, util depois de rodadas com ferramentas em container.
 
