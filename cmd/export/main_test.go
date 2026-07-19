@@ -13,10 +13,17 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 
 	"golang.org/x/net/html"
 )
+
+var exportedSiteOnce struct {
+	sync.Once
+	outputDir string
+	err       error
+}
 
 func TestNormalizeInternalRoute(t *testing.T) {
 	tests := []struct {
@@ -209,47 +216,7 @@ func TestFetchNASADataReturnsStatusError(t *testing.T) {
 }
 
 func TestExportedSiteHasNoBrokenLocalReferences(t *testing.T) {
-	projectRoot, err := findProjectRoot()
-	if err != nil {
-		t.Fatal(err)
-	}
-	cwd, err := os.Getwd()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := os.Chdir(projectRoot); err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() {
-		if err := os.Chdir(cwd); err != nil {
-			t.Fatalf("restore cwd: %v", err)
-		}
-	})
-
-	t.Setenv("CONTENT_DIR", filepath.Join(projectRoot, "content", "articles"))
-	t.Setenv("IMAGES_DIR", filepath.Join(projectRoot, "public", "images"))
-	t.Setenv("NASA_API_KEY", "")
-	t.Setenv("NOTES_DIR", filepath.Join(projectRoot, "content", "notes"))
-	t.Setenv("STATIC_DIR", filepath.Join(projectRoot, "web", "static"))
-	t.Setenv("TEMPLATES_DIR", filepath.Join(projectRoot, "web", "templates"))
-
-	tmpRoot := filepath.Join(projectRoot, "tmp")
-	if err := os.MkdirAll(tmpRoot, 0o755); err != nil {
-		t.Fatal(err)
-	}
-	outputDir, err := os.MkdirTemp(tmpRoot, "export-smoke-*")
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() {
-		if err := os.RemoveAll(outputDir); err != nil {
-			t.Fatalf("remove export smoke dir: %v", err)
-		}
-	})
-
-	if err := run([]string{"-output", outputDir, "-base-path", "/"}); err != nil {
-		t.Fatal(err)
-	}
+	outputDir := exportSiteForTest(t)
 	for _, generatedFile := range []string{"feed.xml", "robots.txt", "sitemap.xml"} {
 		if _, err := os.Stat(filepath.Join(outputDir, generatedFile)); err != nil {
 			t.Fatalf("export did not write %s: %v", generatedFile, err)
@@ -257,7 +224,7 @@ func TestExportedSiteHasNoBrokenLocalReferences(t *testing.T) {
 	}
 
 	var checked int
-	err = filepath.WalkDir(outputDir, func(filePath string, entry os.DirEntry, err error) error {
+	err := filepath.WalkDir(outputDir, func(filePath string, entry os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -849,49 +816,48 @@ type seoMetadata struct {
 func exportSiteForTest(t *testing.T) string {
 	t.Helper()
 
-	projectRoot, err := findProjectRoot()
-	if err != nil {
-		t.Fatal(err)
-	}
-	cwd, err := os.Getwd()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := os.Chdir(projectRoot); err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() {
-		if err := os.Chdir(cwd); err != nil {
-			t.Fatalf("restore cwd: %v", err)
+	exportedSiteOnce.Do(func() {
+		projectRoot, err := findProjectRoot()
+		if err != nil {
+			exportedSiteOnce.err = err
+			return
 		}
+
+		setExportTestEnv(projectRoot)
+
+		tmpRoot := filepath.Join(projectRoot, "tmp")
+		if err := os.MkdirAll(tmpRoot, 0o755); err != nil {
+			exportedSiteOnce.err = err
+			return
+		}
+		outputDir, err := os.MkdirTemp(tmpRoot, "export-contract-*")
+		if err != nil {
+			exportedSiteOnce.err = err
+			return
+		}
+
+		if err := run([]string{"-output", outputDir, "-base-path", "/"}); err != nil {
+			_ = os.RemoveAll(outputDir)
+			exportedSiteOnce.err = err
+			return
+		}
+
+		exportedSiteOnce.outputDir = outputDir
 	})
 
-	t.Setenv("CONTENT_DIR", filepath.Join(projectRoot, "content", "articles"))
-	t.Setenv("IMAGES_DIR", filepath.Join(projectRoot, "public", "images"))
-	t.Setenv("NASA_API_KEY", "")
-	t.Setenv("NOTES_DIR", filepath.Join(projectRoot, "content", "notes"))
-	t.Setenv("STATIC_DIR", filepath.Join(projectRoot, "web", "static"))
-	t.Setenv("TEMPLATES_DIR", filepath.Join(projectRoot, "web", "templates"))
-
-	tmpRoot := filepath.Join(projectRoot, "tmp")
-	if err := os.MkdirAll(tmpRoot, 0o755); err != nil {
-		t.Fatal(err)
+	if exportedSiteOnce.err != nil {
+		t.Fatal(exportedSiteOnce.err)
 	}
-	outputDir, err := os.MkdirTemp(tmpRoot, "export-seo-*")
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() {
-		if err := os.RemoveAll(outputDir); err != nil {
-			t.Fatalf("remove export seo dir: %v", err)
-		}
-	})
+	return exportedSiteOnce.outputDir
+}
 
-	if err := run([]string{"-output", outputDir, "-base-path", "/"}); err != nil {
-		t.Fatal(err)
-	}
-
-	return outputDir
+func setExportTestEnv(projectRoot string) {
+	_ = os.Setenv("CONTENT_DIR", filepath.Join(projectRoot, "content", "articles"))
+	_ = os.Setenv("IMAGES_DIR", filepath.Join(projectRoot, "public", "images"))
+	_ = os.Setenv("NASA_API_KEY", "")
+	_ = os.Setenv("NOTES_DIR", filepath.Join(projectRoot, "content", "notes"))
+	_ = os.Setenv("STATIC_DIR", filepath.Join(projectRoot, "web", "static"))
+	_ = os.Setenv("TEMPLATES_DIR", filepath.Join(projectRoot, "web", "templates"))
 }
 
 func readSitemapLocations(t *testing.T, sitemapPath string) map[string]bool {
