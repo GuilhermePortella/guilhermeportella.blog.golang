@@ -5,7 +5,7 @@ go 1.26.5
 require (
 	github.com/FurqanSoftware/goldmark-katex v0.0.0-20260328091149-1897eb7a41e4
 	github.com/microcosm-cc/bluemonday v1.0.27
-	github.com/yuin/goldmark v1.8.2
+	github.com/yuin/goldmark v1.8.4
 	golang.org/x/net v0.56.0
 	gopkg.in/yaml.v3 v3.0.1
 )
