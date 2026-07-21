@@ -5,6 +5,8 @@ go 1.26.5
 require (
 	github.com/FurqanSoftware/goldmark-katex v0.0.0-20260328091149-1897eb7a41e4
 	github.com/microcosm-cc/bluemonday v1.0.27
+	github.com/yuin/goldmark v1.8.2
+	golang.org/x/net v0.57.0
 	github.com/yuin/goldmark v1.8.4
 	golang.org/x/net v0.56.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -20,7 +22,7 @@ require (
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	golang.org/x/exp v0.0.0-20251023183803-a4bb9ffd2546 // indirect
-	golang.org/x/sys v0.46.0 // indirect
+	golang.org/x/sys v0.47.0 // indirect
 	modernc.org/libc v1.67.1 // indirect
 	modernc.org/libquickjs v0.12.3 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
