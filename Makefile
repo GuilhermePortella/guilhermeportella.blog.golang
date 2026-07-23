@@ -13,6 +13,10 @@ ZAP_REPORT_DIR ?= tmp/zap
 COVER_HTTP_MIN ?= 85.0
 COVER_CONFIG_MIN ?= 90.0
 COVER_EXPORT_MIN ?= 80.0
+GOVULNCHECK_VERSION ?= v1.6.0
+GOSEC_VERSION ?= v2.28.0
+GITLEAKS_VERSION ?= v8.30.1
+STATICCHECK_VERSION ?= v0.7.0
 
 .PHONY: help fmt fmt-check vet staticcheck content-lint architecture quality-gate test test-shuffle cover cover-check vuln secrets security semgrep zap lighthouse docker-prune run build export ci clean
 
@@ -30,7 +34,7 @@ vet: ## Executa analise estatica basica do Go.
 	$(GO) vet $(PKG)
 
 staticcheck: ## Executa analise estatica avancada do Go.
-	$(GO) run honnef.co/go/tools/cmd/staticcheck@latest $(PKG)
+	$(GO) run honnef.co/go/tools/cmd/staticcheck@$(STATICCHECK_VERSION) $(PKG)
 
 content-lint: ## Valida frontmatter e estrutura minima dos arquivos Markdown.
 	$(GO) run ./cmd/contentlint
@@ -60,17 +64,17 @@ cover-check: ## Garante limites minimos de cobertura nos pacotes criticos.
 	@$(GO) tool cover -func=tmp/export.cover | awk -v pkg="cmd/export" -v min="$(COVER_EXPORT_MIN)" '/total:/ { value=$$3; sub(/%/, "", value); if (value + 0 < min + 0) { printf "%s coverage %.1f%% below %.1f%%\n", pkg, value, min; exit 1 } printf "%s coverage %.1f%% >= %.1f%%\n", pkg, value, min }'
 
 vuln: ## Verifica CVEs conhecidas em dependencias e codigo Go alcancavel.
-	$(GO) run golang.org/x/vuln/cmd/govulncheck@latest $(PKG)
+	$(GO) run golang.org/x/vuln/cmd/govulncheck@$(GOVULNCHECK_VERSION) $(PKG)
 
 secrets: ## Procura segredos acidentais em arquivos versionaveis.
-	$(GO) run github.com/zricethezav/gitleaks/v8@latest detect --source . --no-git --redact --no-banner
+	$(GO) run github.com/zricethezav/gitleaks/v8@$(GITLEAKS_VERSION) detect --source . --no-git --redact --no-banner
 
 security: ## Executa verificacoes locais de seguranca.
 	$(GO) mod verify
 	$(GO) vet $(PKG)
-	$(GO) run golang.org/x/vuln/cmd/govulncheck@latest $(PKG)
-	$(GO) run github.com/securego/gosec/v2/cmd/gosec@latest -quiet $(PKG)
-	$(GO) run github.com/zricethezav/gitleaks/v8@latest detect --source . --no-git --redact --no-banner
+	$(GO) run golang.org/x/vuln/cmd/govulncheck@$(GOVULNCHECK_VERSION) $(PKG)
+	$(GO) run github.com/securego/gosec/v2/cmd/gosec@$(GOSEC_VERSION) -quiet $(PKG)
+	$(GO) run github.com/zricethezav/gitleaks/v8@$(GITLEAKS_VERSION) detect --source . --no-git --redact --no-banner
 
 semgrep: ## Executa Semgrep p/ci localmente ou via Docker.
 	@set -eu; \
