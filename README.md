@@ -144,10 +144,10 @@ Configuracoes iniciais sugeridas no repositorio:
 
 O arquivo `vercel.json` configura o projeto como um site estatico: durante o build,
 o comando de instalacao adiciona Go a imagem de build e `GOTOOLCHAIN=auto`
-seleciona a versao exigida pelo `go.mod` para executar o exportador estatico. O
-conteudo gerado em `dist/` e publicado pela CDN da Vercel. Nao selecione o
-preset `Go` no painel; use `Other` ou deixe o `vercel.json` controlar as
-configuracoes do projeto.
+seleciona a versao corrigida exigida pelo `go.mod` para executar o exportador
+estatico. O conteudo gerado em `dist/` e publicado pela CDN da Vercel. Nao
+selecione o preset `Go` no painel; use `Other` ou deixe o `vercel.json` controlar
+as configuracoes do projeto.
 
 Para que sitemap, robots e feed apontem para o dominio de producao, configure
 `SITE_URL` na Vercel. `SITE_BASE_PATH` deve ficar vazio para um dominio servido
