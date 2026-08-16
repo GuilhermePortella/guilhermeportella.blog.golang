@@ -215,6 +215,23 @@ func TestFetchNASADataReturnsStatusError(t *testing.T) {
 	}
 }
 
+func TestOptionalNASADataDoesNotFailExport(t *testing.T) {
+	t.Setenv("NASA_API_KEY", "invalid-test-key")
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "forbidden", http.StatusForbidden)
+	}))
+	defer server.Close()
+	withNASAAPODEndpoint(t, server.URL)
+
+	var warnings bytes.Buffer
+	exporter := exporter{outputDir: t.TempDir()}
+	exporter.writeOptionalNASAData(&warnings)
+
+	if got := warnings.String(); !strings.Contains(got, "optional NASA data unavailable") || !strings.Contains(got, "unexpected status 403") {
+		t.Fatalf("warning = %q, want optional NASA failure details", got)
+	}
+}
+
 func TestExportedSiteHasNoBrokenLocalReferences(t *testing.T) {
 	outputDir := exportSiteForTest(t)
 	for _, generatedFile := range []string{"feed.xml", "robots.txt", "sitemap.xml"} {

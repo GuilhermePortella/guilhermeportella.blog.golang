@@ -160,9 +160,7 @@ func (exporter exporter) Export() error {
 		return fmt.Errorf("write .nojekyll: %w", err)
 	}
 
-	if err := exporter.writeNASAData(); err != nil {
-		return err
-	}
+	exporter.writeOptionalNASAData(os.Stderr)
 
 	routes, err := exporter.collectRoutes()
 	if err != nil {
@@ -199,6 +197,12 @@ func (exporter exporter) Export() error {
 	}
 
 	return nil
+}
+
+func (exporter exporter) writeOptionalNASAData(w io.Writer) {
+	if err := exporter.writeNASAData(); err != nil {
+		_, _ = fmt.Fprintf(w, "export: warning: optional NASA data unavailable: %v\n", err)
+	}
 }
 
 func (exporter exporter) writeNASAData() error {
