@@ -143,16 +143,20 @@ Configuracoes iniciais sugeridas no repositorio:
 ## Publicacao na Vercel
 
 O arquivo `vercel.json` configura o projeto como um site estatico: durante o build,
-o comando de instalacao adiciona Go a imagem de build e `GOTOOLCHAIN=auto`
-seleciona a versao corrigida exigida pelo `go.mod` para executar o exportador
-estatico. O conteudo gerado em `dist/` e publicado pela CDN da Vercel. Nao
-selecione o preset `Go` no painel; use `Other` ou deixe o `vercel.json` controlar
-as configuracoes do projeto.
+o comando de instalacao adiciona Go a imagem e `scripts/vercel-build.sh` seleciona
+explicitamente a toolchain corrigida exigida pelo `go.mod`, baixa os modulos e
+executa o exportador. O conteudo gerado em `dist/` e publicado pela CDN da
+Vercel. Nao selecione o preset `Go` no painel; use `Other` ou deixe o
+`vercel.json` controlar as configuracoes do projeto.
+
+O build define `GOSUMDB=sum.golang.org` para verificar o checksum da toolchain
+baixada. Nao configure `GOSUMDB=off` nas variaveis do projeto na Vercel.
 
 Para que sitemap, robots e feed apontem para o dominio de producao, configure
 `SITE_URL` na Vercel. `SITE_BASE_PATH` deve ficar vazio para um dominio servido
 na raiz. `NASA_API_KEY` e opcional e, quando configurada, fica restrita ao
-ambiente de build.
+ambiente de build. Uma indisponibilidade temporaria da NASA gera um aviso no
+log, mas nao interrompe a publicacao do restante do site.
 
 ## Arquitetura
 
