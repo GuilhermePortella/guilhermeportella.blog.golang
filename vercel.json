@@ -1,0 +1,7 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "dnf install -y golang",
+  "buildCommand": "APP_ENV=production go run ./cmd/export",
+  "outputDirectory": "dist"
+}

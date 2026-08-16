@@ -4,7 +4,7 @@ Estrutura inicial para um site estilo blog em Go. A base usa a biblioteca padrao
 
 ## Requisitos
 
-- Go 1.26.5
+- Go 1.26.6
 - Make opcional, apenas para atalhos locais
 
 ## Comandos
@@ -139,6 +139,19 @@ Configuracoes iniciais sugeridas no repositorio:
 - O export tambem gera `feed.xml` com os artigos publicados para leitores RSS.
 - Se este site for publicado como User Pages ou com dominio proprio na raiz, configure a variavel do repositorio `SITE_BASE_PATH` como `/`.
 - Mantenha segredos fora do repo; o deploy atual nao precisa de secrets.
+
+## Publicacao na Vercel
+
+O arquivo `vercel.json` configura o projeto como um site estatico: durante o build,
+o comando de instalacao adiciona Go a imagem de build e `go run ./cmd/export`
+renderiza o conteudo em `dist/`, que e publicado pela CDN da Vercel. Nao
+selecione o preset `Go` no painel; use `Other` ou deixe o `vercel.json` controlar
+as configuracoes do projeto.
+
+Para que sitemap, robots e feed apontem para o dominio de producao, configure
+`SITE_URL` na Vercel. `SITE_BASE_PATH` deve ficar vazio para um dominio servido
+na raiz. `NASA_API_KEY` e opcional e, quando configurada, fica restrita ao
+ambiente de build.
 
 ## Arquitetura
 
