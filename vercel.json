@@ -1,0 +1,6 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "APP_ENV=production go run ./cmd/export",
+  "outputDirectory": "dist"
+}
