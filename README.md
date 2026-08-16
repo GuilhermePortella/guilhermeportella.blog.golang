@@ -149,6 +149,9 @@ executa o exportador. O conteudo gerado em `dist/` e publicado pela CDN da
 Vercel. Nao selecione o preset `Go` no painel; use `Other` ou deixe o
 `vercel.json` controlar as configuracoes do projeto.
 
+O build define `GOSUMDB=sum.golang.org` para verificar o checksum da toolchain
+baixada. Nao configure `GOSUMDB=off` nas variaveis do projeto na Vercel.
+
 Para que sitemap, robots e feed apontem para o dominio de producao, configure
 `SITE_URL` na Vercel. `SITE_BASE_PATH` deve ficar vazio para um dominio servido
 na raiz. `NASA_API_KEY` e opcional e, quando configurada, fica restrita ao
