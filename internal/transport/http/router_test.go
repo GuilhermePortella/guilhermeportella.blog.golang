@@ -746,6 +746,7 @@ func TestNewRouterAbout(t *testing.T) {
 		`Pilares de trabalho`,
 		`Hábitos que deixam o código menos dramático`,
 		`guilhermeportella.dev@gmail.com`,
+		`href="https://www.linkedin.com/in/myprofileguilhermeportella/?locale=pt-BR" target="_blank" rel="noopener noreferrer">LinkedIn</a>`,
 	} {
 		if !strings.Contains(body, expected) {
 			t.Fatalf("body does not contain %q", expected)
