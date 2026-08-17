@@ -146,8 +146,15 @@
 }
 
 .about-pill--email {
-  margin-top: 20px;
   background: #ffffff;
+}
+
+.about-contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
 }
 
 .about-hero__aside {
