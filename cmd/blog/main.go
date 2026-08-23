@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/guilhermeportella/guilhermeportella.github.io/internal/config"
 	"github.com/guilhermeportella/guilhermeportella.github.io/internal/platform/logger"
@@ -42,6 +44,18 @@ func run() error {
 
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
+	return runServer(ctx, srv, cfg.HTTP.ShutdownTimeout, log)
+}
+
+type managedServer interface {
+	Start() error
+	Shutdown(context.Context) error
+}
+
+func runServer(ctx context.Context, srv managedServer, shutdownTimeout time.Duration, log *slog.Logger) error {
+	if log == nil {
+		log = slog.Default()
+	}
 
 	errCh := make(chan error, 1)
 	go func() {
@@ -50,7 +64,7 @@ func run() error {
 
 	select {
 	case <-ctx.Done():
-		shutdownCtx, cancel := context.WithTimeout(context.Background(), cfg.HTTP.ShutdownTimeout)
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
 		defer cancel()
 
 		if err := srv.Shutdown(shutdownCtx); err != nil {

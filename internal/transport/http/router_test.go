@@ -184,6 +184,24 @@ func TestNewRouterBlog(t *testing.T) {
 	}
 }
 
+func TestBlogHandlerReturnsInternalServerErrorWhenContentCannotBeLoaded(t *testing.T) {
+	renderer := newTestRenderer(t)
+	contentDir := t.TempDir()
+	writeRouterTestFile(t, filepath.Join(contentDir, "broken.md"), "---\ntitle: [broken\n---\n")
+	handler := blogHandler(renderer, testLogger(), contentDir)
+	request := httptest.NewRequest(http.MethodGet, "/blog", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusInternalServerError {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusInternalServerError)
+	}
+	if body := recorder.Body.String(); !strings.Contains(body, `data-error-path>/blog</code>`) {
+		t.Fatalf("body does not contain error page path: %s", body)
+	}
+}
+
 func TestNewRouterProjetos(t *testing.T) {
 	handler := newTestRouter(t)
 	request := httptest.NewRequest(http.MethodGet, "/projetos", nil)
@@ -796,6 +814,24 @@ func TestNewRouterNotes(t *testing.T) {
 	}
 }
 
+func TestNotesHandlerReturnsInternalServerErrorWhenContentCannotBeLoaded(t *testing.T) {
+	renderer := newTestRenderer(t)
+	notesDir := t.TempDir()
+	writeRouterTestFile(t, filepath.Join(notesDir, "broken.md"), "---\ntitle: [broken\n---\n")
+	handler := notesHandler(renderer, testLogger(), notesDir)
+	request := httptest.NewRequest(http.MethodGet, "/notas", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusInternalServerError {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusInternalServerError)
+	}
+	if body := recorder.Body.String(); !strings.Contains(body, `data-error-path>/notas</code>`) {
+		t.Fatalf("body does not contain error page path: %s", body)
+	}
+}
+
 func TestNewRouterNotesTrailingSlash(t *testing.T) {
 	handler := newTestRouter(t)
 	request := httptest.NewRequest(http.MethodGet, "/notas/", nil)
@@ -825,7 +861,8 @@ func TestNewRouterImages(t *testing.T) {
 }
 
 func TestLoadNotesTagFallbackAndSort(t *testing.T) {
-	notes, err := loadNotes(filepath.Join("..", "..", "..", "content", "notes"))
+	_, notesDir := newRouterTestContent(t)
+	notes, err := loadNotes(notesDir)
 	if err != nil {
 		t.Fatalf("loadNotes() error = %v", err)
 	}
@@ -923,7 +960,8 @@ func TestNewRouterBlogArticleNotFound(t *testing.T) {
 }
 
 func TestMarkdownArticleLookupAndConversion(t *testing.T) {
-	article, err := getMarkdownArticleBySlug(filepath.Join("..", "..", "..", "content", "articles"), "Um Começo sem Pressa")
+	contentDir, _ := newRouterTestContent(t)
+	article, err := getMarkdownArticleBySlug(contentDir, "Um Começo sem Pressa")
 	if err != nil {
 		t.Fatalf("getMarkdownArticleBySlug() error = %v", err)
 	}
@@ -1221,18 +1259,102 @@ func newTestRouter(t *testing.T) http.Handler {
 	t.Helper()
 
 	root := filepath.Join("..", "..", "..")
+	contentDir, notesDir := newRouterTestContent(t)
 	handler, err := NewRouter(RouterOptions{
 		ImagesDir:    filepath.Join(root, "public", "images"),
 		StaticDir:    filepath.Join(root, "web", "static"),
 		TemplatesDir: filepath.Join(root, "web", "templates"),
-		ContentDir:   filepath.Join(root, "content", "articles"),
-		NotesDir:     filepath.Join(root, "content", "notes"),
+		ContentDir:   contentDir,
+		NotesDir:     notesDir,
 	}, testLogger())
 	if err != nil {
 		t.Fatalf("NewRouter() error = %v", err)
 	}
 
 	return handler
+}
+
+func newTestRenderer(t *testing.T) *Renderer {
+	t.Helper()
+
+	renderer, err := NewRenderer(filepath.Join("..", "..", "..", "web", "templates"))
+	if err != nil {
+		t.Fatalf("NewRenderer() error = %v", err)
+	}
+	return renderer
+}
+
+func newRouterTestContent(t *testing.T) (string, string) {
+	t.Helper()
+
+	root := t.TempDir()
+	contentDir := filepath.Join(root, "articles")
+	notesDir := filepath.Join(root, "notes")
+	if err := os.MkdirAll(contentDir, 0o755); err != nil {
+		t.Fatalf("MkdirAll(contentDir) error = %v", err)
+	}
+	if err := os.MkdirAll(notesDir, 0o755); err != nil {
+		t.Fatalf("MkdirAll(notesDir) error = %v", err)
+	}
+
+	writeRouterTestFile(t, filepath.Join(contentDir, "um-comeco-sem-pressa.md"), `---
+title: "Estruturando um serviço Go para crescer com segurança"
+summary: "Uma visão prática sobre organização de pacotes e transporte HTTP."
+author: "Guilherme Portella"
+publishedAt: "2026-05-03"
+tags: ["Go", "arquitetura"]
+keywords: ["backend", "templates", "HTTP"]
+---
+
+## Um começo que não precisa correr
+
+Um serviço Go pequeno pode crescer mantendo responsabilidades claras.
+`)
+	writeRouterTestFile(t, filepath.Join(contentDir, "camadas.md"), `---
+title: "Separando domínio, transporte e infraestrutura"
+summary: "Como manter regras de negócio protegidas."
+author: "Guilherme Portella"
+publishedAt: "2026-04-29"
+slug: "separando-camadas"
+tags: ["design", "backend"]
+---
+
+## Camadas como linguagem
+
+Separar responsabilidades torna as mudanças mais previsíveis.
+`)
+	writeRouterTestFile(t, filepath.Join(notesDir, "primeira-nota.md"), `---
+title: "Primeira nota da parede"
+tag: "Go"
+date: "2026-05-04"
+---
+
+Uma nota curta para o teste.
+`)
+	writeRouterTestFile(t, filepath.Join(notesDir, "arquitetura.md"), `---
+title: "Lembrete de arquitetura"
+tag: "arquitetura"
+date: "2026-04-20"
+---
+
+Separar camadas ajuda a explicar decisões.
+`)
+	writeRouterTestFile(t, filepath.Join(notesDir, "sem-tag.md"), `---
+title: "Nota sem pino"
+date: "2026-01-15"
+---
+
+Esta nota usa o pino padrão.
+`)
+
+	return contentDir, notesDir
+}
+
+func writeRouterTestFile(t *testing.T, path string, content string) {
+	t.Helper()
+	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
+		t.Fatalf("WriteFile(%q) error = %v", path, err)
+	}
 }
 
 func testLogger() *slog.Logger {

@@ -862,7 +862,12 @@ func exportSiteForTest(t *testing.T) string {
 
 		setExportTestEnv(t, projectRoot)
 
-		outputDir, err := os.MkdirTemp("", "export-contract-*")
+		tmpRoot := filepath.Join(projectRoot, "tmp")
+		if err := os.MkdirAll(tmpRoot, 0o755); err != nil {
+			exportedSiteOnce.err = err
+			return
+		}
+		outputDir, err := os.MkdirTemp(tmpRoot, "export-contract-*")
 		if err != nil {
 			exportedSiteOnce.err = err
 			return
