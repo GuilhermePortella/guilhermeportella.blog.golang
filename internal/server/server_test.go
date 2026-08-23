@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"log/slog"
+	"net"
 	"net/http"
 	"testing"
 	"time"
@@ -75,16 +76,38 @@ func TestStartReturnsListenErrors(t *testing.T) {
 	}
 }
 
-func TestStartReturnsNilAfterShutdown(t *testing.T) {
+func TestServeReturnsNilAfterShutdown(t *testing.T) {
 	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
-	srv := New(config.HTTPConfig{Host: "127.0.0.1", Port: 0}, http.NotFoundHandler(), logger)
+	requestReceived := make(chan struct{})
+	srv := New(config.HTTPConfig{}, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		close(requestReceived)
+		w.WriteHeader(http.StatusNoContent)
+	}), logger)
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("net.Listen() error = %v", err)
+	}
+	t.Cleanup(func() { _ = listener.Close() })
 	errCh := make(chan error, 1)
 
 	go func() {
-		errCh <- srv.Start()
+		errCh <- srv.serve(listener)
 	}()
 
-	time.Sleep(50 * time.Millisecond)
+	client := &http.Client{Timeout: time.Second}
+	response, err := client.Get("http://" + listener.Addr().String())
+	if err != nil {
+		t.Fatalf("GET readiness request error = %v", err)
+	}
+	_ = response.Body.Close()
+	if response.StatusCode != http.StatusNoContent {
+		t.Fatalf("readiness status = %d, want %d", response.StatusCode, http.StatusNoContent)
+	}
+	select {
+	case <-requestReceived:
+	case <-time.After(time.Second):
+		t.Fatal("server did not handle readiness request")
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
@@ -95,9 +118,9 @@ func TestStartReturnsNilAfterShutdown(t *testing.T) {
 	select {
 	case err := <-errCh:
 		if err != nil {
-			t.Fatalf("Start() error = %v, want nil", err)
+			t.Fatalf("serve() error = %v, want nil", err)
 		}
 	case <-time.After(time.Second):
-		t.Fatalf("Start() did not return after Shutdown()")
+		t.Fatalf("serve() did not return after Shutdown()")
 	}
 }

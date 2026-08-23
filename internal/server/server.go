@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log/slog"
+	"net"
 	"net/http"
 
 	"github.com/guilhermeportella/guilhermeportella.github.io/internal/config"
@@ -37,9 +38,18 @@ func New(cfg config.HTTPConfig, handler http.Handler, logger *slog.Logger) *Serv
 }
 
 func (s *Server) Start() error {
-	s.logger.Info("http server listening", "address", s.httpServer.Addr)
+	listener, err := net.Listen("tcp", s.httpServer.Addr)
+	if err != nil {
+		return err
+	}
 
-	if err := s.httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+	return s.serve(listener)
+}
+
+func (s *Server) serve(listener net.Listener) error {
+	s.logger.Info("http server listening", "address", listener.Addr().String())
+
+	if err := s.httpServer.Serve(listener); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
 
