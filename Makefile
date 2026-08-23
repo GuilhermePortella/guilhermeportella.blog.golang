@@ -13,6 +13,7 @@ ZAP_REPORT_DIR ?= tmp/zap
 COVER_HTTP_MIN ?= 85.0
 COVER_CONFIG_MIN ?= 90.0
 COVER_EXPORT_MIN ?= 80.0
+COVER_CONTENTLINT_MIN ?= 85.0
 GOVULNCHECK_VERSION ?= v1.6.0
 GOSEC_VERSION ?= v2.28.0
 GITLEAKS_VERSION ?= v8.30.1
@@ -62,6 +63,8 @@ cover-check: ## Garante limites minimos de cobertura nos pacotes criticos.
 	@$(GO) tool cover -func=tmp/config.cover | awk -v pkg="internal/config" -v min="$(COVER_CONFIG_MIN)" '/total:/ { value=$$3; sub(/%/, "", value); if (value + 0 < min + 0) { printf "%s coverage %.1f%% below %.1f%%\n", pkg, value, min; exit 1 } printf "%s coverage %.1f%% >= %.1f%%\n", pkg, value, min }'
 	@$(GO) test -coverprofile=tmp/export.cover ./cmd/export >/dev/null
 	@$(GO) tool cover -func=tmp/export.cover | awk -v pkg="cmd/export" -v min="$(COVER_EXPORT_MIN)" '/total:/ { value=$$3; sub(/%/, "", value); if (value + 0 < min + 0) { printf "%s coverage %.1f%% below %.1f%%\n", pkg, value, min; exit 1 } printf "%s coverage %.1f%% >= %.1f%%\n", pkg, value, min }'
+	@$(GO) test -coverprofile=tmp/contentlint.cover ./cmd/contentlint >/dev/null
+	@$(GO) tool cover -func=tmp/contentlint.cover | awk -v pkg="cmd/contentlint" -v min="$(COVER_CONTENTLINT_MIN)" '/total:/ { value=$$3; sub(/%/, "", value); if (value + 0 < min + 0) { printf "%s coverage %.1f%% below %.1f%%\n", pkg, value, min; exit 1 } printf "%s coverage %.1f%% >= %.1f%%\n", pkg, value, min }'
 
 vuln: ## Verifica CVEs conhecidas em dependencias e codigo Go alcancavel.
 	$(GO) run golang.org/x/vuln/cmd/govulncheck@$(GOVULNCHECK_VERSION) $(PKG)

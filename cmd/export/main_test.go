@@ -25,6 +25,14 @@ var exportedSiteOnce struct {
 	err       error
 }
 
+func TestMain(m *testing.M) {
+	code := m.Run()
+	if exportedSiteOnce.outputDir != "" {
+		_ = os.RemoveAll(exportedSiteOnce.outputDir)
+	}
+	os.Exit(code)
+}
+
 func TestNormalizeInternalRoute(t *testing.T) {
 	tests := []struct {
 		name string
@@ -153,12 +161,14 @@ func TestWriteNASADataSkipsWhenAPIKeyIsMissing(t *testing.T) {
 func TestWriteNASADataWritesStaticAPODPayloads(t *testing.T) {
 	t.Setenv("NASA_API_KEY", "secret-test-key")
 
+	var requestsMu sync.Mutex
 	var requests []url.Values
+	var acceptHeaders []string
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if got := r.Header.Get("Accept"); got != "application/json" {
-			t.Fatalf("Accept = %q, want application/json", got)
-		}
+		requestsMu.Lock()
 		requests = append(requests, r.URL.Query())
+		acceptHeaders = append(acceptHeaders, r.Header.Get("Accept"))
+		requestsMu.Unlock()
 		w.Header().Set("Content-Type", "application/json")
 
 		if r.URL.Query().Get("start_date") != "" {
@@ -168,20 +178,26 @@ func TestWriteNASADataWritesStaticAPODPayloads(t *testing.T) {
 		_, _ = w.Write([]byte(`{"title":"Today APOD","date":"2026-06-24"}`))
 	}))
 	defer server.Close()
-	restore := withNASAAPODEndpoint(t, server.URL)
+	withNASAAPODEndpoint(t, server.URL)
 
 	outputDir := t.TempDir()
 	exporter := exporter{outputDir: outputDir}
 	if err := exporter.writeNASAData(); err != nil {
 		t.Fatal(err)
 	}
-	restore()
 
 	assertFileContent(t, filepath.Join(outputDir, "static", "data", "nasa", "apod-today.json"), `{"title":"Today APOD","date":"2026-06-24"}`)
 	assertFileContent(t, filepath.Join(outputDir, "static", "data", "nasa", "apod-random.json"), `[{"title":"Recent APOD","date":"2026-06-20"}]`)
 
+	requestsMu.Lock()
+	defer requestsMu.Unlock()
 	if len(requests) != 2 {
 		t.Fatalf("requests = %d, want 2", len(requests))
+	}
+	for index, header := range acceptHeaders {
+		if header != "application/json" {
+			t.Fatalf("request %d Accept = %q, want application/json", index, header)
+		}
 	}
 	for _, query := range requests {
 		if got := query.Get("api_key"); got != "secret-test-key" {
@@ -844,7 +860,7 @@ func exportSiteForTest(t *testing.T) string {
 			return
 		}
 
-		setExportTestEnv(projectRoot)
+		setExportTestEnv(t, projectRoot)
 
 		tmpRoot := filepath.Join(projectRoot, "tmp")
 		if err := os.MkdirAll(tmpRoot, 0o755); err != nil {
@@ -872,13 +888,14 @@ func exportSiteForTest(t *testing.T) string {
 	return exportedSiteOnce.outputDir
 }
 
-func setExportTestEnv(projectRoot string) {
-	_ = os.Setenv("CONTENT_DIR", filepath.Join(projectRoot, "content", "articles"))
-	_ = os.Setenv("IMAGES_DIR", filepath.Join(projectRoot, "public", "images"))
-	_ = os.Setenv("NASA_API_KEY", "")
-	_ = os.Setenv("NOTES_DIR", filepath.Join(projectRoot, "content", "notes"))
-	_ = os.Setenv("STATIC_DIR", filepath.Join(projectRoot, "web", "static"))
-	_ = os.Setenv("TEMPLATES_DIR", filepath.Join(projectRoot, "web", "templates"))
+func setExportTestEnv(t *testing.T, projectRoot string) {
+	t.Helper()
+	t.Setenv("CONTENT_DIR", filepath.Join(projectRoot, "content", "articles"))
+	t.Setenv("IMAGES_DIR", filepath.Join(projectRoot, "public", "images"))
+	t.Setenv("NASA_API_KEY", "")
+	t.Setenv("NOTES_DIR", filepath.Join(projectRoot, "content", "notes"))
+	t.Setenv("STATIC_DIR", filepath.Join(projectRoot, "web", "static"))
+	t.Setenv("TEMPLATES_DIR", filepath.Join(projectRoot, "web", "templates"))
 }
 
 func readSitemapLocations(t *testing.T, sitemapPath string) map[string]bool {
