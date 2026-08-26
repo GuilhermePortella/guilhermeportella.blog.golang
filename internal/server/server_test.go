@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"io"
 	"log/slog"
 	"net"
@@ -124,3 +125,28 @@ func TestServeReturnsNilAfterShutdown(t *testing.T) {
 		t.Fatalf("serve() did not return after Shutdown()")
 	}
 }
+
+func TestServePropagatesUnexpectedListenerError(t *testing.T) {
+	wantErr := errors.New("accept failed")
+	logger := slog.New(slog.NewTextHandler(io.Discard, nil))
+	srv := New(config.HTTPConfig{}, http.NotFoundHandler(), logger)
+
+	err := srv.serve(errorListener{err: wantErr})
+
+	if !errors.Is(err, wantErr) {
+		t.Fatalf("serve() error = %v, want %v", err, wantErr)
+	}
+}
+
+type errorListener struct {
+	err error
+}
+
+func (listener errorListener) Accept() (net.Conn, error) { return nil, listener.err }
+func (errorListener) Close() error                       { return nil }
+func (errorListener) Addr() net.Addr                     { return testAddr("test:0") }
+
+type testAddr string
+
+func (testAddr) Network() string     { return "test" }
+func (addr testAddr) String() string { return string(addr) }
