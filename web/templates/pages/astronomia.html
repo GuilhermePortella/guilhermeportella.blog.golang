@@ -15,12 +15,12 @@
     <div class="container astronomy-hero__grid">
       <div class="astronomy-hero__copy">
         <a class="astronomy-back arrow-shift" href="/curiosidades">Voltar para curiosidades <span class="link-arrow" aria-hidden="true">-&gt;</span></a>
-        <p class="astronomy-kicker">nasa apod</p>
-        <h1 id="astronomy-title">Astronomia como uma janela diaria para o universo.</h1>
-        <p class="astronomy-hero__lead">Fotos, videos e explicacoes da Astronomy Picture of the Day em uma interface mais direta, escura e feita para explorar sem pressa.</p>
+        <p class="astronomy-kicker">Caderno de astronomia</p>
+        <h1 id="astronomy-title">Um olhar para o céu.</h1>
+        <p class="astronomy-hero__lead">Uma imagem por dia, escolhida pela NASA. Fotografias, observações e histórias sobre o que existe além da Terra.</p>
       </div>
 
-      <aside class="astronomy-command" aria-label="Resumo da missao">
+      <aside class="astronomy-command" aria-label="Disponibilidade das fontes">
         <div class="astronomy-command__row">
           <span>APOD</span>
           <strong data-apod-status>Inicializando</strong>
@@ -36,7 +36,7 @@
   <section class="astronomy-console" aria-labelledby="astronomy-console-title">
     <div class="astronomy-console__header">
       <div>
-        <p class="astronomy-kicker">controle</p>
+        <p class="astronomy-kicker">NASA · APOD</p>
         <h2 id="astronomy-console-title">Astronomy Picture of the Day</h2>
       </div>
       <form class="astronomy-search" data-apod-form aria-describedby="apod-message" aria-controls="apod-feature">
@@ -67,33 +67,33 @@
     <div class="astronomy-gallery-section__header">
       <div>
         <p class="astronomy-kicker">arquivo</p>
-        <h2 id="astronomy-gallery-title">Amostras recentes</h2>
+        <h2 id="astronomy-gallery-title">Nos últimos dias</h2>
       </div>
-      <button class="astronomy-refresh" type="button" data-apod-random aria-controls="apod-gallery">Recarregar arquivo</button>
+      <button class="astronomy-refresh" type="button" data-apod-random aria-controls="apod-gallery">Atualizar galeria</button>
     </div>
     <div id="apod-gallery" class="astronomy-gallery" data-apod-gallery>
-      <p class="astronomy-message">Preparando uma pequena galeria recente.</p>
+      <p class="astronomy-message">Carregando imagens.</p>
     </div>
   </section>
 
   <section class="astronomy-eonet-section" aria-labelledby="astronomy-eonet-title">
     <div class="astronomy-eonet-section__header">
       <div>
-        <p class="astronomy-kicker">terra em tempo quase real</p>
-        <h2 id="astronomy-eonet-title">EONET Natural Event Tracker</h2>
-        <p>Eventos naturais curados pela NASA, com categoria, fonte, localização e geometria mais recente.</p>
+        <p class="astronomy-kicker">Observações da Terra</p>
+        <h2 id="astronomy-eonet-title">Enquanto isso, na Terra</h2>
+        <p>Incêndios, tempestades e outros eventos acompanhados pelo EONET Natural Event Tracker, da NASA.</p>
       </div>
       <form class="astronomy-eonet-controls" data-eonet-form aria-describedby="eonet-summary" aria-controls="eonet-events">
         <label class="astronomy-field" for="eonet-category">
           <span>Categoria</span>
           <select id="eonet-category" data-eonet-category>
             <option value="">Todas</option>
-            <option value="wildfires">Wildfires</option>
-            <option value="severeStorms">Severe Storms</option>
-            <option value="volcanoes">Volcanoes</option>
-            <option value="floods">Floods</option>
-            <option value="seaLakeIce">Sea and Lake Ice</option>
-            <option value="earthquakes">Earthquakes</option>
+            <option value="wildfires">Incêndios florestais</option>
+            <option value="severeStorms">Tempestades severas</option>
+            <option value="volcanoes">Vulcões</option>
+            <option value="floods">Inundações</option>
+            <option value="seaLakeIce">Gelo marinho e lacustre</option>
+            <option value="earthquakes">Terremotos</option>
           </select>
         </label>
         <label class="astronomy-field" for="eonet-status">

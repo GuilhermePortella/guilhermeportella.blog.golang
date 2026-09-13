@@ -45,7 +45,7 @@ func TestNewRouterHome(t *testing.T) {
 		}
 	}
 
-	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260605-css-split">`) {
+	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260912-astronomy">`) {
 		t.Fatalf("body does not contain stylesheet")
 	}
 
@@ -590,7 +590,7 @@ func TestNewRouterAstronomia(t *testing.T) {
 		`data-eonet-category`,
 		`data-eonet-event-status`,
 		`id="eonet-events" class="astronomy-eonet-grid" data-eonet-events`,
-		`Amostras recentes`,
+		`Nos últimos dias`,
 		`Esta pagina precisa de JavaScript para consultar a API APOD da NASA.`,
 		`connect-src 'self' https://api.github.com https://api.nasa.gov https://eonet.gsfc.nasa.gov`,
 		`https://apod.nasa.gov`,
