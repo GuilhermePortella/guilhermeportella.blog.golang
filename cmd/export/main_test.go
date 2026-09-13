@@ -146,15 +146,26 @@ func TestRewriteRootRelativeURLs(t *testing.T) {
 }
 
 func TestWriteNASADataSkipsWhenAPIKeyIsMissing(t *testing.T) {
-	t.Setenv("NASA_API_KEY", "")
-	outputDir := t.TempDir()
-	exporter := exporter{outputDir: outputDir}
-
-	if err := exporter.writeNASAData(); err != nil {
-		t.Fatal(err)
-	}
-	if _, err := os.Stat(filepath.Join(outputDir, "static", "data", "nasa", "apod-today.json")); !errors.Is(err, os.ErrNotExist) {
-		t.Fatalf("apod-today.json stat error = %v, want not exist", err)
+	for _, key := range []string{"", " \t\n"} {
+		t.Run(fmt.Sprintf("key=%q", key), func(t *testing.T) {
+			t.Setenv("NASA_API_KEY", key)
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				t.Error("NASA must not be called without an API key")
+				w.WriteHeader(http.StatusForbidden)
+			}))
+			defer server.Close()
+			withNASAAPODEndpoint(t, server.URL)
+			outputDir := t.TempDir()
+			exporter := exporter{outputDir: outputDir}
+			if err := exporter.writeNASAData(); err != nil {
+				t.Fatal(err)
+			}
+			for _, name := range []string{"apod-today.json", "apod-random.json"} {
+				if _, err := os.Stat(filepath.Join(outputDir, "static", "data", "nasa", name)); !errors.Is(err, os.ErrNotExist) {
+					t.Fatalf("%s stat error = %v, want not exist", name, err)
+				}
+			}
+		})
 	}
 }
 
@@ -228,6 +239,40 @@ func TestFetchNASADataReturnsStatusError(t *testing.T) {
 	}
 	if !strings.Contains(err.Error(), "unexpected status 403") {
 		t.Fatalf("fetchNASAData() error = %v, want status 403", err)
+	}
+}
+
+func TestFetchNASADataRetriesTransientFailures(t *testing.T) {
+	for _, status := range []int{http.StatusTooManyRequests, http.StatusServiceUnavailable} {
+		t.Run(http.StatusText(status), func(t *testing.T) {
+			var mu sync.Mutex
+			attempts := 0
+			const payload = `{"title":"Recovered APOD","media_type":"image"}`
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				mu.Lock()
+				defer mu.Unlock()
+				attempts++
+				if attempts == 1 {
+					w.WriteHeader(status)
+					return
+				}
+				_, _ = w.Write([]byte(payload))
+			}))
+			defer server.Close()
+			withNASAAPODEndpoint(t, server.URL)
+			body, err := fetchNASAData(server.Client(), "today", url.Values{"api_key": {"test-key"}})
+			if err != nil {
+				t.Fatal(err)
+			}
+			if string(body) != payload {
+				t.Fatalf("payload = %q, want %q", body, payload)
+			}
+			mu.Lock()
+			defer mu.Unlock()
+			if attempts != 2 {
+				t.Fatalf("attempts = %d, want 2", attempts)
+			}
+		})
 	}
 }
 
