@@ -160,7 +160,16 @@ func (exporter exporter) Export() error {
 		return fmt.Errorf("write .nojekyll: %w", err)
 	}
 
-	exporter.writeOptionalNASAData(os.Stderr)
+	if os.Getenv("NASA_DATA_REQUIRED") == "true" {
+		if strings.TrimSpace(os.Getenv("NASA_API_KEY")) == "" {
+			return errors.New("NASA_API_KEY is required when NASA_DATA_REQUIRED=true")
+		}
+		if err := exporter.writeNASAData(); err != nil {
+			return fmt.Errorf("required NASA data unavailable: %w", err)
+		}
+	} else {
+		exporter.writeOptionalNASAData(os.Stderr)
+	}
 
 	routes, err := exporter.collectRoutes()
 	if err != nil {

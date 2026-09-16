@@ -3,6 +3,7 @@ set -Eeuo pipefail
 
 export GOTOOLCHAIN="${GOTOOLCHAIN:-go1.26.6}"
 export APP_ENV="${APP_ENV:-production}"
+export NASA_DATA_REQUIRED=true
 # Downloaded Go toolchains must be verified by the public checksum database.
 # Some build environments inject GOSUMDB=off, which makes Go reject them.
 export GOSUMDB="sum.golang.org"
