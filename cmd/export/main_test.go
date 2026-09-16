@@ -15,6 +15,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	"golang.org/x/net/html"
 )
@@ -224,6 +225,20 @@ func TestWriteNASADataWritesStaticAPODPayloads(t *testing.T) {
 	if got := requests[1].Get("end_date"); got == "" {
 		t.Fatal("second NASA request did not include end_date")
 	}
+	start, err := time.Parse("2006-01-02", requests[1].Get("start_date"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	end, err := time.Parse("2006-01-02", requests[1].Get("end_date"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !start.AddDate(0, 0, 5).Equal(end) {
+		t.Fatalf("unexpected date range: %v to %v", start, end)
+	}
+	if age := time.Now().UTC().Sub(end); age < 0 || age > 25*time.Hour {
+		t.Fatalf("end date is not current: %v", end)
+	}
 }
 
 func TestFetchNASADataReturnsStatusError(t *testing.T) {
@@ -276,7 +291,7 @@ func TestFetchNASADataRetriesTransientFailures(t *testing.T) {
 	}
 }
 
-func TestOptionalNASADataDoesNotFailExport(t *testing.T) {
+func TestOptionalNASADataWarnsOnFailure(t *testing.T) {
 	t.Setenv("NASA_API_KEY", "invalid-test-key")
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "forbidden", http.StatusForbidden)
@@ -935,6 +950,7 @@ func exportSiteForTest(t *testing.T) string {
 
 func setExportTestEnv(t *testing.T, projectRoot string) {
 	t.Helper()
+	t.Setenv("NASA_DATA_REQUIRED", "false")
 	t.Setenv("CONTENT_DIR", filepath.Join(projectRoot, "content", "articles"))
 	t.Setenv("IMAGES_DIR", filepath.Join(projectRoot, "public", "images"))
 	t.Setenv("NASA_API_KEY", "")
@@ -1308,4 +1324,103 @@ func withNASAAPODEndpoint(t *testing.T, endpoint string) func() {
 	}
 	t.Cleanup(restore)
 	return restore
+}
+
+func TestFetchNASADataStopsRetrying(t *testing.T) {
+	for _, tc := range []struct{ status, attempts int }{{403, 1}, {429, 3}, {503, 3}} {
+		t.Run(http.StatusText(tc.status), func(t *testing.T) {
+			var mu sync.Mutex
+			attempts := 0
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				mu.Lock()
+				attempts++
+				mu.Unlock()
+				w.WriteHeader(tc.status)
+			}))
+			defer server.Close()
+			withNASAAPODEndpoint(t, server.URL)
+			_, err := fetchNASAData(server.Client(), "today", url.Values{"api_key": {"test-key"}})
+			if err == nil || !strings.Contains(err.Error(), fmt.Sprintf("unexpected status %d", tc.status)) {
+				t.Fatalf("unexpected error: %v", err)
+			}
+			mu.Lock()
+			defer mu.Unlock()
+			if attempts != tc.attempts {
+				t.Fatalf("attempts = %d, want %d", attempts, tc.attempts)
+			}
+		})
+	}
+}
+
+func TestNASAExportPolicy(t *testing.T) {
+	root, err := findProjectRoot()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(root, "tmp"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	for _, tc := range []struct {
+		name, key, required string
+		status              int
+		wantError           bool
+	}{
+		{"optional failure", "test-key", "false", 403, false},
+		{"required missing key", "", "true", 200, true},
+		{"required blank key", " \t", "true", 200, true},
+		{"required failure", "test-key", "true", 403, true},
+		{"required success", "test-key", "true", 200, false},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			setExportTestEnv(t, root)
+			t.Setenv("NASA_API_KEY", tc.key)
+			t.Setenv("NASA_DATA_REQUIRED", tc.required)
+			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(tc.status)
+				if r.URL.Query().Get("start_date") != "" {
+					_, _ = w.Write([]byte(`[{"title":"APOD"}]`))
+				} else {
+					_, _ = w.Write([]byte(`{"title":"APOD"}`))
+				}
+			}))
+			defer server.Close()
+			withNASAAPODEndpoint(t, server.URL)
+			output, err := os.MkdirTemp(filepath.Join(root, "tmp"), "nasa-policy-*")
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() { _ = os.RemoveAll(output) })
+			err = run([]string{"-output", output, "-base-path", "/"})
+			if (err != nil) != tc.wantError {
+				t.Fatalf("export error = %v, wantError %v", err, tc.wantError)
+			}
+			if tc.wantError {
+				want := "required NASA data unavailable"
+				if strings.TrimSpace(tc.key) == "" {
+					want = "NASA_API_KEY is required"
+				}
+				if !strings.Contains(err.Error(), want) {
+					t.Fatalf("error = %v, want %q", err, want)
+				}
+				if _, err := os.Stat(filepath.Join(output, "index.html")); !errors.Is(err, os.ErrNotExist) {
+					t.Fatal("failed export generated index.html")
+				}
+				return
+			}
+			for _, name := range []string{"index.html", "astronomia/index.html"} {
+				if _, err := os.Stat(filepath.Join(output, name)); err != nil {
+					t.Fatal(err)
+				}
+			}
+			for _, name := range []string{"apod-today.json", "apod-random.json"} {
+				_, err := os.Stat(filepath.Join(output, "static/data/nasa", name))
+				if tc.status == 200 && err != nil {
+					t.Fatal(err)
+				}
+				if tc.status != 200 && !errors.Is(err, os.ErrNotExist) {
+					t.Fatalf("unexpected NASA file: %s", name)
+				}
+			}
+		})
+	}
 }
