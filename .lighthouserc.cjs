@@ -18,14 +18,14 @@ module.exports = {
     },
     assert: {
       assertions: {
-        'categories:accessibility': ['error', {minScore: 0.95}],
-        'categories:best-practices': ['error', {minScore: 0.95}],
-        'categories:seo': ['error', {minScore: 1}],
-        'categories:performance': ['warn', {minScore: 0.8}],
-        'first-contentful-paint': ['warn', {maxNumericValue: 2200}],
-        'largest-contentful-paint': ['warn', {maxNumericValue: 3000}],
-        'cumulative-layout-shift': ['error', {maxNumericValue: 0.1}],
-        'total-blocking-time': ['warn', {maxNumericValue: 300}],
+        'categories:accessibility': ['error', { minScore: 0.95 }],
+        'categories:best-practices': ['error', { minScore: 0.95 }],
+        'categories:seo': ['error', { minScore: 1 }],
+        'categories:performance': ['warn', { minScore: 0.8 }],
+        'first-contentful-paint': ['warn', { maxNumericValue: 2200 }],
+        'largest-contentful-paint': ['warn', { maxNumericValue: 3000 }],
+        'cumulative-layout-shift': ['error', { maxNumericValue: 0.1 }],
+        'total-blocking-time': ['warn', { maxNumericValue: 300 }],
       },
     },
     upload: {
