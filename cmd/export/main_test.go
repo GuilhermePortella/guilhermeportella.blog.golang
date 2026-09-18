@@ -703,15 +703,16 @@ func TestWriteSitemapAndRobots(t *testing.T) {
 }
 
 func TestWriteFeed(t *testing.T) {
-	projectRoot, err := findProjectRoot()
-	if err != nil {
+	contentDir := t.TempDir()
+	article := "---\ntitle: Estruturando um serviço Go para crescer com segurança\nsummary: 'Go & HTTP'\npublishedAt: '2026-05-03'\ntags: [Go]\nslug: um-comeco-sem-pressa\n---\nTexto do artigo.\n"
+	if err := os.WriteFile(filepath.Join(contentDir, "artigo.md"), []byte(article), 0o644); err != nil {
 		t.Fatal(err)
 	}
 
 	outputDir := t.TempDir()
 	exporter := exporter{
 		outputDir:  outputDir,
-		contentDir: filepath.Join(projectRoot, "content", "articles"),
+		contentDir: contentDir,
 		basePath:   "/repo",
 		siteURL:    "https://example.com",
 	}
@@ -742,13 +743,14 @@ func TestWriteFeed(t *testing.T) {
 		`<guid isPermaLink="true">https://example.com/repo/blog/um-comeco-sem-pressa</guid>`,
 		`<pubDate>Sun, 03 May 2026 00:00:00 +0000</pubDate>`,
 		`<category>Go</category>`,
+		`<description>Go &amp; HTTP</description>`,
 	} {
 		if !strings.Contains(output, want) {
 			t.Fatalf("feed.xml does not contain %q:\n%s", want, output)
 		}
 	}
-	if strings.Count(output, "<item>") == 0 {
-		t.Fatalf("feed.xml has no items:\n%s", output)
+	if count := strings.Count(output, "<item>"); count != 1 {
+		t.Fatalf("feed.xml has %d items, want 1:\n%s", count, output)
 	}
 }
 
@@ -1373,6 +1375,19 @@ func TestNASAExportPolicy(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			setExportTestEnv(t, root)
+			// This contract exercises NASA policy, not the real editorial corpus.
+			// Keep full-corpus rendering in the dedicated export contract tests.
+			contentDir := t.TempDir()
+			// Home links must resolve while the exporter crawls the site.
+			for _, slug := range []string{"um-comeco-sem-pressa", "coisas-que-ficam-depois-do-estudo", "separando-camadas", "bilhetes-para-dias-comuns"} {
+				article := "---\ntitle: Artigo de teste\nsummary: Resumo\nauthor: Autor\npublishedAt: '2026-05-03'\n---\nTexto.\n"
+				if err := os.WriteFile(filepath.Join(contentDir, slug+".md"), []byte(article), 0o644); err != nil {
+					t.Fatal(err)
+				}
+			}
+			t.Setenv("CONTENT_DIR", contentDir)
+			t.Setenv("NOTES_DIR", t.TempDir())
+			t.Setenv("IMAGES_DIR", t.TempDir())
 			t.Setenv("NASA_API_KEY", tc.key)
 			t.Setenv("NASA_DATA_REQUIRED", tc.required)
 			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

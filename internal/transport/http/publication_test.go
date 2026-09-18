@@ -52,7 +52,7 @@ func TestReadingTimeBoundaries(t *testing.T) {
 func TestPublicationLoadersRejectMalformedContent(t *testing.T) {
 	dir := t.TempDir()
 	writeTestBlogArticle(t, dir, "valid.md", "---\ntitle: Valido\npublishedAt: '2026-05-04'\n---\nTexto.")
-	writeTestBlogArticle(t, dir, "broken.md", "---\ntitle: [broken\n---\nTexto.")
+	writeTestBlogArticle(t, dir, "zz-broken.md", "---\ntitle: [broken\n---\nTexto.")
 	if items, err := loadBlogArticles(dir); err == nil || len(items) != 0 {
 		t.Fatalf("archive returned partial content: %#v, %v", items, err)
 	}
