@@ -104,6 +104,9 @@ Copie as variaveis de `.env.example` para o ambiente do processo quando necessar
 
 As intencoes de evolucao e os criterios de qualidade ficam em `docs/evolucao-e-qualidade.md`.
 
+O [mapa de regras de negócio e testes](docs/regras-de-negocio-e-testes.md) relaciona
+os arquivos críticos, os contratos protegidos e as lacunas de cobertura.
+
 Comandos complementares:
 
 ```sh
