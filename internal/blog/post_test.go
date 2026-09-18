@@ -42,3 +42,25 @@ func TestPostValidateReportsRequiredFields(t *testing.T) {
 		}
 	}
 }
+
+func TestPostValidateRejectsEachMissingFieldIndependently(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		change  func(*Post)
+		message string
+	}{
+		{"id", func(p *Post) { p.ID = " \t" }, "post id is required"},
+		{"slug", func(p *Post) { p.Slug = " \n" }, "post slug is required"},
+		{"title", func(p *Post) { p.Title = "\t" }, "post title is required"},
+		{"date", func(p *Post) { p.PublishedAt = time.Time{} }, "post published date is required"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			post := Post{ID: "1", Slug: "artigo", Title: "Artigo", PublishedAt: time.Date(2026, 5, 4, 0, 0, 0, 0, time.UTC)}
+			tc.change(&post)
+			err := post.Validate()
+			if err == nil || err.Error() != tc.message {
+				t.Fatalf("Validate() = %v, want %q", err, tc.message)
+			}
+		})
+	}
+}

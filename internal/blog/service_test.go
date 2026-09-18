@@ -87,9 +87,11 @@ func TestServiceFindBySlugPropagatesRepositoryError(t *testing.T) {
 }
 
 type fakeRepository struct {
-	listPosts  []Post
-	listErr    error
-	listCalled bool
+	listContext context.Context
+	findContext context.Context
+	listPosts   []Post
+	listErr     error
+	listCalled  bool
 
 	findPost   Post
 	findErr    error
@@ -98,12 +100,37 @@ type fakeRepository struct {
 }
 
 func (repository *fakeRepository) ListPublished(ctx context.Context) ([]Post, error) {
+	repository.listContext = ctx
 	repository.listCalled = true
 	return repository.listPosts, repository.listErr
 }
 
 func (repository *fakeRepository) FindBySlug(ctx context.Context, slug string) (Post, error) {
+	repository.findContext = ctx
 	repository.findCalled = true
 	repository.findSlug = slug
 	return repository.findPost, repository.findErr
+}
+
+func TestServicePreservesContextAndRepositoryFailures(t *testing.T) {
+	for _, wantErr := range []error{ErrPostNotFound, context.Canceled, context.DeadlineExceeded, errors.New("storage unavailable")} {
+		t.Run(wantErr.Error(), func(t *testing.T) {
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			repository := &fakeRepository{listErr: wantErr, findErr: wantErr}
+			service, err := NewService(repository)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := service.ListPublished(ctx); !errors.Is(err, wantErr) {
+				t.Fatalf("ListPublished() = %v, want %v", err, wantErr)
+			}
+			if _, err := service.FindBySlug(ctx, "artigo"); !errors.Is(err, wantErr) {
+				t.Fatalf("FindBySlug() = %v, want %v", err, wantErr)
+			}
+			if repository.listContext != ctx || repository.findContext != ctx {
+				t.Fatal("repository did not receive the caller's context")
+			}
+		})
+	}
 }
