@@ -45,7 +45,7 @@ func TestNewRouterHome(t *testing.T) {
 		}
 	}
 
-	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260912-astronomy">`) {
+	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20260919-reading-toc">`) {
 		t.Fatalf("body does not contain stylesheet")
 	}
 
@@ -60,7 +60,7 @@ func TestNewRouterHome(t *testing.T) {
 		t.Fatalf("body contains external Google Fonts dependency")
 	}
 
-	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260531-errors" defer></script>`) {
+	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260919-reading-toc" defer></script>`) {
 		t.Fatalf("body does not contain footer script")
 	}
 
