@@ -79,13 +79,22 @@
     grid-template-columns: minmax(0, 1fr) 260px;
   }
 
+  .site-main:has(.article-page) {
+    /* Clip decoration without creating a scroll container for the sticky aside. */
+    overflow: clip;
+  }
+
   .article-toc--mobile {
     display: none;
   }
 
-  .article-toc--desktop {
+  .article-aside {
     position: sticky;
-    top: 6rem;
+    top: var(--article-toc-top, 6rem);
+    align-self: start;
+  }
+
+  .article-toc--desktop {
     display: block;
   }
 
@@ -146,4 +155,3 @@
     justify-content: center;
   }
 }
-

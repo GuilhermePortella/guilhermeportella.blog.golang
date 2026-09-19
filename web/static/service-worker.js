@@ -25,7 +25,7 @@ const CSS_PATHS = [
 const PRECACHE_PATHS = [
   OFFLINE_PATH,
   ...CSS_PATHS.map((path) => `${path}?v=${CSS_VERSION}`),
-  "./static/js/site.js?v=20260531-errors",
+  "./static/js/site.js?v=20260919-reading-toc",
 ];
 
 function scopedURL(path) {
