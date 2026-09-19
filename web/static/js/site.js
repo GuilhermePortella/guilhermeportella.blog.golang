@@ -4722,32 +4722,97 @@
       nav.append(list);
     }
 
-    const setActive = (id) => {
-      for (const link of links) {
-        link.classList.toggle("is-active", link.hash === `#${id}`);
+    const aside = article.closest(".article-layout")?.querySelector(".article-aside");
+    const desktopTOC = aside?.querySelector(".article-toc--desktop");
+    const desktopLinks = desktopTOC ? Array.from(desktopTOC.querySelectorAll("a")) : [];
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const header = document.querySelector(".site-nav");
+    let activeIndex = -1;
+    let stickyTop = null;
+    let framePending = false;
+
+    const updateReadingPosition = () => {
+      framePending = false;
+      const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+      const readingLine = Math.max(6 * rem, (header?.getBoundingClientRect().bottom || 0) + rem);
+      let index = 0;
+      for (let i = 0; i < headings.length; i += 1) {
+        if (headings[i].getBoundingClientRect().top > readingLine + 1) {
+          break;
+        }
+        index = i;
+      }
+      // The last section may be too short to reach the reading line.
+      if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2) {
+        for (let i = index + 1; i < headings.length; i += 1) {
+          if (headings[i].getBoundingClientRect().top < window.innerHeight - rem) {
+            index = i;
+          }
+        }
+      }
+
+      if (index !== activeIndex) {
+        activeIndex = index;
+        for (const link of links) {
+          const active = link.getAttribute("href") === `#${headings[index].id}`;
+          link.classList.toggle("is-active", active);
+          if (active) {
+            link.setAttribute("aria-current", "location");
+          } else {
+            link.removeAttribute("aria-current");
+          }
+        }
+      }
+
+      if (!aside || !desktopTOC || !desktop.matches) {
+        aside?.style.removeProperty("--article-toc-top");
+        stickyTop = null;
+        return;
+      }
+
+      const currentLink = desktopLinks[index];
+      if (!currentLink) {
+        return;
+      }
+      const asideRect = aside.getBoundingClientRect();
+      const linkRect = currentLink.getBoundingClientRect();
+      const linkTop = linkRect.top - asideRect.top;
+      const linkBottom = linkRect.bottom - asideRect.top;
+      const visibleBottom = window.innerHeight - rem;
+      const minTop = Math.min(readingLine, visibleBottom - desktopTOC.getBoundingClientRect().height);
+      let nextTop = Math.max(minTop, Math.min(readingLine, stickyTop ?? readingLine));
+
+      // Move only enough to reveal the current entry, in either reading direction.
+      if (nextTop + linkBottom > visibleBottom) {
+        nextTop = visibleBottom - linkBottom;
+      }
+      if (nextTop + linkTop < readingLine) {
+        nextTop = readingLine - linkTop;
+      }
+      nextTop = Math.max(minTop, Math.min(readingLine, nextTop));
+      if (nextTop !== stickyTop) {
+        stickyTop = nextTop;
+        aside.style.setProperty("--article-toc-top", `${stickyTop}px`);
       }
     };
 
-    if (!("IntersectionObserver" in window)) {
-      setActive(headings[0].id);
-      return;
+    const scheduleUpdate = () => {
+      if (!framePending) {
+        framePending = true;
+        window.requestAnimationFrame(updateReadingPosition);
+      }
+    };
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+    window.addEventListener("pageshow", scheduleUpdate);
+    if ("ResizeObserver" in window) {
+      const observer = new ResizeObserver(scheduleUpdate);
+      observer.observe(article);
+      if (aside) {
+        observer.observe(aside);
+      }
     }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setActive(entry.target.id);
-          }
-        }
-      },
-      { rootMargin: "0px 0px -70% 0px", threshold: 0.1 },
-    );
-
-    for (const heading of headings) {
-      observer.observe(heading);
-    }
-    setActive(headings[0].id);
+    updateReadingPosition();
   }
 
   function setupArticleCodeCopy() {
