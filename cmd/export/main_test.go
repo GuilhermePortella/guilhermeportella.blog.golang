@@ -1470,3 +1470,32 @@ func TestExportedPrivacyPageIsReachable(t *testing.T) {
 		t.Error("sitemap does not include canonical privacy URL")
 	}
 }
+
+func TestExportedCookiesPageIsReachable(t *testing.T) {
+	outputDir := exportSiteForTest(t)
+	page, err := os.ReadFile(filepath.Join(outputDir, "cookies", "index.html"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, expected := range []string{
+		`<h1 id="cookies-title">Política de cookies</h1>`,
+		`mailto:guilhermeportella.dev@gmail.com`,
+		`localStorage`,
+		`https://guilhermeportella.github.io/cookies/`,
+	} {
+		if !strings.Contains(string(page), expected) {
+			t.Errorf("cookies page missing %q", expected)
+		}
+	}
+	home, err := os.ReadFile(filepath.Join(outputDir, "index.html"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(home), `href="/cookies/"`) {
+		t.Error("home footer does not link to cookies page")
+	}
+	locations := readSitemapLocations(t, filepath.Join(outputDir, "sitemap.xml"))
+	if !locations["https://guilhermeportella.github.io/cookies/"] {
+		t.Error("sitemap does not include canonical cookies URL")
+	}
+}

@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type privacyPageData struct {
+type policyPageData struct {
 	Title          string
 	Description    string
 	CanonicalURL   string
@@ -24,7 +24,7 @@ type privacyPageData struct {
 
 func privacyHandler(renderer *Renderer, logger *slog.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		data := privacyPageData{
+		data := policyPageData{
 			Title:         "Política de privacidade",
 			Description:   "Como o blog de Guilherme Portella utiliza dados, armazenamento local e serviços externos, e como entrar em contato sobre privacidade.",
 			CanonicalURL:  publicSiteURL + "/privacidade/",
