@@ -23,6 +23,7 @@ import (
 )
 
 var staticPageRoutes = map[string]struct{}{
+	"/privacidade":                 {},
 	"/":                            {},
 	"/404":                         {},
 	"/about":                       {},

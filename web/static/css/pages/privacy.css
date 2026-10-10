@@ -1,0 +1,31 @@
+.privacy-page {
+  width: min(100% - 2rem, 48rem);
+  margin: 0 auto;
+  padding: 3rem 0;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.privacy-page h1 {
+  font-size: clamp(2rem, 5vw, 3rem);
+  line-height: 1.2;
+}
+
+.privacy-page h2 {
+  font-size: 1.4rem;
+  line-height: 1.4;
+  margin-bottom: 0.75rem;
+}
+
+.privacy-page section {
+  margin-top: 2rem;
+}
+
+.privacy-page p {
+  margin-top: 1rem;
+}
+
+.privacy-page a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}

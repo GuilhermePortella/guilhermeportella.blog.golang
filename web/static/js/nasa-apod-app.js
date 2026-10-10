@@ -149,7 +149,7 @@
     const response = await fetch(url.href, { headers: { Accept: "application/json" } });
 
     if (!response.ok) {
-      throw new Error("Dados APOD ainda nao foram publicados no build estatico.");
+      throw new Error("O conteúdo de astronomia está temporariamente indisponível. Tente novamente mais tarde.");
     }
 
     const payload = await response.json();
@@ -420,7 +420,7 @@
 
     const empty = document.createElement("article");
     empty.className = "astronomy-state";
-    empty.innerHTML = "<h3>Dados nao publicados</h3><p>A APOD precisa ser gerada no export estatico com a chave da NASA configurada nos segredos do GitHub Actions.</p>";
+    empty.innerHTML = `<h3>Conteúdo temporariamente indisponível</h3><p>Não foi possível carregar a imagem de astronomia. Tente novamente mais tarde ou consulte o <a href="https://apod.nasa.gov/apod/astropix.html" target="_blank" rel="noopener noreferrer">arquivo oficial da NASA</a>.</p>`;
     feature.replaceChildren(empty);
   }
 

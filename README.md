@@ -4,7 +4,7 @@ Estrutura inicial para um site estilo blog em Go. A base usa a biblioteca padrao
 
 ## Requisitos
 
-- Go 1.26.6
+- Go 1.26.9
 - Make opcional, apenas para atalhos locais
 
 ## Comandos
@@ -158,11 +158,13 @@ baixada. Nao configure `GOSUMDB=off` nas variaveis do projeto na Vercel.
 Para que sitemap, robots e feed apontem para o dominio de producao, configure
 `SITE_URL` na Vercel. `SITE_BASE_PATH` deve ficar vazio para um dominio servido
 na raiz. Configure `NASA_API_KEY` no ambiente Production da Vercel; a chave fica
-restrita ao build. O script define `NASA_DATA_REQUIRED=true`: sem chave ou se a
-consulta falhar, o build falha para evitar publicar a astronomia sem dados.
-Isso tambem impede novas publicacoes durante indisponibilidades da NASA.
-Fora desse script, a integracao continua opcional por padrao; configure
-`NASA_DATA_REQUIRED=true` para exigir os dados em outros ambientes.
+restrita ao build. A integracao e opcional por padrao (`NASA_DATA_REQUIRED=false`):
+se a NASA continuar indisponivel apos as tentativas, o export registra um aviso
+e publica o restante do site. A secao APOD mostra um aviso de indisponibilidade
+quando nao ha dados locais no navegador.
+Para impedir publicacoes sem os dados da NASA, configure `NASA_DATA_REQUIRED=true`
+no ambiente da Vercel. Remova essa variavel ou defina `false` para permitir
+publicacoes durante falhas da API.
 
 ## Arquitetura
 
@@ -180,6 +182,7 @@ As decisoes arquiteturais ficam em `docs/adr/`.
 - `GET /`
 - `GET /404`
 - `GET /about`
+- `GET /privacidade` (política de privacidade)
 - `GET /astronomia`
 - `GET /articles` (atalho para o arquivo de textos)
 - `GET /blog`

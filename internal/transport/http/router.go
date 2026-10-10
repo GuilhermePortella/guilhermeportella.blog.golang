@@ -27,6 +27,8 @@ func NewRouter(options RouterOptions, logger *slog.Logger) (http.Handler, error)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /{$}", homeHandler(renderer, logger))
+	mux.HandleFunc("GET /privacidade", privacyHandler(renderer, logger))
+	mux.HandleFunc("GET /privacidade/{$}", privacyHandler(renderer, logger))
 	mux.HandleFunc("GET /about", aboutHandler(renderer, logger))
 	mux.HandleFunc("GET /about/{$}", aboutHandler(renderer, logger))
 	mux.HandleFunc("GET /astronomia", astronomiaHandler(renderer, logger))
