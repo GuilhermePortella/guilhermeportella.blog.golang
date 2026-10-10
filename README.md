@@ -183,6 +183,7 @@ As decisoes arquiteturais ficam em `docs/adr/`.
 - `GET /404`
 - `GET /about`
 - `GET /privacidade` (política de privacidade)
+- `GET /cookies` (política de cookies e armazenamento no navegador)
 - `GET /astronomia`
 - `GET /articles` (atalho para o arquivo de textos)
 - `GET /blog`
