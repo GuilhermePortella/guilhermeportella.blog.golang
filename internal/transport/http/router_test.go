@@ -581,7 +581,7 @@ func TestNewRouterAstronomia(t *testing.T) {
 		`<title>Astronomia | Guilherme Portella</title>`,
 		`<link rel="canonical" href="https://guilhermeportella.github.io/astronomia/">`,
 		`<a href="/curiosidades" class="active" aria-current="page">Curiosidades</a>`,
-		`/static/js/nasa-apod-app.js?v=20260625-apod-video-modal`,
+		`/static/js/nasa-apod-app.js?v=20261010-apod-availability`,
 		`Astronomy Picture of the Day`,
 		`aria-describedby="apod-message" aria-controls="apod-feature"`,
 		`id="apod-gallery"`,

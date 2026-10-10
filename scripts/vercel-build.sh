@@ -3,7 +3,8 @@ set -Eeuo pipefail
 
 export GOTOOLCHAIN="${GOTOOLCHAIN:-go1.26.9}"
 export APP_ENV="${APP_ENV:-production}"
-export NASA_DATA_REQUIRED=true
+# A NASA outage must not block publication of the rest of the site.
+export NASA_DATA_REQUIRED="${NASA_DATA_REQUIRED:-false}"
 # Downloaded Go toolchains must be verified by the public checksum database.
 # Some build environments inject GOSUMDB=off, which makes Go reject them.
 export GOSUMDB="sum.golang.org"
