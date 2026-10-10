@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-export GOTOOLCHAIN="${GOTOOLCHAIN:-go1.26.6}"
+export GOTOOLCHAIN="${GOTOOLCHAIN:-go1.26.9}"
 export APP_ENV="${APP_ENV:-production}"
 export NASA_DATA_REQUIRED=true
 # Downloaded Go toolchains must be verified by the public checksum database.
