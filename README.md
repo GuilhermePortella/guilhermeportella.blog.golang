@@ -180,6 +180,7 @@ As decisoes arquiteturais ficam em `docs/adr/`.
 - `GET /`
 - `GET /404`
 - `GET /about`
+- `GET /privacidade` (política de privacidade)
 - `GET /astronomia`
 - `GET /articles` (atalho para o arquivo de textos)
 - `GET /blog`

@@ -1439,3 +1439,32 @@ func TestNASAExportPolicy(t *testing.T) {
 		})
 	}
 }
+
+func TestExportedPrivacyPageIsReachable(t *testing.T) {
+	outputDir := exportSiteForTest(t)
+	page, err := os.ReadFile(filepath.Join(outputDir, "privacidade", "index.html"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, expected := range []string{
+		`<h1 id="privacy-title">Política de privacidade</h1>`,
+		`mailto:guilhermeportella.dev@gmail.com`,
+		`localStorage`,
+		`https://guilhermeportella.github.io/privacidade/`,
+	} {
+		if !strings.Contains(string(page), expected) {
+			t.Errorf("privacy page missing %q", expected)
+		}
+	}
+	home, err := os.ReadFile(filepath.Join(outputDir, "index.html"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(string(home), `href="/privacidade/"`) {
+		t.Error("home footer does not link to privacy page")
+	}
+	locations := readSitemapLocations(t, filepath.Join(outputDir, "sitemap.xml"))
+	if !locations["https://guilhermeportella.github.io/privacidade/"] {
+		t.Error("sitemap does not include canonical privacy URL")
+	}
+}

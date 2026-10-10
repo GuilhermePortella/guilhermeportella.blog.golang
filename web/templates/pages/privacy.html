@@ -1,0 +1,55 @@
+{{define "privacy"}}{{template "base" .}}{{end}}
+
+{{define "head-extra"}}
+<link rel="stylesheet" href="/static/css/pages/privacy.css?v=20261009">
+{{end}}
+
+{{define "content"}}
+<article class="privacy-page" aria-labelledby="privacy-title">
+  <header>
+    <p>Transparência e dados pessoais</p>
+    <h1 id="privacy-title">Política de privacidade</h1>
+    <p>Última atualização: <time datetime="2026-10-09">9 de outubro de 2026</time>.</p>
+    <p>Esta política explica o uso de dados neste blog pessoal de tecnologia, mantido por Guilherme Portella. Para assuntos de privacidade, escreva para <a href="mailto:guilhermeportella.dev@gmail.com">guilhermeportella.dev@gmail.com</a>.</p>
+  </header>
+
+  <section aria-labelledby="privacy-data">
+    <h2 id="privacy-data">Dados utilizados e finalidades</h2>
+    <p>O blog não oferece cadastro, newsletter, formulário de contato ou comentários. O código do site não inclui ferramentas de publicidade ou análise de audiência.</p>
+    <p>Ao acessar o site, o provedor de hospedagem recebe dados técnicos, como endereço IP, informações do navegador e recursos solicitados, necessários para entregar as páginas, manter a segurança e diagnosticar falhas. A publicação pode ser hospedada no GitHub Pages ou na Vercel. Quando executado como servidor Go, o blog também registra IP, caminho acessado, horário, método, status e duração das requisições.</p>
+    <p>Se você enviar um e-mail, seu endereço, nome e conteúdo da mensagem serão utilizados para responder e acompanhar o assunto. Evite enviar dados sensíveis ou documentos que não sejam necessários à sua solicitação.</p>
+  </section>
+
+  <section aria-labelledby="privacy-storage">
+    <h2 id="privacy-storage">Cookies e armazenamento no navegador</h2>
+    <p>O código próprio do blog não define cookies. Ele utiliza armazenamento local (localStorage) para preferências e resultados dos jogos e para guardar temporariamente dados públicos de astronomia. Esses registros não são enviados pelo código do blog a um banco de dados de usuários.</p>
+    <p>O cache de astronomia é considerado válido por até 8 horas; o de eventos naturais, por 20 minutos. Registros vencidos são removidos quando consultados novamente. Preferências e resultados de jogos podem permanecer até que você limpe os dados do site.</p>
+    <p>Um service worker mantém arquivos em cache para apoiar o funcionamento sem conexão. Você pode remover o armazenamento local, o cache e o service worker nas configurações de dados do site do navegador. Isso pode apagar resultados dos jogos e reduzir os recursos offline.</p>
+    <p>Serviços externos incorporados podem utilizar cookies e outros identificadores conforme suas próprias políticas e as configurações do seu navegador.</p>
+  </section>
+
+  <section aria-labelledby="privacy-third-parties">
+    <h2 id="privacy-third-parties">Serviços externos</h2>
+    <p>Dependendo da página, o navegador consulta APIs ou carrega imagens e outros recursos de GitHub, NASA/EONET, Rick and Morty API, Fandom e jsDelivr. Essas conexões expõem aos respectivos serviços dados técnicos, como IP e informações do navegador.</p>
+    <p>Algumas páginas incluem players do Spotify ou YouTube. Eles podem estabelecer conexões ao carregar o conteúdo incorporado, mesmo antes de você iniciar a reprodução. Links para outros sites também levam a serviços com práticas próprias de privacidade.</p>
+    <p>Esses fornecedores podem processar dados fora do Brasil. Os prazos de retenção e as práticas de tratamento dos serviços externos são descritos por cada fornecedor. Consulte, por exemplo, as políticas do <a href="https://docs.github.com/pt/site-policy/privacy-policies/github-general-privacy-statement">GitHub</a>, da <a href="https://vercel.com/legal/privacy-policy">Vercel</a>, do <a href="https://www.spotify.com/br/legal/privacy-policy/">Spotify</a> e do <a href="https://policies.google.com/privacy?hl=pt-BR">Google/YouTube</a>.</p>
+  </section>
+
+  <section aria-labelledby="privacy-retention">
+    <h2 id="privacy-retention">Conservação e proteção</h2>
+    <p>Mensagens de contato são conservadas enquanto necessárias para tratar a solicitação e, quando aplicável, cumprir obrigações legais ou exercer direitos. Para saber sobre a conservação de uma mensagem específica ou solicitar sua exclusão, utilize o contato abaixo.</p>
+    <p>A retenção de registros de hospedagem depende do provedor utilizado. Dados guardados no seu navegador permanecem sujeitos às regras de cache descritas acima e às suas configurações. O site utiliza restrições de carregamento de recursos e de envio de informações de referência para reduzir exposições desnecessárias.</p>
+  </section>
+
+  <section aria-labelledby="privacy-rights">
+    <h2 id="privacy-rights">Seus direitos e contato</h2>
+    <p>Nos termos aplicáveis da LGPD, você pode solicitar confirmação de tratamento, acesso, correção e informações sobre compartilhamento dos seus dados, além de anonimização, bloqueio ou eliminação de dados desnecessários ou tratados irregularmente. Também pode solicitar portabilidade conforme a regulamentação e, quando houver tratamento baseado em consentimento, revogá-lo e solicitar a eliminação dos dados, respeitadas as exceções legais.</p>
+    <p>Envie sua solicitação para <a href="mailto:guilhermeportella.dev@gmail.com">guilhermeportella.dev@gmail.com</a>, indicando o direito que deseja exercer. Poderão ser solicitadas apenas as informações necessárias para confirmar sua identidade e localizar o atendimento. Você também pode recorrer à <a href="https://www.gov.br/anpd/pt-br/assuntos/titular-de-dados/direito-dos-titulares">Autoridade Nacional de Proteção de Dados (ANPD)</a>.</p>
+  </section>
+
+  <section aria-labelledby="privacy-updates">
+    <h2 id="privacy-updates">Atualizações desta política</h2>
+    <p>Esta página será atualizada quando houver mudanças nas funcionalidades ou no uso de dados do blog. A data no início do texto identifica a última revisão.</p>
+  </section>
+</article>
+{{end}}
