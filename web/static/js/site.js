@@ -117,16 +117,11 @@
         continue;
       }
 
-      const iframe = document.createElement("iframe");
-      iframe.title = embed.dataset.spotifyTitle || "Spotify";
-      iframe.src = embed.dataset.spotifySrc || spotifyEmbedURL(embed.dataset.spotifyResource || "");
-      iframe.width = "100%";
-      iframe.height = embed.dataset.spotifyHeight || "152";
-      iframe.frameBorder = "0";
-      iframe.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
-      iframe.allowFullscreen = true;
-      iframe.loading = "lazy";
-      embed.replaceChildren(iframe);
+      window.siteConsent?.mount(embed, {
+        title: embed.dataset.spotifyTitle || "Spotify",
+        src: embed.dataset.spotifySrc || spotifyEmbedURL(embed.dataset.spotifyResource || ""),
+        height: embed.dataset.spotifyHeight || "152",
+      });
     }
   }
 

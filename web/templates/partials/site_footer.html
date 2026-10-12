@@ -5,5 +5,16 @@
   </span>
   <a class="site-footer__text" href="/privacidade/">Política de privacidade</a>
   <a class="site-footer__text" href="/cookies/">Política de cookies</a>
+  <button type="button" data-consent-open hidden>Preferências de cookies</button>
+  <p data-consent-status role="status" aria-live="polite"></p>
 </footer>
+<section class="consent-panel" data-consent-panel aria-labelledby="consent-title" hidden>
+  <h2 id="consent-title">Cookies e conteúdos externos</h2>
+  <p>Você permite carregar players do Spotify e YouTube? Eles podem receber dados de navegação e usar cookies próprios. Você pode recusar e continuar usando o blog.</p>
+  <p>Preferências de jogos e cache funcional permanecem no navegador. Saiba mais na <a href="/cookies/">Política de cookies</a>. Altere sua escolha a qualquer momento no rodapé.</p>
+  <div class="consent-actions">
+    <button type="button" data-consent-reject>Recusar conteúdos externos</button>
+    <button type="button" data-consent-accept>Aceitar conteúdos externos</button>
+  </div>
+</section>
 {{end}}

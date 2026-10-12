@@ -130,7 +130,11 @@ build: ## Gera binario otimizado em ./bin.
 export: ## Gera o site estatico em ./dist para publicacao no GitHub Pages.
 	EXPORT_DIR=$(EXPORT_DIR) $(GO) run ./cmd/export
 
-ci: fmt-check content-lint architecture quality-gate security staticcheck test cover-check build export ## Executa as validacoes usadas no CI.
+ci: test-consent fmt-check content-lint architecture quality-gate security staticcheck test cover-check build export ## Executa as validacoes usadas no CI.
 
 clean: ## Remove artefatos locais.
 	rm -rf bin dist
+
+.PHONY: test-consent
+test-consent: ## Verifica bloqueio e escolhas de conteudos externos.
+	node --test scripts/tests/consent.test.cjs

@@ -371,13 +371,9 @@
       const safeURL = safeFrameURL(item.url);
 
       if (safeURL) {
-        const iframe = document.createElement("iframe");
-        iframe.title = item.title || alt;
-        iframe.src = safeURL;
-        iframe.loading = "lazy";
-        iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-        iframe.allowFullscreen = true;
-        return iframe;
+        const host = document.createElement("div");
+        window.siteConsent?.mount(host, { title: item.title || alt, src: safeURL });
+        return host;
       }
 
       const videoURL = safeVideoURL(item.url);
