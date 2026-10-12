@@ -23,7 +23,7 @@ func TestCookiesRoutes(t *testing.T) {
 				`data-consent-accept`,
 				`data-consent-reject`,
 				`data-consent-open`,
-				`/static/js/consent.js?v=20261011`,
+				`/static/js/consent.js?v=20261012`,
 			} {
 				if !strings.Contains(response.Body.String(), expected) {
 					t.Errorf("page missing %q", expected)

@@ -5,6 +5,7 @@
   const status = document.querySelector("[data-consent-status]");
   const frames = new Map();
   let returnFocus;
+  let statusTimer;
   let choice = read();
 
   function read() {
@@ -61,7 +62,11 @@
     try { localStorage.setItem(KEY, JSON.stringify(choice)); }
     catch { persisted = false; }
     update();
-    if (status) status.textContent = `${allowed ? "Conteúdos externos autorizados." : "Conteúdos externos bloqueados."}${persisted ? "" : " A preferência vale apenas nesta página porque o armazenamento está indisponível."}`;
+    if (status) {
+      clearTimeout(statusTimer);
+      status.textContent = `${allowed ? "Conteúdos externos autorizados." : "Conteúdos externos bloqueados."}${persisted ? "" : " A preferência vale apenas nesta página porque o armazenamento está indisponível."}`;
+      statusTimer = setTimeout(() => { status.textContent = ""; }, 5000);
+    }
     const target = returnFocus?.isConnected ? returnFocus : document.querySelector("[data-consent-open]");
     target?.focus();
   }
