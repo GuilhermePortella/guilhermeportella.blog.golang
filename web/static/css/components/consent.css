@@ -19,7 +19,7 @@
 .consent-panel p { margin: 0.75rem 0; }
 .consent-panel a { text-decoration: underline; }
 .consent-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
-.consent-actions button, .external-media button, [data-consent-open] {
+.consent-actions button, .external-media button {
   cursor: pointer;
   font: inherit;
   padding: 0.65rem 1rem;
@@ -40,3 +40,19 @@
   height: auto;
   aspect-ratio: 16 / 9;
 }
+
+.site-footer [data-consent-open] {
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+}
+.site-footer [data-consent-open]:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+[data-consent-status] {
+  color: var(--neutral-500);
+  font-size: 0.875rem;
+}
+[data-consent-status]:empty { margin: 0; }
