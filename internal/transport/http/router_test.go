@@ -60,7 +60,7 @@ func TestNewRouterHome(t *testing.T) {
 		t.Fatalf("body contains external Google Fonts dependency")
 	}
 
-	if !strings.Contains(body, `<script src="/static/js/site.js?v=20260919-reading-toc" defer></script>`) {
+	if !strings.Contains(body, `<script src="/static/js/site.js?v=20261011-consent" defer></script>`) {
 		t.Fatalf("body does not contain footer script")
 	}
 
@@ -543,6 +543,10 @@ func TestNewRouterCuriosidades(t *testing.T) {
 		}
 	}
 
+	if strings.Contains(body, "<iframe") {
+		t.Fatal("Spotify must not load before consent, including noscript")
+	}
+
 	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "frame-src https://open.spotify.com") {
 		t.Fatalf("Content-Security-Policy = %q, want Spotify frame-src", got)
 	}
@@ -581,7 +585,7 @@ func TestNewRouterAstronomia(t *testing.T) {
 		`<title>Astronomia | Guilherme Portella</title>`,
 		`<link rel="canonical" href="https://guilhermeportella.github.io/astronomia/">`,
 		`<a href="/curiosidades" class="active" aria-current="page">Curiosidades</a>`,
-		`/static/js/nasa-apod-app.js?v=20261010-apod-availability`,
+		`/static/js/nasa-apod-app.js?v=20261011-consent`,
 		`Astronomy Picture of the Day`,
 		`aria-describedby="apod-message" aria-controls="apod-feature"`,
 		`id="apod-gallery"`,

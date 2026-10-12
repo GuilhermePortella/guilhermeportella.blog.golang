@@ -5,6 +5,7 @@ Estrutura inicial para um site estilo blog em Go. A base usa a biblioteca padrao
 ## Requisitos
 
 - Go 1.26.9
+- Node.js com suporte a `node --test` para os testes de consentimento (`make ci`).
 - Make opcional, apenas para atalhos locais
 
 ## Comandos
@@ -208,3 +209,12 @@ As decisoes arquiteturais ficam em `docs/adr/`.
 - `GET /static/*`
 - `GET /healthz`
 - `GET /readyz`
+
+## Preferencias de cookies
+
+Players Spotify e YouTube ficam bloqueados ate a autorizacao em Preferencias de cookies.
+Aceitar ou recusar salva uma escolha versionada no navegador por 180 dias. O rodape
+permite alterar a escolha; revogar remove os players ativos e sincroniza outras abas.
+Sem JavaScript, o Spotify fica disponivel apenas por links externos. Essa escolha
+nao controla as APIs, imagens externas ou o armazenamento funcional de jogos e cache.
+Execute `make test-consent` para verificar o comportamento do controle.

@@ -158,15 +158,7 @@
               data-spotify-height="152">
             </div>
             <noscript>
-              <iframe
-                title="{{.Artist}} - {{.Title}} - Spotify"
-                src="{{.EmbedURL}}"
-                width="100%"
-                height="152"
-                frameborder="0"
-                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                allowfullscreen>
-              </iframe>
+              <a href="{{.EmbedURL}}" target="_blank" rel="noopener noreferrer">Abrir {{.Artist}} - {{.Title}} - Spotify no Spotify</a>
             </noscript>
           </div>
           <div class="curiosity-song-card__copy">
@@ -189,15 +181,7 @@
             data-spotify-height="352">
           </div>
           <noscript>
-            <iframe
-              title="{{.Title}}"
-              src="{{.EmbedURL}}"
-              width="100%"
-              height="352"
-              frameborder="0"
-              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-              allowfullscreen>
-            </iframe>
+            <a href="{{.EmbedURL}}" target="_blank" rel="noopener noreferrer">Abrir {{.Title}} no Spotify</a>
           </noscript>
         </article>
         {{end}}

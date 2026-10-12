@@ -20,6 +20,10 @@ func TestCookiesRoutes(t *testing.T) {
 				`<h1 id="cookies-title">Política de cookies</h1>`,
 				`<link rel="canonical" href="https://guilhermeportella.github.io/cookies/">`,
 				`href="/privacidade/"`,
+				`data-consent-accept`,
+				`data-consent-reject`,
+				`data-consent-open`,
+				`/static/js/consent.js?v=20261011`,
 			} {
 				if !strings.Contains(response.Body.String(), expected) {
 					t.Errorf("page missing %q", expected)
