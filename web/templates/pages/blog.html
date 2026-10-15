@@ -71,12 +71,15 @@
               name="q"
               placeholder="Buscar por título, resumo ou conteúdo..."
               aria-label="Buscar textos"
+              aria-describedby="blog-search-help"
+              aria-controls="blog-search-results"
               data-blog-search-input
             >
             <button type="submit">Buscar</button>
           </form>
 
-          <div class="blog-search__results" data-blog-search-results hidden></div>
+          <p id="blog-search-help">Use ↑ e ↓ para escolher um texto e Enter para abrir. Com um único resultado, Enter abre diretamente. Esc volta à busca.</p>
+          <div id="blog-search-results" class="blog-search__results" data-blog-search-results hidden></div>
         </section>
 
         <nav class="blog-filter" aria-label="Filtro de ano e meses">

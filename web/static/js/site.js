@@ -4899,6 +4899,31 @@
 
     input.addEventListener("input", renderSearch);
 
+    const moveResultFocus = (event) => {
+      if (event.isComposing || !["ArrowDown", "ArrowUp", "Escape"].includes(event.key)) {
+        return;
+      }
+
+      const links = Array.from(results.querySelectorAll("a"));
+      if (event.key === "Escape") {
+        input.focus();
+        return;
+      }
+      if (!links.length) {
+        return;
+      }
+
+      event.preventDefault();
+      const current = links.indexOf(document.activeElement);
+      const next = current === -1
+        ? (event.key === "ArrowDown" ? 0 : links.length - 1)
+        : (current + (event.key === "ArrowDown" ? 1 : -1) + links.length) % links.length;
+      links[next].focus();
+    };
+
+    input.addEventListener("keydown", moveResultFocus);
+    results.addEventListener("keydown", moveResultFocus);
+
     form.addEventListener("submit", (event) => {
       event.preventDefault();
 
@@ -4914,6 +4939,13 @@
       const nextURL = `${window.location.pathname}${search ? `?${search}` : ""}${window.location.hash}`;
       window.history.replaceState(null, "", nextURL);
       renderSearch();
+
+      const links = results.querySelectorAll("a");
+      if (links.length === 1) {
+        links[0].click();
+      } else if (links.length > 1) {
+        links[0].focus();
+      }
     });
 
     window.addEventListener("popstate", () => {

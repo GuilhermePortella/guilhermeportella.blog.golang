@@ -303,10 +303,19 @@
 }
 
 .blog-search__results a {
+  display: block;
+  padding: 0.5rem;
+  border-radius: 0.375rem;
   color: var(--stone-900);
   font-size: 0.875rem;
   font-weight: 600;
   text-decoration: none;
+}
+
+.blog-search__results a:focus {
+  background: var(--stone-200);
+  outline: 2px solid var(--stone-900);
+  outline-offset: 2px;
 }
 
 .blog-filter {
