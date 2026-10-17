@@ -163,6 +163,8 @@ restrita ao build. A integracao e opcional por padrao (`NASA_DATA_REQUIRED=false
 se a NASA continuar indisponivel apos as tentativas, o export registra um aviso
 e publica o restante do site. A secao APOD mostra um aviso de indisponibilidade
 quando nao ha dados locais no navegador.
+Depois de adicionar ou alterar `NASA_API_KEY`, execute um novo deploy para
+regenerar os arquivos JSON da APOD com a configuracao atualizada.
 Para impedir publicacoes sem os dados da NASA, configure `NASA_DATA_REQUIRED=true`
 no ambiente da Vercel. Remova essa variavel ou defina `false` para permitir
 publicacoes durante falhas da API.
