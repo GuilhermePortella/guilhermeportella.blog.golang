@@ -22,15 +22,9 @@ if [[ -z "$changed_files" ]]; then
   exit 0
 fi
 
-# Excecao editorial explicita; o artigo continua sujeito ao content-lint.
-# Use caminhos completos para nao dispensar testes de outros conteudos.
-files_requiring_tests="$(
-  grep -Fxv 'content/articles/2026/02/Model_Context_Protocol-MCP.md' <<<"$changed_files" || true
-)"
-
 has_change() {
   local pattern="$1"
-  grep -Eq "$pattern" <<<"$files_requiring_tests"
+  grep -Eq "$pattern" <<<"$changed_files"
 }
 
 require_change() {
@@ -60,10 +54,12 @@ require_change \
   '^internal/config/.*_test\.go$' \
   'mudanca de configuracao exige teste em internal/config.'
 
+# Conteudo Markdown e imagens nao exigem alteracoes em arquivos de teste.
+# Continuam validados pelo content-lint e pelos testes de exportacao no CI.
 require_change \
-  '(^internal/blog/.*\.go$|^content/(articles|notes)/.*\.md$)' \
+  '^internal/blog/.*\.go$' \
   '(^internal/blog/.*_test\.go$|^cmd/contentlint/.*_test\.go$|^internal/transport/http/.*(_test|_unit_test)\.go$)' \
-  'mudanca em conteudo ou modelo de blog exige teste de blog, lint de conteudo ou contrato HTTP.'
+  'mudanca no modelo de blog exige teste de blog, lint de conteudo ou contrato HTTP.'
 
 require_change \
   '(^web/static/js/.*\.js$|^internal/transport/http/(astronomia|curiosidades|projetos)\.go$)' \
