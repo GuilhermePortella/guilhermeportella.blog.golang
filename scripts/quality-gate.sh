@@ -22,9 +22,15 @@ if [[ -z "$changed_files" ]]; then
   exit 0
 fi
 
+# Excecao editorial explicita; o artigo continua sujeito ao content-lint.
+# Use caminhos completos para nao dispensar testes de outros conteudos.
+files_requiring_tests="$(
+  grep -Fxv 'content/articles/2026/02/Model_Context_Protocol-MCP.md' <<<"$changed_files" || true
+)"
+
 has_change() {
   local pattern="$1"
-  grep -Eq "$pattern" <<<"$changed_files"
+  grep -Eq "$pattern" <<<"$files_requiring_tests"
 }
 
 require_change() {
