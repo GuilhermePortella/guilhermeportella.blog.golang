@@ -52,7 +52,7 @@ O servidor implementa as capacidades oferecidas pelo protocolo e as conecta à s
 
 SDKs ajudam a implementar esses componentes, mas não são componentes obrigatórios da arquitetura. É possível implementar o protocolo diretamente, assumindo o custo de manter sua conformidade.
 
-![Arquitetura MCP: um host com dois clientes, cada um conectado a um servidor por um transporte diferente. As implementações dos servidores acessam sistemas externos.](mcp_architecture.png)
+![Arquitetura MCP: um host com dois clientes, cada um conectado a um servidor por um transporte diferente. As implementações dos servidores acessam sistemas externos.](/images/mcp_architecture.png)
 
 *Figura 1 — Cada cliente mantém sua própria relação com um servidor. stdio e Streamable HTTP são alternativas de transporte; o exemplo utiliza servidores distintos para deixar essa separação explícita. As primitivas não possuem correspondência obrigatória com arquivos, bancos ou APIs.*
 
