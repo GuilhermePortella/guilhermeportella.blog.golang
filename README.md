@@ -4,7 +4,7 @@ Estrutura inicial para um site estilo blog em Go. A base usa a biblioteca padrao
 
 ## Requisitos
 
-- Go 1.26.9
+- Go 1.26.10
 - Node.js com suporte a `node --test` para os testes de consentimento (`make ci`).
 - Make opcional, apenas para atalhos locais
 

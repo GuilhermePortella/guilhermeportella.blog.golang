@@ -1,194 +1,246 @@
 ---
-title: "Model Context Protocol (MCP): Unificando a Interação de Aplicações de IA com Sistemas Externos"
-summary: "Um panorama técnico do Model Context Protocol (MCP): motivação, arquitetura cliente-servidor, transportes (STDIO/HTTP), primitivas (Resources/Prompts/Tools), ciclo de vida, sampling e práticas de segurança — com sugestões de estudo e referências."
+title: "Model Context Protocol (MCP): arquitetura, funcionamento e limites"
+summary: "Como hosts, clientes e servidores MCP trocam contexto e executam operações: transportes, primitivas, ciclo de vida, sampling, segurança e decisões de implementação."
 author: "Guilherme Portella"
 publishedDate: "2026-02-07"
+updatedDate: "2026-10-29"
 keywords:
-  - AI
-  - LLM
-  - Model Context Protocol
   - MCP
-  - Agents
-  - Tooling
+  - Model Context Protocol
+  - LLM
   - JSON-RPC
-  - Integrations
-  - Security
-  - Architecture
+  - Arquitetura
+  - Segurança
 seo:
-  title: "Model Context Protocol (MCP) — arquitetura, primitivas e segurança"
-  description: "Artigo técnico sobre o MCP: Host/Client/Server, transportes, Resources/Prompts/Tools, lifecycle, sampling e considerações de segurança para integrações de IA."
-  canonicalUrl: "https://guilhermeportella.github.io/blog/model-context-protocol-mcp"
+  title: "MCP: arquitetura, funcionamento e limites"
+  description: "Guia técnico de MCP com exemplos de resources, prompts, tools, sampling e controles de segurança."
   image: "/images/mcp_architecture.png"
   locale: "pt-BR"
-jsonLd:
-  "@context": "https://schema.org"
-  "@type": "Article"
-  "headline": "Model Context Protocol (MCP): Unificando a Interação de Aplicações de IA com Sistemas Externos"
-  "description": "Artigo técnico sobre o Model Context Protocol (MCP), cobrindo arquitetura cliente-servidor, transportes, primitivas (Resources/Prompts/Tools), ciclo de vida, sampling e segurança."
-  "author":
-    "@type": "Person"
-    "name": "Guilherme Portella"
-  "publisher":
-    "@type": "Organization"
-    "name": "Guilherme Portella"
-    "url": "https://guilhermeportella.github.io/"
-  "inLanguage": "pt-BR"
-  "datePublished": "2026-02-07"
-  "keywords": "AI, LLM, Model Context Protocol, MCP, Agents, JSON-RPC, Integrations, Security, Architecture"
 ---
 
+# Model Context Protocol (MCP): arquitetura, funcionamento e limites
 
-# Model Context Protocol (MCP): Unificando a Interação de Aplicações de IA com Sistemas Externos
+O Model Context Protocol (MCP) é um protocolo aberto para conectar aplicações de IA a dados e funcionalidades externas. Ele padroniza a descoberta de capacidades e a troca de mensagens entre clientes e servidores. Não substitui as APIs de negócio, não executa o modelo por conta própria e não torna uma integração segura apenas por ser adotado.
 
-## Resumo
+Este artigo usa a **revisão 2025-11-25 da especificação** como referência. Os exemplos são ilustrativos e não pressupõem que todo host ou SDK implemente todas as capacidades dessa revisão. A compatibilidade deve ser verificada entre as implementações utilizadas. [1–3]
 
-A proliferação de aplicações de Inteligência Artificial (IA), especialmente os Grandes Modelos de Linguagem (LLMs), tem impulsionado a necessidade de mecanismos padronizados para que essas aplicações interajam de forma segura e eficiente com sistemas externos. O **Model Context Protocol (MCP)** surge como uma solução de código aberto, propondo um padrão unificado para a conexão de aplicações de IA a fontes de dados, ferramentas e fluxos de trabalho. Este artigo acadêmico explora o MCP em profundidade, desde seus conceitos fundamentais e arquitetura até seus componentes técnicos, como Primitivas (Resources, Prompts, Tools), gerenciamento de ciclo de vida e considerações de segurança. Além disso, discute o ecossistema do MCP e oferece sugestões para aprofundamento no tema.
+## 1. Qual problema o MCP resolve?
 
-## 1. Introdução
+Sem uma interface compartilhada, cada aplicação de IA precisa construir integrações próprias para descobrir ferramentas, representar seus argumentos e obter contexto. O MCP oferece um contrato comum para essa parte da comunicação.
 
-A era da Inteligência Artificial Generativa tem transformado a maneira como interagimos com a tecnologia. No entanto, para que os modelos de IA atinjam seu potencial máximo, é imperativo que eles possam acessar informações contextuais e executar ações em ambientes externos. A ausência de um padrão universal para essa interação tem gerado fragmentação e complexidade no desenvolvimento de aplicações de IA. O Model Context Protocol (MCP) aborda essa lacuna, estabelecendo uma linguagem comum para a comunicação entre aplicações de IA e o mundo exterior [1].
+Imagine um assistente de engenharia conectado a documentação, repositórios e incidentes. Um servidor pode oferecer documentos para leitura; outro, operações de consulta de incidentes; um terceiro, modelos de prompt para revisão de código. O host coordena como essas capacidades entram na interação com o usuário.
 
-Concebido como um "porta USB-C para aplicações de IA" [2], o MCP visa simplificar a integração, permitindo que LLMs e outras IAs se conectem a uma vasta gama de sistemas, desde arquivos locais e bancos de dados até APIs complexas e fluxos de trabalho especializados. Essa padronização não apenas acelera o desenvolvimento, mas também aprimora as capacidades das IAs, tornando-as mais contextuais, personalizadas e capazes de realizar tarefas complexas em nome dos usuários.
+O ganho é reutilizar a interface de integração. Ainda é necessário implementar acesso às fontes, regras de negócio, permissões, tratamento de falhas e observabilidade. Se uma aplicação precisa chamar uma única API estável, uma integração direta pode ser mais simples e barata de operar.
 
-## 2. Conceitos Fundamentais e Arquitetura do MCP
+## 2. Arquitetura: host, client e server
 
-O MCP opera sob uma arquitetura cliente-servidor, onde uma aplicação de IA atua como um *Host* MCP, gerenciando uma ou mais conexões com *Servidores* MCP através de *Clientes* MCP. Essa estrutura permite que o *Host* obtenha contexto de diversos *Servidores*, cada um mantendo uma conexão dedicada [3].
+### Host
 
-### 2.1. Participantes da Arquitetura
+O host é a aplicação que coordena a experiência de IA: uma aplicação desktop, uma IDE ou um sistema próprio com suporte a MCP. Ele cria clientes MCP, controla conexões e permissões, agrega contexto e coordena o acesso ao modelo.
 
-*   **MCP Host:** A aplicação de IA (ex: Claude Desktop, IDEs, aplicações customizadas) que coordena e gerencia múltiplos *Clientes* MCP. É o ponto central onde a inteligência artificial reside e interage com o usuário.
-*   **MCP Client:** Um componente que mantém uma conexão com um *Servidor* MCP e obtém dados de contexto para o *Host* MCP utilizar. O *Client* atua como um intermediário, traduzindo as requisições do *Host* para o *Servidor* e vice-versa.
-*   **MCP Server:** Um programa que fornece dados de contexto (recursos, *prompts*, ferramentas) para *Clientes* MCP. Os *Servidores* podem ser executados localmente ou remotamente, dependendo do mecanismo de transporte utilizado.
+O modelo pode executar localmente ou em um provedor remoto. Portanto, o host não é necessariamente o lugar onde a inferência acontece. O servidor MCP também não deve receber automaticamente toda a conversa ou os dados de outros servidores. O host controla essas fronteiras. [1]
 
-### 2.2. Camadas e Protocolos de Transporte
+### Client
 
-A comunicação no MCP é estruturada em camadas, utilizando o protocolo JSON-RPC 2.0 para a troca de mensagens. A camada de transporte gerencia os canais de comunicação e autenticação, abstraindo esses detalhes da camada de protocolo. Dois mecanismos de transporte principais são suportados [3]:
+O cliente MCP é um componente do host responsável pela comunicação com um servidor específico. Ele negocia a versão e as capacidades, encaminha mensagens e administra a sessão e as notificações suportadas.
 
-*   **STDIO Transport:** Utiliza fluxos de entrada/saída padrão para comunicação direta entre processos locais na mesma máquina. Oferece desempenho otimizado e sem sobrecarga de rede, ideal para *Servidores* locais.
-*   **Streamable HTTP Transport:** Emprega HTTP POST para mensagens cliente-servidor, com suporte opcional a Server-Sent Events (SSE) para capacidades de *streaming*. Permite a comunicação com *Servidores* remotos e suporta métodos de autenticação HTTP padrão, como *bearer tokens* e chaves de API. O uso de OAuth é recomendado para obtenção de *tokens* de autenticação.
+A relação lógica é **um cliente para um servidor**. Um host que utiliza dois servidores cria duas instâncias de cliente. Um servidor remoto pode, por sua vez, atender diversos clientes. Sessão lógica não significa necessariamente uma conexão TCP persistente. [1]
 
-O diagrama a seguir ilustra a arquitetura fundamental do MCP, destacando a interação entre Host, Cliente e Servidor, bem como os mecanismos de transporte e a conexão com sistemas externos.
+### Server
 
-<figure class="my-8">
-  <img
-    src="/images/mcp_architecture.png"
-    alt="Interação entre Host, Cliente e Servidor"
-    class="rounded-2xl shadow-md mx-auto"
-    width="800"
-    loading="lazy"
-    decoding="async"
-  />
-  <figcaption class="text-center text-sm italic text-neutral-600 mt-3">
-    Interação entre Host, Cliente e Servidor.
-  </figcaption>
-</figure>
+O servidor implementa as capacidades oferecidas pelo protocolo e as conecta à sua lógica interna. Pode expor dados, fornecer modelos de prompt e executar operações. Não precisa usar um LLM para cumprir esse papel.
 
-## 3. Primitivas do MCP: Resources, Prompts e Tools
+SDKs ajudam a implementar esses componentes, mas não são componentes obrigatórios da arquitetura. É possível implementar o protocolo diretamente, assumindo o custo de manter sua conformidade.
 
-O coração do MCP reside em suas primitivas, que são os blocos de construção para a interação contextual. Elas permitem que os *Servidores* exponham diferentes tipos de informações e funcionalidades para as aplicações de IA [4].
+![Arquitetura MCP: um host com dois clientes, cada um conectado a um servidor por um transporte diferente. As implementações dos servidores acessam sistemas externos.](/images/mcp_architecture.png)
 
-### 3.1. Resources (Recursos)
+*Figura 1 — Cada cliente mantém sua própria relação com um servidor. stdio e Streamable HTTP são alternativas de transporte; o exemplo utiliza servidores distintos para deixar essa separação explícita. As primitivas não possuem correspondência obrigatória com arquivos, bancos ou APIs.*
 
-*Resources* permitem que os *Servidores* compartilhem dados que fornecem contexto aos modelos de linguagem, como arquivos, esquemas de banco de dados ou informações específicas da aplicação. São projetados para serem **orientados pela aplicação** (*application-driven*), com o *Host* determinando como incorporar o contexto com base em suas necessidades [4].
+Para publicar em um site que armazena imagens em `/public/images`, copie a imagem para esse diretório e altere o endereço da figura para `/images/mcp_architecture.png`.
 
-*   **Tipos de Conteúdo:** Podem conter dados de texto ou binários (ex: `file:///example.txt` com `text/plain` ou `file:///example.png` com `image/png` e dados *base64-encoded*).
-*   **Mecanismos de Interação:** O protocolo oferece mecanismos para listar (`resources/list`), ler (`resources/read`) e assinar (`resources/subscribe`) recursos. Notificações (`notifications/resources/list_changed`, `notifications/resources/updated`) informam os *Clientes* sobre atualizações.
-*   **Identificação:** Recursos são identificados por URIs (ex: `https://`, `file://`, `git://`) e podem incluir anotações (ex: `audience`, `priority`, `lastModified`) para guiar seu uso.
+## 3. Mensagens e transportes
 
-### 3.2. Prompts
+O MCP utiliza JSON-RPC 2.0 para representar requisições, respostas e notificações. Uma requisição possui identificador para correlacionar sua resposta; uma notificação não espera resposta JSON-RPC. Os métodos MCP definem o significado das mensagens; o transporte define como elas circulam. [2]
 
-*Prompts* fornecem uma maneira padronizada para os *Servidores* exporem modelos de *prompt* aos *Clientes*. Eles permitem que os *Servidores* ofereçam mensagens e instruções estruturadas para interagir com LLMs. Os *Clientes* podem descobrir *prompts* disponíveis, recuperar seu conteúdo e fornecer argumentos para personalizá-los [5].
+### stdio
 
-*   **Controle pelo Usuário:** *Prompts* são projetados para serem **controlados pelo usuário** (*user-controlled*), o que significa que são expostos dos *Servidores* para os *Clientes* com a intenção de que o usuário possa selecioná-los explicitamente para uso (ex: comandos de barra em interfaces de usuário).
-*   **Mensagens:** As mensagens de *prompt* podem conter texto, imagens, áudio e recursos incorporados, permitindo interações multimodais.
-*   **Listagem e Obtenção:** *Clientes* usam `prompts/list` para descobrir *prompts* e `prompts/get` para recuperar um *prompt* específico, com a possibilidade de fornecer argumentos.
+No transporte stdio, o cliente inicia o servidor como subprocesso. O servidor lê mensagens em `stdin` e escreve respostas, requisições e notificações em `stdout`.
 
-### 3.3. Tools (Ferramentas)
+Cada mensagem é delimitada por uma quebra de linha. Quebras dentro de strings JSON precisam ser escapadas. **Logs devem ser enviados para `stderr`**, pois `stdout` é reservado às mensagens do protocolo. Um simples log no canal errado pode interromper a comunicação. [2]
 
-*Tools* permitem que os *Servidores* exponham ferramentas que podem ser invocadas por modelos de linguagem. Essas ferramentas capacitam os modelos a interagir com sistemas externos, como consultar bancos de dados, chamar APIs ou realizar cálculos. Cada ferramenta é identificada por um nome e inclui metadados que descrevem seu esquema [6].
+Esse transporte evita a rede entre cliente e subprocesso, mas não elimina serialização, cópias de dados, processamento ou a latência de APIs acessadas pelo servidor. Não há garantia universal de melhor desempenho. O processo também consome recursos locais e precisa de gestão de dependências e permissões.
 
-*   **Controle pelo Modelo:** *Tools* são projetadas para serem **controladas pelo modelo** (*model-controlled*), o que significa que o LLM pode descobrir e invocar ferramentas automaticamente com base em sua compreensão contextual e nos *prompts* do usuário.
-*   **Segurança:** Para confiança e segurança, é fundamental que haja sempre um humano no ciclo, com a capacidade de negar invocações de ferramentas. As aplicações *DEVERIAM* fornecer UI que deixe claro quais ferramentas estão sendo expostas e apresentar *prompts* de confirmação ao usuário.
-*   **Mensagens de Protocolo:** *Clientes* usam `tools/list` para descobrir ferramentas e `tools/call` para invocar uma ferramenta, passando argumentos conforme o `inputSchema` da ferramenta. Os resultados podem ser estruturados ou não estruturados, incluindo texto, imagem, áudio, links de recursos e recursos incorporados.
+### Streamable HTTP
 
-## 4. Ciclo de Vida e Amostragem (Sampling)
+O Streamable HTTP permite que o servidor opere como serviço independente, inclusive em localhost. O cliente envia mensagens por POST ao endpoint MCP; o transporte também define GET para recepção de mensagens do servidor, com possibilidade de resposta 405 quando esse canal não é oferecido. SSE é opcional e permite transmitir mensagens ao cliente. [2]
 
-O MCP define um ciclo de vida claro para a interação entre *Clientes* e *Servidores*, que inclui inicialização, descoberta de primitivas e execução. Um aspecto crucial é a capacidade de **amostragem** (*sampling*), que permite aos *Servidores* solicitar gerações de LLMs via *Clientes* [7].
+SSE não significa, por si só, transmissão de tokens do LLM. Ele transporta mensagens MCP, que podem incluir respostas, notificações e requisições do servidor.
 
-### 4.1. Gerenciamento do Ciclo de Vida
+**Streamable HTTP substitui o transporte HTTP+SSE da revisão 2024-11-05.** SSE continua podendo ser usado no transporte mais novo; o transporte legado e Streamable HTTP não são sinônimos. [2]
 
-O ciclo de vida de uma conexão MCP começa com a **inicialização**, onde *Cliente* e *Servidor* negociam suas capacidades e trocam informações essenciais. Após a inicialização, o *Cliente* pode descobrir as primitivas (Resources, Prompts, Tools) que o *Servidor* oferece. Notificações em tempo real garantem que o *Cliente* esteja ciente de quaisquer mudanças na disponibilidade ou estado dessas primitivas.
+| Decisão | stdio | Streamable HTTP |
+|---|---|---|
+| Execução | Subprocesso iniciado pelo cliente | Serviço independente, local ou remoto |
+| Operação | Instalação e recursos por ambiente local | Hospedagem, rede e controle de acesso ao endpoint |
+| Compartilhamento | Normalmente associado ao subprocesso daquele cliente | Pode atender múltiplos clientes |
+| Custo relevante | Processos, memória e distribuição de dependências | Rede, hospedagem, autenticação e gestão de sessões quando adotadas |
 
-### 4.2. Sampling (Amostragem)
+Não escolha pelo rótulo “mais rápido”. Meça latência de ponta a ponta, concorrência esperada, tamanho de mensagens e tempo dos sistemas externos.
 
-O *sampling* no MCP permite que os *Servidores* solicitem gerações de LLMs (*completions* ou *generations*) através dos *Clientes*. Esse fluxo é vital para implementar comportamentos de agente, onde chamadas de LLM podem ocorrer aninhadas dentro de outras funcionalidades do *Servidor* MCP. O *Cliente* mantém o controle sobre o acesso ao modelo, seleção e permissões, enquanto o *Servidor* aproveita as capacidades de IA sem a necessidade de chaves de API do *Servidor* [7].
+## 4. Resources, prompts e tools
 
-*   **Controle do Usuário:** Similar às *Tools*, o *sampling* *DEVERIA* sempre envolver um humano no ciclo para aprovar ou negar as requisições de amostragem, garantindo confiança e segurança.
-*   **Preferências do Modelo:** Os *Servidores* expressam suas necessidades através de prioridades de capacidade (custo, velocidade, inteligência) e *hints* de modelo (ex: `claude-3-sonnet`), permitindo que o *Cliente* selecione o modelo mais apropriado entre suas opções disponíveis [7].
+Essas são as três principais primitivas oferecidas por servidores, não uma lista de todos os recursos do protocolo. Seu suporte depende das capacidades declaradas. [4–6]
 
-O diagrama de sequência a seguir ilustra o fluxo de comunicação para o ciclo de vida e um exemplo de *sampling* no MCP:
+| Primitiva | Responsabilidade | Exemplo |
+|---|---|---|
+| Resource | Expor conteúdo identificado por URI | Esquema de pagamentos em `banking://schemas/pagamentos` |
+| Prompt | Fornecer mensagens parametrizadas | `revisar_integracao`, com argumentos sobre código e contexto |
+| Tool | Executar uma operação com argumentos | `consultar_pagamento`, recebendo um identificador |
 
-<figure class="my-8">
-  <img
-    src="/images/mcp_lifecycle_sampling.png"
-    alt="Diagrama do Ciclo de Vida e Sampling do MCP"
-    class="rounded-2xl shadow-md mx-auto"
-    width="800"
-    loading="lazy"
-    decoding="async"
-  />
-  <figcaption class="text-center text-sm italic text-neutral-600 mt-3">
-    Arquitetura fundamental do MCP, destacando a interação entre Host, Cliente e Servidor, bem como os mecanismos de transporte e a conexão com sistemas externos.
-  </figcaption>
-</figure>
+Um banco de dados pode fornecer conteúdo para um resource e ser consultado por uma tool. Uma tool pode ler arquivos; um prompt pode estar definido em código. A origem dos dados não determina a primitiva.
 
-## 5. Considerações de Segurança e Ecossistema
+### Resources: conteúdo para contexto
 
-A segurança é uma preocupação central no design do MCP, especialmente devido à natureza sensível da interação entre IA e sistemas externos. O protocolo incorpora diretrizes e mecanismos para mitigar riscos, enquanto seu ecossistema continua a crescer com diversas implementações.
+Resources são identificados por URI e podem conter texto ou conteúdo binário codificado em base64. O cliente pode usar `resources/list` e `resources/read`. Templates de URI são descobertos por `resources/templates/list` e permitem representar famílias de recursos. [4]
 
-### 5.1. Segurança
+O modelo de interação é descrito como *application-driven*: o host decide como incorporar o conteúdo, podendo considerar seleção do usuário ou sugestões do modelo. A especificação não impõe uma interface única.
 
-As considerações de segurança no MCP são multifacetadas e abrangem a validação de entradas, controle de acesso e a necessidade de intervenção humana [3], [4], [5], [6], [7]:
+Assinaturas e notificações são opcionais. `resources/subscribe` depende de suporte anunciado; mudanças de catálogo e de conteúdo usam notificações distintas. **Não se deve prometer que qualquer alteração será comunicada, entregue ou processada em tempo real.**
 
-*   **Validação de Entradas e Saídas:** Implementações *DEVEM* validar cuidadosamente todas as entradas e saídas de *prompts* e ferramentas para prevenir ataques de injeção ou acesso não autorizado a recursos.
-*   **Aprovação do Usuário:** Para operações sensíveis, como invocações de ferramentas ou requisições de *sampling*, os *Clientes* *DEVERIAM* implementar controles de aprovação do usuário, garantindo que um humano esteja sempre no ciclo para autorizar ações da IA.
-*   **Autorização:** O MCP suporta mecanismos de autenticação padrão, como OAuth, para garantir que apenas entidades autorizadas possam se conectar e interagir com os *Servidores*.
-*   **Rate Limiting:** *Clientes* *DEVERIAM* implementar *rate limiting* para prevenir abusos e proteger os *Servidores* contra sobrecarga.
-*   **Dados Sensíveis:** Ambas as partes (*Cliente* e *Servidor*) *DEVEM* lidar com dados sensíveis de forma apropriada, seguindo as melhores práticas de segurança e privacidade.
+A URI também não autoriza acesso direto ao sistema correspondente. Uma URI `file://` anunciada por um servidor não concede acesso irrestrito ao disco do usuário.
 
-### 5.2. Ecossistema e Casos de Uso
+### Prompts: mensagens reutilizáveis
 
-O ecossistema do MCP está em constante expansão, com diversas implementações de *Servidores* e *Clientes* surgindo para atender a uma variedade de casos de uso [2]:
+O cliente descobre modelos com `prompts/list` e obtém suas mensagens com `prompts/get`, fornecendo os argumentos necessários. O padrão de interação é *user-controlled*, como um comando de revisão selecionado pelo usuário, sem obrigatoriedade de uma interface específica. [5]
 
-*   **Agentes de IA Personalizados:** Agentes podem acessar calendários, ferramentas de produtividade (ex: Notion, Slack) e outros dados pessoais, atuando como assistentes de IA mais personalizados.
-*   **Desenvolvimento de Software:** Ferramentas como Claude Code podem gerar aplicações web completas a partir de designs (ex: Figma), integrando-se a sistemas de controle de versão (Git) e ferramentas de monitoramento (Sentry).
-*   **Análise de Dados Empresariais:** Chatbots corporativos podem se conectar a múltiplos bancos de dados (PostgreSQL, SQLite) e sistemas de arquivos (Google Drive) para permitir que usuários analisem dados via conversação.
-*   **Automação Criativa:** Modelos de IA podem criar designs 3D no Blender e enviá-los para impressão 3D, demonstrando a capacidade de interagir com *software* e *hardware* especializados.
+Obter um prompt não executa automaticamente uma inferência. O host recebe as mensagens e decide como utilizá-las. Texto, imagens, áudio e recursos incorporados podem compor essas mensagens.
 
-O MCP simplifica o desenvolvimento e a integração, reduzindo a complexidade e o tempo de *build* para desenvolvedores, enquanto oferece às aplicações de IA acesso a um vasto ecossistema de dados e ferramentas, resultando em uma experiência de usuário final aprimorada.
+### Tools: operações executadas pelo servidor
 
-## 6. Conclusão e Sugestões de Estudo
+O cliente descobre ferramentas com `tools/list` e solicita execução com `tools/call`. Cada ferramenta possui nome, descrição e `inputSchema`; pode também declarar `outputSchema` para resultados estruturados. [6]
 
-O Model Context Protocol representa um avanço significativo na forma como as aplicações de IA interagem com o mundo real. Ao fornecer um padrão aberto e flexível, o MCP não apenas resolve desafios de integração, mas também abre caminho para uma nova geração de aplicações de IA mais poderosas, contextuais e seguras. A capacidade de conectar LLMs a *Resources*, *Prompts* e *Tools* de forma padronizada é um divisor de águas para o desenvolvimento de agentes de IA verdadeiramente inteligentes e autônomos.
+O termo *model-controlled* indica que o modelo pode selecionar ferramentas no fluxo da aplicação. Na execução concreta, o modelo propõe a chamada, o host aplica suas políticas, o cliente envia a mensagem e o servidor valida e executa a operação.
 
-Para aprofundar a compreensão do MCP, as seguintes sugestões de estudo são recomendadas:
+Exemplo de requisição após a inicialização:
 
-*   **Documentação Oficial:** A documentação em [modelcontextprotocol.io](https://modelcontextprotocol.io/) é a fonte primária para a especificação, arquitetura e guias de implementação.
-*   **Repositório GitHub:** O repositório oficial no [GitHub](https://github.com/modelcontextprotocol) oferece acesso ao código-fonte, exemplos e discussões da comunidade.
-*   **Artigos e Blogs:** Plataformas como [Triggo.ai](https://triggo.ai/blog/o-que-e-o-mcp-model-context-protocol/), [Cloud Google](https://cloud.google.com/discover/what-is-model-context-protocol?hl=pt-BR) e [Rocketseat](https://www.rocketseat.com.br/blog/artigos/post/mcp-na-pratica-ia-contextual) fornecem artigos introdutórios e práticos que complementam a documentação técnica.
-*   **Implementação Prática:** Construir um *Servidor* ou *Cliente* MCP simples pode oferecer uma compreensão prática inestimável dos conceitos do protocolo.
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 7,
+  "method": "tools/call",
+  "params": {
+    "name": "consultar_pagamento",
+    "arguments": {
+      "pagamentoId": "pg-123"
+    }
+  }
+}
+```
 
-O MCP é uma tecnologia em evolução, e acompanhar seu desenvolvimento e as discussões da comunidade é essencial para se manter atualizado com as melhores práticas e as novas capacidades que surgem.
+Exemplo de resposta:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 7,
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Pagamento pg-123 liquidado."
+      }
+    ],
+    "structuredContent": {
+      "pagamentoId": "pg-123",
+      "status": "LIQUIDADO"
+    },
+    "isError": false
+  }
+}
+```
+
+`structuredContent` não exige que exista `outputSchema`, mas, se declarado, o resultado estruturado deve respeitá-lo. Conteúdo de ferramentas deve ser tratado como dado externo, não como instrução privilegiada.
+
+A especificação recomenda participação humana com capacidade de negar chamadas. Isso não estabelece confirmação manual obrigatória para toda operação. Leituras e operações destrutivas podem receber políticas diferentes, sem dispensar autorização no servidor. [6]
+
+## 5. Ciclo de vida e capacidades
+
+A conexão passa por inicialização, operação e encerramento. O fluxo básico é: [3]
+
+1. O cliente envia `initialize`, informando versão do protocolo, capacidades e identificação da implementação.
+2. O servidor responde com a versão e as capacidades que suporta.
+3. Se a versão retornada não for suportada pelo cliente, ele deve encerrar a conexão.
+4. Após a inicialização bem-sucedida, o cliente envia `notifications/initialized`.
+5. Durante a operação, utiliza as funcionalidades anunciadas e encerra a comunicação conforme o transporte.
+
+Capacidades não são permissões de negócio. Anunciar suporte a tools não autoriza um usuário a acessar pagamentos de qualquer cliente. Compatibilidade de protocolo e autorização de dados são verificações separadas.
+
+Notificações de alteração de catálogo também dependem do suporte declarado. Uma implementação não deve presumir que todos os servidores oferecem resources, prompts, tools ou notificações.
+
+## 6. Sampling: o servidor solicita uma geração
+
+Sampling permite ao servidor enviar `sampling/createMessage` ao cliente para solicitar uma geração de modelo. O cliente precisa ter declarado a capability `sampling`. Ele controla o acesso ao modelo, a escolha efetiva e as permissões. Preferências informadas pelo servidor são sugestões, não ordens. [7]
+
+Por exemplo: durante uma análise de incidentes, o servidor reúne registros e solicita uma síntese ao cliente. O host avalia a solicitação, utiliza um modelo permitido e devolve o resultado. Isso dispensa credenciais próprias do provedor de modelo no servidor **para esse fluxo**; não elimina credenciais necessárias para bancos e APIs.
+
+Sampling é opcional e não é requisito para construir agentes. O host pode realizar suas próprias chamadas ao modelo. Também há custo: inferências aninhadas acrescentam latência, consumo de tokens e risco de ciclos. Defina orçamento e limites de profundidade.
+
+Na revisão adotada, uso de ferramentas dentro de sampling depende ainda da capability `sampling.tools`. A especificação recomenda revisão humana de solicitações e respostas, sem impor uma interface única. [7]
+
+## 7. Segurança: protocolo não substitui controles
+
+### Autenticação e autorização
+
+Autenticação verifica identidade; autorização determina o que uma entidade pode fazer. OAuth é um framework de autorização. A especificação MCP define um fluxo de autorização para transportes HTTP baseado em OAuth, incluindo descoberta e uso de access tokens. [8]
+
+API keys podem existir em soluções específicas, mas não equivalem a implementar esse fluxo interoperável. Em stdio, a orientação é obter credenciais do ambiente, em vez de aplicar o fluxo HTTP. Isso não torna seguro executar qualquer pacote local.
+
+No servidor, valide permissões por operação, recurso e tenant. Um token válido não autoriza todas as ações. Tokens recebidos para um servidor MCP não devem ser simplesmente repassados a APIs de terceiros; respeite audiência, escopos e os fluxos próprios dessas APIs. [8–9]
+
+### Controles práticos
+
+- Trate descrições de ferramentas, documentos e resultados como conteúdo não confiável. Validar JSON não impede prompt injection.
+- Valide argumentos e regras de negócio antes de executar; use consultas parametrizadas e restrinja caminhos, URLs e comandos aceitos.
+- Em HTTP, valide `Origin` conforme a especificação. Para execução local, prefira escuta em localhost; para comunicação remota, proteja o tráfego com TLS.
+- Aplique quotas, limites de concorrência e rate limiting no servidor ou gateway. Controles apenas no cliente não impedem outros clientes de sobrecarregar o serviço.
+- Restrinja credenciais e dados ao mínimo necessário. Revise origem, dependências e permissões de servidores locais antes de executá-los.
+
+Esses controles reduzem riscos como SSRF, exfiltração, comprometimento local e abuso de privilégios; não constituem garantia absoluta de segurança. [2, 9]
+
+## 8. Falhas, desempenho e custo operacional
+
+Um timeout informa que o cliente não obteve a conclusão dentro do prazo. **Não prova que a operação falhou no sistema externo.** Se uma ferramenta criou um pagamento antes da perda de comunicação, repetir a chamada pode duplicar o efeito.
+
+Para operações de escrita, defina idempotência e consulta de estado ou reconciliação. Um identificador JSON-RPC correlaciona mensagens; não é, por si só, chave de idempotência de negócio. Cancelamento também não deve ser tratado como rollback garantido.
+
+Separe erros do protocolo de falhas da ferramenta. Uma operação conhecida que falhou durante sua execução pode retornar um resultado com `isError: true`; isso é diferente de uma mensagem JSON-RPC inválida. O host precisa lidar com ambos. [6]
+
+Mensure separadamente inferência, transporte MCP, execução da ferramenta e dependências externas. Registre duração, taxa de erro, timeouts e volume de dados, sem registrar segredos ou dados pessoais desnecessários.
+
+Catálogos extensos, documentos grandes e binários em base64 aumentam transferência, memória e custo de contexto quando enviados ao modelo. Prefira seleção de conteúdo relevante e paginação quando suportada. Repetir contexto indiscriminadamente pode custar mais do que o transporte em si.
+
+Essas são recomendações de engenharia para a implementação; não são garantias fornecidas pelo protocolo.
+
+## 9. Quando adotar
+
+MCP tende a ser útil quando várias aplicações precisam consumir capacidades reutilizáveis, ou quando descoberta padronizada e integração com hosts compatíveis justificam o custo operacional.
+
+Uma chamada direta a uma API pode ser melhor quando o contrato é pequeno, fixo e usado por uma única aplicação. MCP também não substitui um workflow determinístico quando a sequência e as condições de execução precisam ser controladas pelo negócio.
+
+Um primeiro exercício útil é implementar uma tool de consulta sem efeitos externos, adicionar validação e autorização e testar com um host compatível. Depois, introduza resources e prompts apenas se houver necessidade. Para escritas, teste também perda de resposta após execução, duplicidade e reconciliação.
+
+O valor do MCP está no contrato compartilhado. A qualidade da solução continua dependendo dos limites de acesso, do comportamento sob falha e das decisões de operação.
 
 ## Referências
 
-[1] Model Context Protocol. *What is MCP?*. Disponível em: [https://modelcontextprotocol.io/docs/getting-started/intro](https://modelcontextprotocol.io/docs/getting-started/intro)
-[2] Triggo.ai. *O que é o MCP (Model Context Protocol)?*. Disponível em: [https://triggo.ai/blog/o-que-e-o-mcp-model-context-protocol/](https://triggo.ai/blog/o-que-e-o-mcp-model-context-protocol/)
-[3] Model Context Protocol. *Architecture overview*. Disponível em: [https://modelcontextprotocol.io/docs/concepts/architecture](https://modelcontextprotocol.io/docs/concepts/architecture)
-[4] Model Context Protocol. *Resources*. Disponível em: [https://modelcontextprotocol.io/docs/concepts/resources](https://modelcontextprotocol.io/docs/concepts/resources)
-[5] Model Context Protocol. *Prompts*. Disponível em: [https://modelcontextprotocol.io/docs/concepts/prompts](https://modelcontextprotocol.io/docs/concepts/prompts)
-[6] Model Context Protocol. *Tools*. Disponível em: [https://modelcontextprotocol.io/docs/concepts/tools](https://modelcontextprotocol.io/docs/concepts/tools)
-[7] Model Context Protocol. *Sampling*. Disponível em: [https://modelcontextprotocol.io/docs/concepts/sampling](https://modelcontextprotocol.io/docs/concepts/sampling)
-[8] Cloud Google. *What is Model Context Protocol?*. Disponível em: [https://cloud.google.com/discover/what-is-model-context-protocol?hl=pt-BR](https://cloud.google.com/discover/what-is-model-context-protocol?hl=pt-BR)
-[9] Rocketseat. *MCP na prática: IA contextual*. Disponível em: [https://www.rocketseat.com.br/blog/artigos/post/mcp-na-pratica-ia-contextual](https://www.rocketseat.com.br/blog/artigos/post/mcp-na-pratica-ia-contextual)
-[10] GitHub. *modelcontextprotocol*. Disponível em: [https://github.com/modelcontextprotocol](https://github.com/modelcontextprotocol)
+Todas as referências normativas abaixo apontam para a revisão 2025-11-25, evitando misturar requisitos de versões diferentes.
+
+1. [Architecture](https://modelcontextprotocol.io/specification/2025-11-25/architecture).
+2. [Transports](https://modelcontextprotocol.io/specification/2025-11-25/basic/transports).
+3. [Lifecycle](https://modelcontextprotocol.io/specification/2025-11-25/basic/lifecycle).
+4. [Resources](https://modelcontextprotocol.io/specification/2025-11-25/server/resources).
+5. [Prompts](https://modelcontextprotocol.io/specification/2025-11-25/server/prompts).
+6. [Tools](https://modelcontextprotocol.io/specification/2025-11-25/server/tools).
+7. [Sampling](https://modelcontextprotocol.io/specification/2025-11-25/client/sampling).
+8. [Authorization](https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization).
+9. [Security Best Practices](https://modelcontextprotocol.io/docs/2025-11-25/tutorials/security/security_best_practices).

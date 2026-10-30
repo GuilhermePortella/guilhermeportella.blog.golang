@@ -57,13 +57,13 @@ cover: ## Executa testes com relatorio de cobertura por pacote.
 
 cover-check: ## Garante limites minimos de cobertura nos pacotes criticos.
 	@mkdir -p tmp
-	@$(GO) test -coverprofile=tmp/http.cover ./internal/transport/http >/dev/null
+	@$(GO) test -coverprofile=tmp/http.cover ./internal/transport/http
 	@$(GO) tool cover -func=tmp/http.cover | awk -v pkg="internal/transport/http" -v min="$(COVER_HTTP_MIN)" '/total:/ { value=$$3; sub(/%/, "", value); if (value + 0 < min + 0) { printf "%s coverage %.1f%% below %.1f%%\n", pkg, value, min; exit 1 } printf "%s coverage %.1f%% >= %.1f%%\n", pkg, value, min }'
-	@$(GO) test -coverprofile=tmp/config.cover ./internal/config >/dev/null
+	@$(GO) test -coverprofile=tmp/config.cover ./internal/config
 	@$(GO) tool cover -func=tmp/config.cover | awk -v pkg="internal/config" -v min="$(COVER_CONFIG_MIN)" '/total:/ { value=$$3; sub(/%/, "", value); if (value + 0 < min + 0) { printf "%s coverage %.1f%% below %.1f%%\n", pkg, value, min; exit 1 } printf "%s coverage %.1f%% >= %.1f%%\n", pkg, value, min }'
-	@$(GO) test -coverprofile=tmp/export.cover ./cmd/export >/dev/null
+	@$(GO) test -coverprofile=tmp/export.cover ./cmd/export
 	@$(GO) tool cover -func=tmp/export.cover | awk -v pkg="cmd/export" -v min="$(COVER_EXPORT_MIN)" '/total:/ { value=$$3; sub(/%/, "", value); if (value + 0 < min + 0) { printf "%s coverage %.1f%% below %.1f%%\n", pkg, value, min; exit 1 } printf "%s coverage %.1f%% >= %.1f%%\n", pkg, value, min }'
-	@$(GO) test -coverprofile=tmp/contentlint.cover ./cmd/contentlint >/dev/null
+	@$(GO) test -coverprofile=tmp/contentlint.cover ./cmd/contentlint
 	@$(GO) tool cover -func=tmp/contentlint.cover | awk -v pkg="cmd/contentlint" -v min="$(COVER_CONTENTLINT_MIN)" '/total:/ { value=$$3; sub(/%/, "", value); if (value + 0 < min + 0) { printf "%s coverage %.1f%% below %.1f%%\n", pkg, value, min; exit 1 } printf "%s coverage %.1f%% >= %.1f%%\n", pkg, value, min }'
 
 vuln: ## Verifica CVEs conhecidas em dependencias e codigo Go alcancavel.
