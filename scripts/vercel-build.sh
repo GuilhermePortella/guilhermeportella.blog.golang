@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-export GOTOOLCHAIN="${GOTOOLCHAIN:-go1.26.9}"
+export GOTOOLCHAIN="${GOTOOLCHAIN:-go1.26.10}"
 export APP_ENV="${APP_ENV:-production}"
 # A NASA outage must not block publication of the rest of the site.
 export NASA_DATA_REQUIRED="${NASA_DATA_REQUIRED:-false}"
