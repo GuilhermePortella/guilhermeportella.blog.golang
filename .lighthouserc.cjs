@@ -8,7 +8,7 @@ module.exports = {
       url: [
         'http://127.0.0.1:4173/',
         'http://127.0.0.1:4173/blog/',
-        'http://127.0.0.1:4173/blog/um-comeco-sem-pressa/',
+        'http://127.0.0.1:4173/blog/estruturando-servico-go/',
         'http://127.0.0.1:4173/projetos/',
       ],
       settings: {
