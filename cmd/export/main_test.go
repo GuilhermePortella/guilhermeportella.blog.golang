@@ -607,7 +607,7 @@ func TestCanonicalSitemapRoute(t *testing.T) {
 		{route: "/projetos", want: "/projetos/"},
 		{route: "/rick-morty", want: "/rick-morty/"},
 		{route: "/blog", want: "/blog"},
-		{route: "/blog/um-comeco-sem-pressa", want: "/blog/um-comeco-sem-pressa"},
+		{route: "/blog/estruturando-servico-go", want: "/blog/estruturando-servico-go"},
 		{route: "/notas", want: "/notas"},
 	}
 
@@ -635,7 +635,7 @@ func TestWriteSitemapAndRobots(t *testing.T) {
 		"/astronomia",
 		"/articles",
 		"/blog",
-		"/blog/um-comeco-sem-pressa",
+		"/blog/estruturando-servico-go",
 		"/curiosidades/rick-and-morty",
 		"/erro",
 		"/games",
@@ -681,7 +681,7 @@ func TestWriteSitemapAndRobots(t *testing.T) {
 		"https://example.com/repo/",
 		"https://example.com/repo/astronomia/",
 		"https://example.com/repo/blog",
-		"https://example.com/repo/blog/um-comeco-sem-pressa",
+		"https://example.com/repo/blog/estruturando-servico-go",
 		"https://example.com/repo/jogos/snake/",
 	} {
 		if !locations[want] {
@@ -704,7 +704,7 @@ func TestWriteSitemapAndRobots(t *testing.T) {
 
 func TestWriteFeed(t *testing.T) {
 	contentDir := t.TempDir()
-	article := "---\ntitle: Estruturando um serviço Go para crescer com segurança\nsummary: 'Go & HTTP'\npublishedAt: '2026-05-03'\ntags: [Go]\nslug: um-comeco-sem-pressa\n---\nTexto do artigo.\n"
+	article := "---\ntitle: Estruturando um serviço Go para crescer com segurança\nsummary: 'Go & HTTP'\npublishedAt: '2026-05-03'\ntags: [Go]\nslug: estruturando-servico-go\n---\nTexto do artigo.\n"
 	if err := os.WriteFile(filepath.Join(contentDir, "artigo.md"), []byte(article), 0o644); err != nil {
 		t.Fatal(err)
 	}
@@ -739,8 +739,8 @@ func TestWriteFeed(t *testing.T) {
 		`<link>https://example.com/repo/blog</link>`,
 		`<atom:link href="https://example.com/repo/feed.xml" rel="self" type="application/rss+xml"></atom:link>`,
 		`<title>Estruturando um serviço Go para crescer com segurança</title>`,
-		`<link>https://example.com/repo/blog/um-comeco-sem-pressa</link>`,
-		`<guid isPermaLink="true">https://example.com/repo/blog/um-comeco-sem-pressa</guid>`,
+		`<link>https://example.com/repo/blog/estruturando-servico-go</link>`,
+		`<guid isPermaLink="true">https://example.com/repo/blog/estruturando-servico-go</guid>`,
 		`<pubDate>Sun, 03 May 2026 00:00:00 +0000</pubDate>`,
 		`<category>Go</category>`,
 		`<description>Go &amp; HTTP</description>`,
@@ -1381,7 +1381,7 @@ func TestNASAExportPolicy(t *testing.T) {
 			// Keep full-corpus rendering in the dedicated export contract tests.
 			contentDir := t.TempDir()
 			// Home links must resolve while the exporter crawls the site.
-			for _, slug := range []string{"um-comeco-sem-pressa", "coisas-que-ficam-depois-do-estudo", "separando-camadas", "bilhetes-para-dias-comuns"} {
+			for _, slug := range []string{"estruturando-servico-go", "coisas-que-ficam-depois-do-estudo", "separando-camadas", "bilhetes-para-dias-comuns"} {
 				article := "---\ntitle: Artigo de teste\nsummary: Resumo\nauthor: Autor\npublishedAt: '2026-05-03'\n---\nTexto.\n"
 				if err := os.WriteFile(filepath.Join(contentDir, slug+".md"), []byte(article), 0o644); err != nil {
 					t.Fatal(err)
