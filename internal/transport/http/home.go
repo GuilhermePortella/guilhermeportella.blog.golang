@@ -197,7 +197,7 @@ func newHomePageData(now time.Time, currentPath string) homePageData {
 		RecentArticles: []homeArticle{
 			{
 				Title:       "Estruturando um serviço Go para crescer com segurança",
-				Slug:        "um-comeco-sem-pressa",
+				Slug:        "estruturando-servico-go",
 				Excerpt:     "Uma visão prática sobre organização de pacotes, configuração, transporte HTTP e pontos de extensão.",
 				PublishedAt: formatDatePTBR(time.Date(2026, time.May, 3, 0, 0, 0, 0, time.UTC)),
 				Tags:        []string{"Go", "arquitetura"},

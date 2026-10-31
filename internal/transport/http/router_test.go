@@ -913,7 +913,7 @@ func TestLoadNotesTagFallbackAndSort(t *testing.T) {
 
 func TestNewRouterBlogArticle(t *testing.T) {
 	handler := newTestRouter(t)
-	request := httptest.NewRequest(http.MethodGet, "/blog/um-comeco-sem-pressa", nil)
+	request := httptest.NewRequest(http.MethodGet, "/blog/estruturando-servico-go", nil)
 	recorder := httptest.NewRecorder()
 
 	handler.ServeHTTP(recorder, request)
@@ -980,13 +980,13 @@ func TestNewRouterBlogArticleNotFound(t *testing.T) {
 
 func TestMarkdownArticleLookupAndConversion(t *testing.T) {
 	contentDir, _ := newRouterTestContent(t)
-	article, err := getMarkdownArticleBySlug(contentDir, "Um Começo sem Pressa")
+	article, err := getMarkdownArticleBySlug(contentDir, "Estruturando Serviço Go")
 	if err != nil {
 		t.Fatalf("getMarkdownArticleBySlug() error = %v", err)
 	}
 
-	if article.Slug != "um-comeco-sem-pressa" {
-		t.Fatalf("Slug = %q, want um-comeco-sem-pressa", article.Slug)
+	if article.Slug != "estruturando-servico-go" {
+		t.Fatalf("Slug = %q, want estruturando-servico-go", article.Slug)
 	}
 
 	if !strings.Contains(string(article.HTML), `<h2 id="um-comeco-que-nao-precisa-correr">`) {
@@ -1316,7 +1316,7 @@ func newRouterTestContent(t *testing.T) (string, string) {
 		t.Fatalf("MkdirAll(notesDir) error = %v", err)
 	}
 
-	writeRouterTestFile(t, filepath.Join(contentDir, "um-comeco-sem-pressa.md"), `---
+	writeRouterTestFile(t, filepath.Join(contentDir, "estruturando-serviço-Go.md"), `---
 title: "Estruturando um serviço Go para crescer com segurança"
 summary: "Uma visão prática sobre organização de pacotes e transporte HTTP."
 author: "Guilherme Portella"
