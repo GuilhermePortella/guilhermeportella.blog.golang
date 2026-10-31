@@ -204,8 +204,8 @@ func newHomePageData(now time.Time, currentPath string) homePageData {
 			},
 			{
 				Title:       "Handlers HTTP previsíveis e fáceis de testar",
-				Slug:        "coisas-que-ficam-depois-do-estudo",
-				Excerpt:     "Padrões simples para tratar requests, respostas, logs e erros sem espalhar complexidade.",
+				Slug:        "handlers-http-previsiveis",
+				Excerpt:     "Padrões simples para tratar requisições, respostas, logs e erros, com testes que verificam o contrato HTTP sem depender dos detalhes da implementação.",
 				PublishedAt: formatDatePTBR(time.Date(2026, time.May, 1, 0, 0, 0, 0, time.UTC)),
 				Tags:        []string{"HTTP", "testes"},
 			},
