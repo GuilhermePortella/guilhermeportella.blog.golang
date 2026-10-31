@@ -1381,7 +1381,7 @@ func TestNASAExportPolicy(t *testing.T) {
 			// Keep full-corpus rendering in the dedicated export contract tests.
 			contentDir := t.TempDir()
 			// Home links must resolve while the exporter crawls the site.
-			for _, slug := range []string{"estruturando-servico-go", "coisas-que-ficam-depois-do-estudo", "separando-camadas", "bilhetes-para-dias-comuns"} {
+			for _, slug := range []string{"estruturando-servico-go", "handlers-http-previsiveis", "separando-camadas", "bilhetes-para-dias-comuns"} {
 				article := "---\ntitle: Artigo de teste\nsummary: Resumo\nauthor: Autor\npublishedAt: '2026-05-03'\n---\nTexto.\n"
 				if err := os.WriteFile(filepath.Join(contentDir, slug+".md"), []byte(article), 0o644); err != nil {
 					t.Fatal(err)
