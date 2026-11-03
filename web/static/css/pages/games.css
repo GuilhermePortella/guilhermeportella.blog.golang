@@ -41,7 +41,7 @@
 .game-hero__text {
   max-width: 42rem;
   color: var(--stone-700);
-  font-size: 1.125rem;
+  font-size: 1rem;
   line-height: 1.625;
 }
 
@@ -130,7 +130,7 @@
 .game-rules h2 {
   margin-top: 0.35rem;
   color: var(--stone-900);
-  font-size: 1.5rem;
+  font-size: 1.375rem;
   font-weight: 600;
   line-height: 2rem;
 }
@@ -138,7 +138,7 @@
 .games-section-heading p:not(.eyebrow) {
   margin-top: 0.5rem;
   color: var(--stone-600);
-  font-size: 0.95rem;
+  font-size: 0.8125rem;
   line-height: 1.5;
 }
 
@@ -230,14 +230,14 @@
 
 .game-card h3 {
   color: var(--stone-900);
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   font-weight: 650;
   line-height: 1.55rem;
 }
 
 .game-card p {
   color: var(--stone-600);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   line-height: 1.5;
 }
 
@@ -257,7 +257,7 @@
 
 .game-card__meta dt {
   color: var(--stone-500);
-  font-size: 0.7rem;
+  font-size: 0.625rem;
   line-height: 1rem;
   text-transform: uppercase;
 }
@@ -265,7 +265,7 @@
 .game-card__meta dd {
   margin: 0.2rem 0 0;
   color: var(--stone-900);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 650;
   line-height: 1.25rem;
 }
@@ -273,7 +273,7 @@
 .game-card__action {
   margin-top: auto;
   color: var(--stone-900);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   line-height: 1.25rem;
 }
@@ -282,7 +282,7 @@
 .game-stage__link {
   justify-self: start;
   color: var(--stone-900);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   line-height: 1.25rem;
   text-decoration: none;
@@ -303,7 +303,7 @@
   margin: 1rem 0 0;
   padding: 0;
   color: var(--stone-700);
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   list-style: none;
 }
 
@@ -364,7 +364,7 @@
 
 .game-toolbar p {
   color: #e5e7eb;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   line-height: 1.25rem;
 }
 
@@ -380,7 +380,7 @@
   cursor: pointer;
   padding: 0.45rem 0.8rem;
   font: inherit;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 700;
 }
 
@@ -405,7 +405,7 @@
   color: #18181b;
   cursor: pointer;
   font: inherit;
-  font-size: clamp(0.9rem, 2vw, 1.35rem);
+  font-size: 1.15rem;
   font-weight: 800;
   line-height: 1;
   transition: transform 130ms ease, background-color 130ms ease, opacity 130ms ease;
@@ -503,7 +503,7 @@
   color: #ffffff;
   cursor: pointer;
   font: inherit;
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   font-weight: 800;
   transition: background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
 }
@@ -543,7 +543,7 @@
 
 .math-card__label {
   color: #1e40af;
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 800;
   line-height: 1rem;
   text-transform: uppercase;
@@ -551,7 +551,7 @@
 
 .math-card__question {
   color: #0f172a;
-  font-size: 3rem;
+  font-size: 2.6rem;
   font-weight: 850;
   line-height: 1.05;
 }
@@ -577,7 +577,7 @@
   min-height: 2.75rem;
   border-radius: 8px;
   font: inherit;
-  font-size: 1rem;
+  font-size: 0.9375rem;
 }
 
 .math-answer input {
@@ -610,13 +610,17 @@
 }
 
 @media (max-width: 520px) {
+  .memory-card {
+    font-size: 1rem;
+  }
+
   .math-card {
     min-height: 17rem;
     padding: 1rem;
   }
 
   .math-card__question {
-    font-size: 2.35rem;
+    font-size: 2.1rem;
   }
 
   .math-answer {
@@ -630,7 +634,7 @@
   background: rgb(255 255 255 / 8%);
   color: #f8fafc;
   padding: 0.8rem;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   line-height: 1.4;
   text-align: center;
 }
@@ -680,7 +684,7 @@
 
 .snake-stats span {
   color: #d1d5db;
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   line-height: 1rem;
@@ -689,7 +693,7 @@
 
 .snake-stats strong {
   color: #ffffff;
-  font-size: 1.25rem;
+  font-size: 1.125rem;
   line-height: 1.35rem;
 }
 
@@ -799,7 +803,7 @@
 .snake-start-panel h3 {
   margin: 0;
   color: var(--stone-900);
-  font-size: 1.35rem;
+  font-size: 1.125rem;
   font-weight: 750;
   line-height: 1.6rem;
 }
@@ -872,7 +876,7 @@
   padding: 0;
   list-style: none;
   color: #d1d5db;
-  font-size: 0.86rem;
+  font-size: 0.8125rem;
   line-height: 1.45;
 }
 
@@ -966,7 +970,7 @@
 .solitaire-stats span,
 .solitaire-controls label > span {
   color: #d4d4d8;
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   font-weight: 700;
   line-height: 1rem;
   text-transform: uppercase;
@@ -1000,7 +1004,7 @@
   cursor: pointer;
   padding: 0.5rem 0.75rem;
   font: inherit;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   line-height: 1.25rem;
 }
@@ -1106,7 +1110,7 @@
 }
 
 .solitaire-foundation:empty::after {
-  font-size: 1.45rem;
+  font-size: 1.25rem;
 }
 
 .solitaire-foundation[data-suit="hearts"]:empty::after {
@@ -1146,7 +1150,7 @@
   box-shadow: 0 0.65rem 1.2rem rgb(0 0 0 / 24%);
   color: #18181b;
   padding: 0.05rem 0.4rem;
-  font-size: 0.64rem;
+  font-size: 0.625rem;
   font-weight: 800;
   line-height: 1rem;
 }
@@ -1206,7 +1210,7 @@
 .solitaire-card__corner {
   display: grid;
   gap: 0.05rem;
-  font-size: clamp(0.78rem, 1.7vw, 1.05rem);
+  font-size: 0.92rem;
   font-weight: 800;
   line-height: 0.95;
 }
@@ -1219,7 +1223,7 @@
 .solitaire-card__suit {
   align-self: center;
   font-family: "Segoe UI Symbol", "Noto Color Emoji", "Times New Roman", serif;
-  font-size: clamp(1.65rem, 4vw, 2.45rem);
+  font-size: 2.1rem;
   font-weight: 700;
   line-height: 1;
 }
@@ -1282,14 +1286,14 @@
 
 .solitaire-overlay__card h3 {
   color: var(--stone-900);
-  font-size: 1.45rem;
+  font-size: 1.125rem;
   font-weight: 650;
   line-height: 1.9rem;
 }
 
 .solitaire-overlay__card p:not(.eyebrow) {
   color: var(--stone-600);
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   line-height: 1.5;
 }
 
@@ -1356,7 +1360,7 @@
 .checkers-stats span,
 .checkers-controls label > span {
   color: #d4d4d8;
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   font-weight: 700;
   line-height: 1rem;
   text-transform: uppercase;
@@ -1389,7 +1393,7 @@
   cursor: pointer;
   padding: 0.5rem 0.75rem;
   font: inherit;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 700;
   line-height: 1.25rem;
 }
@@ -1531,7 +1535,7 @@
 .checkers-piece.is-king::after {
   content: "K";
   color: #fef3c7;
-  font-size: clamp(0.7rem, 2vw, 1rem);
+  font-size: 0.85rem;
   font-weight: 800;
   line-height: 1;
   text-shadow: 0 2px 2px rgb(0 0 0 / 40%);
@@ -1554,14 +1558,14 @@
 
 .checkers-panel h3 {
   color: #ffffff;
-  font-size: 1rem;
+  font-size: 1.125rem;
   font-weight: 700;
   line-height: 1.4rem;
 }
 
 .checkers-panel p {
   color: #e5e7eb;
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   line-height: 1.45;
 }
 

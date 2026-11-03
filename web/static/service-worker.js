@@ -1,7 +1,7 @@
 const CACHE_PREFIX = "guilherme-portella-site-";
-const CACHE_NAME = `${CACHE_PREFIX}v20261012-consent`;
+const CACHE_NAME = `${CACHE_PREFIX}v20261102-typography`;
 const OFFLINE_PATH = "./erro/";
-const CSS_VERSION = "20260605-css-split";
+const CSS_VERSION = "20261102-typography";
 const CSS_PATHS = [
   "./static/css/main.css",
   "./static/css/globals.css",
@@ -11,6 +11,7 @@ const CSS_PATHS = [
   "./static/css/pages/games.css",
   "./static/css/pages/notes.css",
   "./static/css/pages/article.css",
+  "./static/css/pages/astronomy.css",
   "./static/css/components/faq.css",
   "./static/css/pages/about.css",
   "./static/css/pages/curiosities.css",
@@ -20,7 +21,6 @@ const CSS_PATHS = [
   "./static/css/utilities/motion.css",
   "./static/css/utilities/keyframes.css",
   "./static/css/utilities/responsive.css",
-  "./static/css/utilities/compact-typography.css",
 ];
 const PRECACHE_PATHS = [
   OFFLINE_PATH,
