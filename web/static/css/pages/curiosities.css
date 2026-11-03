@@ -55,7 +55,7 @@
 
 .curiosity-eyebrow {
   color: #78716c;
-  font-size: 12px;
+  font-size: 0.6875rem;
   font-weight: 600;
   line-height: 16px;
   letter-spacing: 0.4em;
@@ -64,14 +64,14 @@
 
 .curiosity-eyebrow--hero {
   color: #57534e;
-  font-size: 10.4px;
+  font-size: 0.625rem;
   letter-spacing: 0.45em;
 }
 
 #curiosity-title {
   color: #1c1917;
   font-family: var(--font-display);
-  font-size: 36px;
+  font-size: 32px;
   font-weight: 600;
   letter-spacing: -0.018em;
   line-height: 1.22;
@@ -80,7 +80,7 @@
 .curiosity-hero__lead {
   max-width: 672px;
   color: #44403c;
-  font-size: 18px;
+  font-size: 1rem;
   line-height: 1.625;
 }
 
@@ -91,7 +91,7 @@
   margin: 0;
   padding: 0;
   color: #57534e;
-  font-size: 12px;
+  font-size: 0.6875rem;
   line-height: 16px;
   list-style: none;
 }
@@ -120,7 +120,7 @@
 .curiosity-map-card h2 {
   margin-top: 12px;
   color: #1c1917;
-  font-size: 18px;
+  font-size: 1rem;
   font-weight: 600;
   line-height: 28px;
 }
@@ -128,7 +128,7 @@
 .curiosity-map-card > p:not(.curiosity-eyebrow) {
   margin-top: 8px;
   color: #57534e;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 1.5;
 }
 
@@ -156,7 +156,7 @@
 
 .curiosity-map-card__item h3 {
   color: #1c1917;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   line-height: 20px;
 }
@@ -164,7 +164,7 @@
 .curiosity-map-card__item p {
   margin-top: 4px;
   color: #57534e;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 16px;
 }
 
@@ -179,7 +179,7 @@
 .curiosity-map-card__item a {
   display: inline-flex;
   margin-top: 4px;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 16px;
 }
 
@@ -198,14 +198,14 @@
 .curiosity-small-card > p:not(.curiosity-eyebrow) {
   margin-top: 12px;
   color: #44403c;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 1.625;
 }
 
 .curiosity-small-card a {
   display: inline-flex;
   margin-top: 12px;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 16px;
 }
 
@@ -244,7 +244,7 @@
 .curiosity-music__header h2 {
   color: #1c1917;
   font-family: var(--font-display);
-  font-size: 28px;
+  font-size: 1.375rem;
   font-weight: 600;
   line-height: 36px;
 }
@@ -252,12 +252,12 @@
 .curiosity-section__header p:not(.curiosity-eyebrow),
 .curiosity-music__header p:not(.curiosity-eyebrow) {
   color: #57534e;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 1.5;
 }
 
 .curiosity-section__link {
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 20px;
 }
 
@@ -288,7 +288,7 @@
 
 .curiosity-shortcut-card h3 {
   color: #1c1917;
-  font-size: 18px;
+  font-size: 1rem;
   font-weight: 600;
   line-height: 28px;
 }
@@ -296,7 +296,7 @@
 .curiosity-shortcut-card p {
   margin-top: 8px;
   color: #57534e;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 1.5;
 }
 
@@ -341,14 +341,14 @@
 
 .curiosity-api-card h3 {
   color: #123733;
-  font-size: 24px;
+  font-size: 1.125rem;
   font-weight: 700;
   line-height: 1.2;
 }
 
 .curiosity-api-card p:not(.curiosity-eyebrow) {
   color: #57534e;
-  font-size: 15px;
+  font-size: 0.8125rem;
   line-height: 1.6;
 }
 
@@ -362,7 +362,7 @@
   background: #eef7f3;
   color: #123733;
   padding: 9px 11px;
-  font-size: 13px;
+  font-size: 0.875rem;
   line-height: 18px;
 }
 
@@ -388,7 +388,7 @@
   background: #f8fafc;
   color: #355c57;
   padding: 5px 10px;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 800;
   line-height: 16px;
 }
@@ -404,7 +404,7 @@
   background: #123733;
   color: #fffaf4;
   padding: 9px 14px;
-  font-size: 14px;
+  font-size: 0.8125rem;
   font-weight: 700;
   line-height: 20px;
 }
@@ -456,7 +456,7 @@
 
 .curiosity-collection-card h3 {
   color: #1c1917;
-  font-size: 20px;
+  font-size: 1rem;
   font-weight: 600;
   line-height: 28px;
 }
@@ -510,7 +510,7 @@
 .rick-api-back {
   width: fit-content;
   color: #57534e;
-  font-size: 14px;
+  font-size: 0.8125rem;
   font-weight: 700;
   line-height: 20px;
 }
@@ -518,7 +518,7 @@
 #rick-api-title {
   color: #1c1917;
   font-family: var(--font-display);
-  font-size: 36px;
+  font-size: 32px;
   font-weight: 600;
   line-height: 1.16;
 }
@@ -526,7 +526,7 @@
 .rick-api-hero__lead {
   max-width: 672px;
   color: #44403c;
-  font-size: 18px;
+  font-size: 1rem;
   line-height: 1.625;
 }
 
@@ -556,7 +556,7 @@
   background: #0f302c;
   color: #fffaf4;
   padding: 10px 12px;
-  font-size: 13px;
+  font-size: 0.875rem;
   line-height: 18px;
 }
 
@@ -579,13 +579,13 @@
 
 .rick-api-hero__panel strong {
   color: #fffaf4;
-  font-size: 18px;
+  font-size: 1.125rem;
   line-height: 26px;
 }
 
 .rick-api-hero__panel p:not(.curiosity-eyebrow) {
   color: #d6ede7;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 1.625;
 }
 
@@ -634,14 +634,14 @@
 .curiosity-api__header h2 {
   color: #fffaf4;
   font-family: var(--font-display);
-  font-size: 28px;
+  font-size: 1.375rem;
   font-weight: 600;
   line-height: 36px;
 }
 
 .curiosity-api__header p:not(.curiosity-eyebrow) {
   color: #d6ede7;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 1.625;
 }
 
@@ -653,7 +653,7 @@
   border-radius: 9999px;
   color: #fffaf4;
   padding: 8px 14px;
-  font-size: 14px;
+  font-size: 0.8125rem;
   font-weight: 600;
   line-height: 20px;
 }
@@ -698,7 +698,7 @@
 .curiosity-api__stats strong {
   display: block;
   color: #143d38;
-  font-size: 24px;
+  font-size: 1.125rem;
   font-weight: 700;
   line-height: 1.1;
 }
@@ -725,7 +725,7 @@
 
 .rick-field span {
   color: #57534e;
-  font-size: 12px;
+  font-size: 0.6875rem;
   font-weight: 700;
   line-height: 16px;
   text-transform: uppercase;
@@ -761,7 +761,7 @@
   border: 1px solid transparent;
   border-radius: 10px;
   padding: 9px 14px;
-  font-size: 14px;
+  font-size: 0.8125rem;
   font-weight: 700;
   line-height: 20px;
   transition: background 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease;
@@ -809,7 +809,7 @@
 
 .rick-pagination span {
   color: #57534e;
-  font-size: 13px;
+  font-size: 0.75rem;
   font-weight: 700;
   line-height: 18px;
 }
@@ -818,7 +818,7 @@
 .curiosity-api__noscript {
   margin-top: 14px;
   color: #57534e;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 1.5;
 }
 
@@ -857,7 +857,7 @@
 
 .rick-spotlight h3 {
   color: #fffaf4;
-  font-size: 22px;
+  font-size: 1rem;
   font-weight: 700;
   line-height: 30px;
 }
@@ -865,7 +865,7 @@
 .rick-spotlight p,
 .rick-spotlight span {
   color: #d6ede7;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 1.625;
 }
 
@@ -938,7 +938,7 @@
   border: 1px solid;
   border-radius: 9999px;
   padding: 3px 9px;
-  font-size: 12px;
+  font-size: 0.6875rem;
   font-weight: 700;
   line-height: 16px;
 }
@@ -963,14 +963,14 @@
 
 .rick-character h3 {
   color: #1c1917;
-  font-size: 18px;
+  font-size: 1rem;
   font-weight: 700;
   line-height: 26px;
 }
 
 .rick-character p {
   color: #57534e;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 1.5;
 }
 
@@ -987,7 +987,7 @@
 
 .rick-character__meta dt {
   color: #78716c;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 700;
   line-height: 14px;
   text-transform: uppercase;
@@ -996,14 +996,14 @@
 .rick-character__meta dd {
   margin: 0;
   color: #292524;
-  font-size: 13px;
+  font-size: 0.75rem;
   line-height: 18px;
 }
 
 .rick-character__link {
   width: fit-content;
   color: #143d38;
-  font-size: 13px;
+  font-size: 0.75rem;
   font-weight: 700;
   line-height: 18px;
 }
@@ -1011,7 +1011,7 @@
 .rick-empty {
   padding: 24px;
   color: #57534e;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 1.5;
 }
 
@@ -1043,7 +1043,7 @@
 .rick-boot p:not(.curiosity-eyebrow),
 .rick-noscript {
   color: #57534e;
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.6;
 }
 
@@ -1076,7 +1076,7 @@
 .rick-back {
   width: fit-content;
   color: #355c57;
-  font-size: 14px;
+  font-size: 0.8125rem;
   font-weight: 700;
   line-height: 20px;
 }
@@ -1089,7 +1089,7 @@
 #rick-title,
 .rick-detail-card h1 {
   color: #123733;
-  font-size: 42px;
+  font-size: 38px;
   font-weight: 700;
   line-height: 1.08;
 }
@@ -1097,7 +1097,7 @@
 .rick-hero__lead {
   max-width: 720px;
   color: #3f4f4b;
-  font-size: 18px;
+  font-size: 1rem;
   line-height: 1.65;
 }
 
@@ -1126,13 +1126,13 @@
   background: #0d2926;
   color: #fffaf4;
   padding: 10px 12px;
-  font-size: 13px;
+  font-size: 0.875rem;
   line-height: 18px;
 }
 
 .rick-hero__panel p:not(.curiosity-eyebrow) {
   color: #d8f3eb;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 1.6;
 }
 
@@ -1152,7 +1152,7 @@
   background: #ffce6a;
   color: #2f2507;
   padding: 7px 10px;
-  font-size: 20px;
+  font-size: 1.125rem;
   font-weight: 800;
   line-height: 1;
 }
@@ -1186,7 +1186,7 @@
 .rick-browser__header h2,
 .rick-related-section__header h2 {
   color: #123733;
-  font-size: 30px;
+  font-size: 1.55rem;
   font-weight: 700;
   line-height: 1.18;
 }
@@ -1194,7 +1194,7 @@
 .rick-browser__header p:not(.curiosity-eyebrow),
 .rick-related-section__header p:not(.curiosity-eyebrow) {
   color: #57534e;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 1.55;
 }
 
@@ -1207,7 +1207,7 @@
   background: #ffffff;
   color: #123733;
   padding: 8px 14px;
-  font-size: 14px;
+  font-size: 0.8125rem;
   font-weight: 700;
   line-height: 20px;
 }
@@ -1238,7 +1238,7 @@
   background: #ffffff;
   color: #355c57;
   padding: 8px 12px;
-  font-size: 14px;
+  font-size: 0.8125rem;
   font-weight: 700;
   line-height: 20px;
   transition: background 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease;
@@ -1319,7 +1319,7 @@
   min-height: 24px;
   margin-top: 18px;
   color: #57534e;
-  font-size: 14px;
+  font-size: 0.8125rem;
   font-weight: 600;
   line-height: 24px;
 }
@@ -1394,7 +1394,7 @@
   background: #eef7f3;
   color: #355c57;
   padding: 3px 9px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 800;
   line-height: 16px;
   text-transform: uppercase;
@@ -1403,7 +1403,7 @@
 .rick-result-card h3,
 .rick-person-card h3 {
   color: #1c1917;
-  font-size: 18px;
+  font-size: 1rem;
   font-weight: 700;
   line-height: 1.3;
 }
@@ -1422,17 +1422,23 @@
 .rick-result-card dt,
 .rick-info-grid dt {
   color: #78716c;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 800;
   line-height: 14px;
   text-transform: uppercase;
 }
 
-.rick-result-card dd,
-.rick-info-grid dd {
+.rick-result-card dd {
   margin: 0;
   color: #292524;
   font-size: 14px;
+  line-height: 20px;
+}
+
+.rick-info-grid dd {
+  margin: 0;
+  color: #292524;
+  font-size: 0.875rem;
   line-height: 20px;
 }
 
@@ -1459,13 +1465,13 @@
 
 .rick-state h2 {
   color: #123733;
-  font-size: 22px;
+  font-size: 1rem;
   line-height: 1.25;
 }
 
 .rick-state p {
   color: #57534e;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 1.55;
 }
 
@@ -1570,21 +1576,21 @@
 
 .rick-episode-list span {
   color: #355c57;
-  font-size: 12px;
+  font-size: 0.6875rem;
   font-weight: 800;
   line-height: 16px;
 }
 
 .rick-episode-list h2 {
   color: #1c1917;
-  font-size: 16px;
+  font-size: 1.125rem;
   line-height: 1.35;
 }
 
 .rick-episode-list p,
 .rick-related-status {
   color: #57534e;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 1.55;
 }
 
@@ -1603,7 +1609,7 @@
 
 .rick-wiki-panel h2 {
   color: #123733;
-  font-size: 20px;
+  font-size: 1rem;
   font-weight: 700;
   line-height: 1.25;
 }
@@ -1611,7 +1617,7 @@
 .rick-wiki-panel__translation {
   margin-top: 6px;
   color: #355c57;
-  font-size: 13px;
+  font-size: 0.75rem;
   font-weight: 700;
   line-height: 18px;
 }
@@ -1619,14 +1625,14 @@
 .rick-wiki-panel__text {
   white-space: pre-line;
   color: #44403c;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 1.65;
 }
 
 .rick-wiki-panel__source {
   width: fit-content;
   color: #123733;
-  font-size: 14px;
+  font-size: 0.8125rem;
   font-weight: 700;
   line-height: 20px;
 }
@@ -1671,7 +1677,7 @@
 
 .rick-person-card p {
   color: #57534e;
-  font-size: 13px;
+  font-size: 0.75rem;
   line-height: 18px;
 }
 
@@ -1705,7 +1711,7 @@
 }
 
 .curiosity-music__header h2 {
-  font-size: 24px;
+  font-size: 1.375rem;
   line-height: 32px;
 }
 
@@ -1774,14 +1780,14 @@
 
 .curiosity-song-card h3 {
   color: #1c1917;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   line-height: 20px;
 }
 
 .curiosity-song-card__album {
   color: #78716c;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 16px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
@@ -1789,7 +1795,7 @@
 
 .curiosity-song-card__description {
   color: #57534e;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 1.625;
 }
 
@@ -1816,7 +1822,7 @@
 .curiosity-music__fallback {
   margin-top: 16px;
   color: #57534e;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 20px;
   text-align: center;
 }
@@ -1827,7 +1833,7 @@
   justify-content: center;
   gap: 12px;
   margin-top: 8px;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 20px;
 }
 

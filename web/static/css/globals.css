@@ -156,7 +156,7 @@ h4 {
   background: rgba(248, 250, 252, 0.9);
   color: #525252;
   font-family: var(--font-body);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 400;
   line-height: 1.6;
   backdrop-filter: saturate(140%) blur(12px);
@@ -177,7 +177,7 @@ h4 {
   align-items: center;
   gap: 0.4rem;
   color: #0f172a;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
   letter-spacing: -0.02em;
   text-decoration: none;
@@ -190,7 +190,7 @@ h4 {
 
 .site-brand span {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
@@ -213,7 +213,7 @@ h4 {
   border-radius: 999px;
   padding: 6px 12px;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 0.8125rem;
   font-weight: 500;
   text-decoration: none;
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.12s ease;

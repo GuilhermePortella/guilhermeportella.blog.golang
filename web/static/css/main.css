@@ -1,27 +1,26 @@
 /* CSS entry point. Keep this order aligned with the original cascade. */
-@import url("./globals.css?v=20260605-css-split");
+@import url("./globals.css?v=20261102-typography");
 
 /* Pages */
-@import url("./pages/home.css?v=20260605-css-split");
-@import url("./pages/blog.css?v=20260605-css-split");
-@import url("./pages/projects.css?v=20260605-css-split");
-@import url("./pages/games.css?v=20260605-css-split");
-@import url("./pages/notes.css?v=20260605-css-split");
-@import url("./pages/article.css?v=20260605-css-split");
-@import url("./pages/astronomy.css?v=20260912-editorial");
+@import url("./pages/home.css?v=20261102-typography");
+@import url("./pages/blog.css?v=20261102-typography");
+@import url("./pages/projects.css?v=20261102-typography");
+@import url("./pages/games.css?v=20261102-typography");
+@import url("./pages/notes.css?v=20261102-typography");
+@import url("./pages/article.css?v=20261102-typography");
+@import url("./pages/astronomy.css?v=20261102-typography");
 
 /* Shared components */
-@import url("./components/faq.css?v=20260605-css-split");
+@import url("./components/faq.css?v=20261102-typography");
 
 /* More pages */
-@import url("./pages/about.css?v=20260605-css-split");
-@import url("./pages/curiosities.css?v=20260605-css-split");
-@import url("./pages/errors.css?v=20260605-css-split");
+@import url("./pages/about.css?v=20261102-typography");
+@import url("./pages/curiosities.css?v=20261102-typography");
+@import url("./pages/errors.css?v=20261102-typography");
 
 /* Cross-page behavior and responsive overrides */
-@import url("./utilities/page-effects.css?v=20260605-css-split");
-@import url("./components/footer.css?v=20260605-css-split");
-@import url("./utilities/motion.css?v=20260605-css-split");
-@import url("./utilities/keyframes.css?v=20260605-css-split");
-@import url("./utilities/responsive.css?v=20260919-reading-toc");
-@import url("./utilities/compact-typography.css?v=20260605-css-split");
+@import url("./utilities/page-effects.css?v=20261102-typography");
+@import url("./components/footer.css?v=20261102-typography");
+@import url("./utilities/motion.css?v=20261102-typography");
+@import url("./utilities/keyframes.css?v=20261102-typography");
+@import url("./utilities/responsive.css?v=20261102-typography");

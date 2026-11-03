@@ -52,7 +52,7 @@
 
 .about-eyebrow {
   color: #78716c;
-  font-size: 12px;
+  font-size: 0.6875rem;
   font-weight: 500;
   line-height: 1rem;
   letter-spacing: 0.4em;
@@ -61,7 +61,7 @@
 
 .about-eyebrow--hero {
   color: #57534e;
-  font-size: 10.4px;
+  font-size: 0.625rem;
   letter-spacing: 0.45em;
 }
 
@@ -74,21 +74,21 @@
 }
 
 #about-title {
-  font-size: 36px;
+  font-size: 32px;
   line-height: 1.22;
 }
 
 .about-hero__lead {
   max-width: 672px;
   color: #44403c;
-  font-size: 18px;
+  font-size: 1rem;
   line-height: 1.625;
 }
 
 .about-hero__note {
   max-width: 672px;
   color: #57534e;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 1.625;
 }
 
@@ -106,7 +106,7 @@
   border-radius: 9999px;
   padding: 8px 20px;
   color: #1c1917;
-  font-size: 14px;
+  font-size: 0.8125rem;
   font-weight: 600;
   line-height: 20px;
   text-decoration: none !important;
@@ -333,14 +333,14 @@
 .about-profile-card h2 {
   color: #1c1917;
   font-family: var(--font-body);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 600;
   line-height: 20px;
 }
 
 .about-profile-card p {
   color: #57534e;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.5;
 }
 
@@ -354,7 +354,7 @@
 .about-note-card p:not(.about-eyebrow) {
   margin-top: 12px;
   color: #44403c;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 1.625;
 }
 
@@ -386,7 +386,7 @@
 }
 
 .about-section h2 {
-  font-size: 24px;
+  font-size: 1.375rem;
   line-height: 32px;
 }
 
@@ -394,13 +394,13 @@
 .about-ritual-card__copy p:not(.about-eyebrow),
 .about-contact-card > p:not(.about-eyebrow) {
   color: #57534e;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 1.5;
 }
 
 .about-section__link {
   color: #1c1917;
-  font-size: 14px;
+  font-size: 0.8125rem;
   font-weight: 600;
   line-height: 20px;
   text-decoration: none;
@@ -422,7 +422,7 @@
 
 .about-pillar-card h3 {
   color: #1c1917;
-  font-size: 16px;
+  font-size: 0.875rem;
   font-weight: 600;
   line-height: 24px;
 }
@@ -430,7 +430,7 @@
 .about-pillar-card p {
   margin-top: 8px;
   color: #57534e;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 1.625;
 }
 
@@ -468,7 +468,7 @@
   margin: 0;
   padding: 0;
   color: #44403c;
-  font-size: 14px;
+  font-size: 0.8125rem;
   line-height: 1.625;
   list-style: none;
 }
