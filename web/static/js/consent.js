@@ -22,7 +22,7 @@
     if (!panel) return;
     returnFocus = document.activeElement;
     panel.hidden = false;
-    panel.querySelector("button").focus();
+    panel.querySelector("button").focus({ preventScroll: true });
   }
 
   function render(host, options) {
@@ -68,7 +68,8 @@
       statusTimer = setTimeout(() => { status.textContent = ""; }, 5000);
     }
     const target = returnFocus?.isConnected ? returnFocus : document.querySelector("[data-consent-open]");
-    target?.focus();
+    // Restore keyboard focus without scrolling to the footer or media opener.
+    target?.focus({ preventScroll: true });
   }
 
   window.siteConsent = {

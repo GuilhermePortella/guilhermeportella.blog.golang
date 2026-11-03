@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "guilherme-portella-site-";
-const CACHE_NAME = `${CACHE_PREFIX}v20261102-typography`;
+const CACHE_NAME = `${CACHE_PREFIX}v20261102-consent-scroll`;
 const OFFLINE_PATH = "./erro/";
 const CSS_VERSION = "20261102-typography";
 const CSS_PATHS = [
@@ -24,7 +24,7 @@ const CSS_PATHS = [
 ];
 const PRECACHE_PATHS = [
   OFFLINE_PATH,
-  "./static/js/consent.js?v=20261012",
+  "./static/js/consent.js?v=20261102-consent-scroll",
   "./static/css/components/consent.css?v=20261012",
   ...CSS_PATHS.map((path) => `${path}?v=${CSS_VERSION}`),
   "./static/js/site.js?v=20261011-consent",

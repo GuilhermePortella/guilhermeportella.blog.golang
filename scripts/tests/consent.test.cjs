@@ -13,7 +13,7 @@ function setup(initial, broken = false) {
     replaceChildren(...items) { this.children = items; }
     append(...items) { this.children.push(...items); }
     addEventListener(name, fn) { this.handlers[name] = fn; }
-    focus() { document.activeElement = this; }
+    focus(options) { document.activeElement = this; this.focusOptions = options; }
     querySelector() { return elements['[data-consent-reject]']; }
     click() { this.handlers.click(); }
   }
@@ -33,7 +33,7 @@ function setup(initial, broken = false) {
   }});
   const host = new Element('div');
   window.siteConsent.mount(host, { title: 'Player', src: 'https://www.youtube-nocookie.com/embed/test' });
-  return { host, elements, events, window, Element, timers, stored: () => stored, setStored: value => stored = value };
+  return { host, elements, events, window, document, Element, timers, stored: () => stored, setStored: value => stored = value };
 }
 const saved = (allowed, savedAt = Date.now()) => JSON.stringify({ version: 1, allowed, savedAt });
 test('unknown choice blocks iframe; accept loads; revoke removes and persists', () => {
@@ -93,4 +93,37 @@ test('confirmation disappears after five seconds and a new choice restarts the t
   timer.fn();
   assert.equal(status.textContent, '');
   assert.equal(JSON.parse(s.stored()).allowed, false);
+});
+
+for (const action of ['accept', 'reject']) {
+  test(`${action} restores focus without scrolling to the footer on first choice`, () => {
+    const s = setup(null);
+    s.elements[`[data-consent-${action}]`].click();
+    const opener = s.elements['[data-consent-open]'];
+    assert.equal(s.document.activeElement, opener);
+    assert.equal(opener.focusOptions?.preventScroll, true);
+  });
+
+  test(`${action} returns focus without scrolling after reopening preferences`, () => {
+    const s = setup(saved(false));
+    const origin = new s.Element('button');
+    origin.focus();
+    s.elements['[data-consent-open]'].click();
+    assert.equal(s.document.activeElement, s.elements['[data-consent-reject]']);
+    assert.equal(s.document.activeElement.focusOptions?.preventScroll, true);
+    s.elements[`[data-consent-${action}]`].click();
+    assert.equal(s.document.activeElement, origin);
+    assert.equal(origin.focusOptions?.preventScroll, true);
+  });
+}
+
+test('removed media opener falls back to the footer without scrolling', () => {
+  const s = setup(null);
+  const opener = s.host.children[1];
+  opener.focus();
+  opener.click();
+  opener.isConnected = false;
+  s.elements['[data-consent-accept]'].click();
+  assert.equal(s.document.activeElement, s.elements['[data-consent-open]']);
+  assert.equal(s.document.activeElement.focusOptions?.preventScroll, true);
 });
