@@ -3,14 +3,20 @@ const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
 const vm = require('node:vm');
 const source = readFileSync('web/static/js/consent.js', 'utf8');
+const NOW = Date.UTC(2026, 10, 3);
+const TTL = 180 * 24 * 60 * 60 * 1000;
 function setup(initial, broken = false) {
+  let now = NOW;
   let stored = initial;
   const events = {};
   const timers = new Map();
   let timerID = 0;
   class Element {
     constructor(tag) { this.tag = tag; this.children = []; this.isConnected = true; this.classList = { add() {} }; this.handlers = {}; }
-    replaceChildren(...items) { this.children = items; }
+    replaceChildren(...items) {
+      for (const child of this.children) child.isConnected = false;
+      this.children = items;
+    }
     append(...items) { this.children.push(...items); }
     addEventListener(name, fn) { this.handlers[name] = fn; }
     focus(options) { document.activeElement = this; this.focusOptions = options; }
@@ -24,7 +30,7 @@ function setup(initial, broken = false) {
     createElement: tag => new Element(tag),
   };
   const window = { addEventListener: (name, fn) => events[name] = fn };
-  vm.runInNewContext(source, { window, document, URL, Date,
+  vm.runInNewContext(source, { window, document, URL, Date: { now: () => now },
     setTimeout: (fn, delay) => { timers.set(++timerID, { fn, delay }); return timerID; },
     clearTimeout: id => timers.delete(id),
     localStorage: {
@@ -33,9 +39,9 @@ function setup(initial, broken = false) {
   }});
   const host = new Element('div');
   window.siteConsent.mount(host, { title: 'Player', src: 'https://www.youtube-nocookie.com/embed/test' });
-  return { host, elements, events, window, document, Element, timers, stored: () => stored, setStored: value => stored = value };
+  return { host, elements, events, window, document, Element, timers, advance: ms => { now += ms; }, stored: () => stored, setStored: value => stored = value };
 }
-const saved = (allowed, savedAt = Date.now()) => JSON.stringify({ version: 1, allowed, savedAt });
+const saved = (allowed, savedAt = NOW) => JSON.stringify({ version: 1, allowed, savedAt });
 test('unknown choice blocks iframe; accept loads; revoke removes and persists', () => {
   const s = setup(null);
   assert.equal(s.host.children.some(e => e.tag === 'iframe'), false);
@@ -50,7 +56,7 @@ test('unknown choice blocks iframe; accept loads; revoke removes and persists', 
   assert.equal(JSON.parse(s.stored()).allowed, false);
 });
 test('saved choices, corrupt, expired and future records', () => {
-  for (const [record, allowed] of [[saved(true),true],[saved(false),false],['invalid',false],[saved(true,0),false],[saved(true,Date.now()+60000),false]]) {
+  for (const [record, allowed] of [[saved(true),true],[saved(false),false],['invalid',false],[saved(true,0),false],[saved(true,NOW+60000),false]]) {
     assert.equal(setup(record).host.children[0].tag === 'iframe', allowed);
   }
 });
@@ -122,8 +128,88 @@ test('removed media opener falls back to the footer without scrolling', () => {
   const opener = s.host.children[1];
   opener.focus();
   opener.click();
-  opener.isConnected = false;
   s.elements['[data-consent-accept]'].click();
   assert.equal(s.document.activeElement, s.elements['[data-consent-open]']);
   assert.equal(s.document.activeElement.focusOptions?.preventScroll, true);
+});
+
+for (const allowed of [true, false]) {
+  test(`consent expires at 180 days when the tab regains focus (allowed=${allowed})`, () => {
+    const s = setup(saved(allowed));
+    s.advance(TTL - 1);
+    s.events.focus();
+    assert.equal(s.elements['[data-consent-panel]'].hidden, true);
+    assert.equal(s.host.children[0].tag === 'iframe', allowed);
+    s.advance(1);
+    s.events.focus();
+    assert.equal(s.elements['[data-consent-panel]'].hidden, false);
+    assert.equal(s.host.children.some(e => e.tag === 'iframe'), false);
+  });
+}
+
+test('persisted consent validates types, version and exact expiration boundary', () => {
+  const invalid = [
+    null, {}, { version: 2, allowed: true, savedAt: NOW },
+    { version: 1, allowed: 'true', savedAt: NOW },
+    { version: 1, allowed: true, savedAt: String(NOW) },
+    { version: 1, allowed: true, savedAt: null },
+    { version: 1, allowed: true },
+    { version: 1, allowed: true, savedAt: NOW + 1 },
+    { version: 1, allowed: true, savedAt: NOW - TTL },
+  ];
+  for (const record of invalid) {
+    const s = setup(JSON.stringify(record));
+    assert.equal(s.host.children.some(e => e.tag === 'iframe'), false, JSON.stringify(record));
+    assert.equal(s.elements['[data-consent-panel]'].hidden, false);
+  }
+  assert.equal(setup(saved(true, NOW - TTL + 1)).host.children[0].tag, 'iframe');
+});
+
+test('media only loads from supported HTTPS hosts, even after accepting', () => {
+  const s = setup(null);
+  const rejected = [
+    'not a URL', 'javascript:alert(1)', '//www.youtube.com/embed/test',
+    'http://www.youtube.com/embed/test',
+    'https://www.youtube.com.evil.example/embed/test',
+    'https://www.youtube.com@evil.example/embed/test',
+    'https://evil.example/?url=https://open.spotify.com',
+  ].map(src => {
+    const host = new s.Element('div');
+    s.window.siteConsent.mount(host, { title: 'Invalid', src });
+    return host;
+  });
+  const supported = ['open.spotify.com', 'www.youtube.com', 'www.youtube-nocookie.com'].map(domain => {
+    const host = new s.Element('div');
+    const src = `https://${domain}/embed/test`;
+    s.window.siteConsent.mount(host, { title: 'Player', src, height: '152' });
+    assert.equal(host.children.some(e => e.tag === 'iframe'), false);
+    return { host, src };
+  });
+  s.elements['[data-consent-accept]'].click();
+  for (const host of rejected) assert.equal(host.children.length, 0);
+  for (const { host, src } of supported) {
+    assert.equal(host.children[0].tag, 'iframe');
+    assert.equal(host.children[0].src, src);
+    assert.equal(host.children[0].title, 'Player');
+    assert.equal(host.children[0].height, '152');
+  }
+});
+
+test('unrelated storage events do not reload media; cross-tab acceptance does', () => {
+  const s = setup(saved(false));
+  const placeholder = s.host.children[0];
+  s.setStored(saved(true));
+  s.events.storage({ key: 'unrelated-setting' });
+  assert.equal(s.host.children[0], placeholder);
+  s.events.storage({ key: 'gp:external-media-consent:v1' });
+  assert.equal(s.host.children[0].tag, 'iframe');
+  assert.equal(s.elements['[data-consent-panel]'].hidden, true);
+});
+
+test('disconnected media is not rendered again after a consent change', () => {
+  const s = setup(null);
+  const placeholder = s.host.children[0];
+  s.host.isConnected = false;
+  s.elements['[data-consent-accept]'].click();
+  assert.equal(s.host.children[0], placeholder);
 });
