@@ -24,7 +24,7 @@ protege apresentação e comportamento do leitor; P2 protege infraestrutura.
 | P1 | `web/static/js/nasa-apod-app.js`, `rick-and-morty-app.js` | Integrações no navegador, seleção de dados e estados de erro. Há contratos Go da página/export, sem cobertura direta da interação JavaScript. |
 | P1 | `web/templates/`, `internal/transport/http/router.go`, `jogos.go`, `projetos.go`, `astronomia.go`, `curiosidades.go` | Rotas, aliases, conteúdo e atributos usados pela interface. `router_test.go` e export completo. |
 | P2 | `internal/config/config.go`, `internal/server/server.go`, `internal/transport/http/{middleware,static,security,render}.go` | Configuração válida, ciclo HTTP, cabeçalhos, acesso a arquivos e falhas de renderização. Testes dos respectivos pacotes. |
-| P2 | `web/static/service-worker.js` | Cache e atualização offline; a rota é testada, mas o ciclo de cache no navegador ainda precisa de testes próprios. |
+| P2 | `web/static/service-worker.js` | Instalação e falha de precache, atualização sem excluir caches de outras aplicações, prioridade da rede, fallback offline, erros HTTP e escopo em subpastas. `scripts/tests/service-worker.test.cjs` executa os handlers reais com rede e Cache API simuladas. |
 
 ## Base aplicada
 
@@ -57,9 +57,34 @@ palavras por minuto, arredonda para o inteiro mais próximo e tem mínimo de um
 minuto. Tags `Go` e `go` são distintas, embora a ordenação ignore maiúsculas no
 primeiro critério. Não foi introduzida uma regra de agendamento para datas futuras.
 
+## Testes unitários JavaScript
+
+`make test-js` executa todos os arquivos `scripts/tests/*.test.cjs` e faz parte
+do `make ci`. Os alvos individuais `test-consent`, `test-blog-search` e
+`test-service-worker` continuam disponíveis. Os testes usam `node:test` e
+`node:vm`, sem dependências adicionais ou chamadas de rede.
+
+- Consentimento: relógio controlado, expiração no limite de 180 dias,
+  registros inválidos, domínios/protocolos rejeitados, sincronização entre abas,
+  remoção de players desconectados e retorno de foco sem rolagem. O DOM simulado
+  desconecta os filhos substituídos para exercitar o fallback de foco.
+- Service worker: execução dos handlers de instalação, ativação e fetch, com
+  respostas HTTP reais da API `Response` e serviços de rede/cache simulados.
+  O contrato de precache também verifica se os arquivos existem e se as URLs
+  versionadas do template e dos imports CSS estão presentes na lista offline.
+- Busca: os testes existentes protegem normalização, resultados, navegação por
+  teclado e atualização pela URL.
+
+Esses testes não substituem validações em navegador: comportamento visual,
+rolagem real, ciclo de atualização entre abas e integrações externas permanecem
+fora do alcance dos doubles usados aqui.
+
 ## Execução e critérios
 
 ```sh
+# Testes unitários do frontend
+make test-js
+
 # Validação editorial e análise estática
 make content-lint
 make fmt-check
