@@ -1,5 +1,5 @@
 .blog-page {
-  background: #ffffff;
+  background: var(--page-surface);
 }
 
 .blog-shell {
@@ -135,8 +135,8 @@
   line-height: 1.75rem;
 }
 
-.blog-guide-card > p:not(.eyebrow),
-.blog-browser__aside > p:not(.eyebrow) {
+.blog-guide-card>p:not(.eyebrow),
+.blog-browser__aside>p:not(.eyebrow) {
   margin-top: 0.5rem;
   color: var(--stone-600);
   font-size: 0.8125rem;
@@ -159,7 +159,7 @@
   gap: 0.75rem;
 }
 
-.blog-guide-card li > span:first-child {
+.blog-guide-card li>span:first-child {
   flex: none;
   width: 0.5rem;
   height: 0.5rem;
@@ -176,7 +176,7 @@
   padding: 1.25rem;
 }
 
-.blog-note-card > p:not(.eyebrow) {
+.blog-note-card>p:not(.eyebrow) {
   margin-top: 0.75rem;
   color: var(--stone-700);
   font-size: 0.8125rem;
@@ -491,4 +491,3 @@
   font-size: 0.875rem;
   line-height: 1.25rem;
 }
-

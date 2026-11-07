@@ -1,31 +1,31 @@
 /* CSS entry point. Keep this order aligned with the original cascade. */
-@import url("./globals.css?v=20261107-themes");
+@import url("./globals.css?v=20261107-warm");
 
 /* Pages */
-@import url("./pages/home.css?v=20261107-themes");
-@import url("./pages/blog.css?v=20261107-themes");
-@import url("./pages/projects.css?v=20261107-themes");
-@import url("./pages/games.css?v=20261107-themes");
-@import url("./pages/notes.css?v=20261107-themes");
-@import url("./pages/article.css?v=20261107-themes");
-@import url("./pages/astronomy.css?v=20261107-themes");
+@import url("./pages/home.css?v=20261107-warm");
+@import url("./pages/blog.css?v=20261107-warm");
+@import url("./pages/projects.css?v=20261107-warm");
+@import url("./pages/games.css?v=20261107-warm");
+@import url("./pages/notes.css?v=20261107-warm");
+@import url("./pages/article.css?v=20261107-warm");
+@import url("./pages/astronomy.css?v=20261107-warm");
 
 /* Shared components */
-@import url("./components/faq.css?v=20261107-themes");
+@import url("./components/faq.css?v=20261107-warm");
 
 /* More pages */
-@import url("./pages/about.css?v=20261107-themes");
-@import url("./pages/curiosities.css?v=20261107-themes");
-@import url("./pages/errors.css?v=20261107-themes");
+@import url("./pages/about.css?v=20261107-warm");
+@import url("./pages/curiosities.css?v=20261107-warm");
+@import url("./pages/errors.css?v=20261107-warm");
 
 /* Cross-page behavior and responsive overrides */
-@import url("./utilities/page-effects.css?v=20261107-themes");
-@import url("./components/footer.css?v=20261107-themes");
-@import url("./utilities/motion.css?v=20261107-themes");
-@import url("./utilities/keyframes.css?v=20261107-themes");
-@import url("./utilities/responsive.css?v=20261107-themes");
+@import url("./utilities/page-effects.css?v=20261107-warm");
+@import url("./components/footer.css?v=20261107-warm");
+@import url("./utilities/motion.css?v=20261107-warm");
+@import url("./utilities/keyframes.css?v=20261107-warm");
+@import url("./utilities/responsive.css?v=20261107-warm");
 
 /* Theme switch and dark themes (GTA VI, escuro). Must stay last. */
-@import url("./components/theme-switch.css?v=20261107-themes");
-@import url("./themes.css?v=20261107-themes");
-@import url("./themes-overrides.css?v=20261107-themes");
+@import url("./components/theme-switch.css?v=20261107-warm");
+@import url("./themes.css?v=20261107-warm");
+@import url("./themes-overrides.css?v=20261107-warm");

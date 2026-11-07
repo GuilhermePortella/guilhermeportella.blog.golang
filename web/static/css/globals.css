@@ -1,8 +1,10 @@
 :root {
   color-scheme: light;
-  --paper: #f8f1e7;
-  --peach: #f3c9a4;
-  --green: #b7d5cf;
+  --paper: linear-gradient(180deg, #f5ebdd 0%, #f8f1e7 55%, #fbf8f3 100%);
+  --peach: #f1d4b6;
+  --green: #c9dfd8;
+  --page-bg: radial-gradient(ellipse at top, #efe6d8 0, #f5eee4 40%, #faf6f0 100%);
+  --page-surface: linear-gradient(180deg, #fbf8f3 0%, #f8f3ec 100%);
   --card-border: #e6d8cb;
   --card-border-hover: #cfb6a4;
   --button-bg: #f4e7da;
@@ -49,8 +51,9 @@ html {
 
 body {
   margin: 0;
-  background: radial-gradient(circle at top, #e5e7eb 0, #f3f4f6 36%, #f9fafb 100%);
-  color: #111827;
+  background: var(--page-bg);
+  background-attachment: fixed;
+  color: #1c1917;
   font-family: var(--font-body);
   font-feature-settings: "liga" 1, "calt" 1;
   font-optical-sizing: auto;
@@ -152,8 +155,8 @@ h4 {
   position: sticky;
   top: 0;
   z-index: 40;
-  border-bottom: 1px solid rgba(229, 231, 235, 0.9);
-  background: rgba(248, 250, 252, 0.9);
+  border-bottom: 1px solid rgba(230, 216, 203, 0.75);
+  background: rgba(251, 247, 241, 0.85);
   color: #525252;
   font-family: var(--font-body);
   font-size: 14px;
