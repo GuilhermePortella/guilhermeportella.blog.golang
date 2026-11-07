@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "guilherme-portella-site-";
-const CACHE_NAME = `${CACHE_PREFIX}v20261102-consent-scroll`;
+const CACHE_NAME = `${CACHE_PREFIX}v20261107-themes`;
 const OFFLINE_PATH = "./erro/";
 const CSS_VERSION = "20261107-themes";
 const CSS_PATHS = [
