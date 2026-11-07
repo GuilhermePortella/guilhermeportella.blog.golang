@@ -24,3 +24,8 @@
 @import url("./utilities/motion.css?v=20261102-typography");
 @import url("./utilities/keyframes.css?v=20261102-typography");
 @import url("./utilities/responsive.css?v=20261102-typography");
+
+/* Theme switch and dark themes (GTA VI, escuro). Must stay last. */
+@import url("./components/theme-switch.css?v=20261107-themes");
+@import url("./themes.css?v=20261107-themes");
+@import url("./themes-overrides.css?v=20261107-themes");

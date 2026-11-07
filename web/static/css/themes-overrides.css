@@ -1,0 +1,947 @@
+/*
+ * Remapeamento dos temas escuros (GTA VI e Escuro).
+ *
+ * Cada regra troca uma cor literal do tema claro por um token definido em
+ * themes.css. Tudo e escopado em html[data-dark], portanto o tema claro nao
+ * e afetado. Ao criar um componente com cor fixa clara, adicione aqui a regra
+ * equivalente com tokens (ou, melhor, use tokens direto no componente).
+ */
+
+/* globals.css */
+html[data-dark] body {
+    color: var(--stone-900);
+}
+
+html[data-dark] .site-links a.active {
+    color: var(--stone-900);
+}
+
+/* pages/home.css */
+html[data-dark] .button--secondary {
+    background: var(--surface-glass);
+}
+
+html[data-dark] .home-tags li {
+    border: 1px solid var(--card-border);
+    background: var(--surface-glass);
+}
+
+html[data-dark] .quick-map {
+    background: var(--surface-glass);
+}
+
+html[data-dark] .hero-card {
+    background: var(--surface-glass);
+}
+
+html[data-dark] .shortcut-card {
+    background: var(--surface-glass);
+}
+
+html[data-dark] .shortcut-card:hover,
+html[data-dark] .shortcut-card:focus {
+    background: var(--surface-solid);
+}
+
+html[data-dark] .article-card__link {
+    background: var(--surface-glass);
+}
+
+/* pages/blog.css */
+html[data-dark] .blog-page {
+    background: var(--surface-solid);
+}
+
+html[data-dark] .blog-tags li {
+    border: 1px solid var(--card-border);
+    background: var(--surface-glass);
+}
+
+html[data-dark] .blog-guide-card {
+    background: var(--surface-glass);
+}
+
+html[data-dark] .blog-note-card,
+html[data-dark] .blog-browser__aside {
+    background: var(--surface-glass);
+}
+
+html[data-dark] .blog-search,
+html[data-dark] .blog-filter {
+    background: var(--surface-glass);
+}
+
+html[data-dark] .blog-search__form input {
+    background: var(--surface-solid);
+}
+
+html[data-dark] .blog-search__results {
+    background: var(--surface-solid);
+}
+
+html[data-dark] .blog-filter select {
+    background: var(--surface-solid);
+}
+
+html[data-dark] .blog-filter__button {
+    background: var(--surface-solid);
+}
+
+html[data-dark] .blog-card {
+    background: var(--surface-glass);
+}
+
+/* pages/projects.css */
+html[data-dark] .projects-page {
+    background: var(--surface-solid);
+}
+
+html[data-dark] .projects-controls {
+    background: var(--surface-glass);
+}
+
+html[data-dark] .projects-controls select {
+    background: var(--surface-solid);
+}
+
+html[data-dark] .project-card {
+    background: var(--surface-glass);
+}
+
+html[data-dark] .project-card__language {
+    border: 1px solid var(--card-border);
+}
+
+html[data-dark] .projects-pagination button {
+    background: var(--surface-solid);
+}
+
+/* pages/games.css */
+html[data-dark] .games-page,
+html[data-dark] .game-page {
+    background: var(--surface-solid);
+}
+
+html[data-dark] .game-card {
+    background: var(--surface-solid);
+}
+
+html[data-dark] .game-card__meta div {
+    background: var(--surface-soft);
+}
+
+html[data-dark] .game-rules {
+    background: var(--surface-glass);
+}
+
+/* pages/notes.css */
+html[data-dark] .notes-page {
+    background: var(--surface-solid);
+}
+
+html[data-dark] .notes-pin {
+    background: var(--surface-solid);
+}
+
+html[data-dark] .notes-pin.is-active span {
+    background: var(--surface-glass);
+}
+
+html[data-dark] .note-card {
+    background: var(--surface-glass);
+}
+
+html[data-dark] .notes-pagination button {
+    background: var(--surface-glass);
+}
+
+/* pages/article.css */
+html[data-dark] .article-page {
+    background: var(--surface-solid);
+}
+
+html[data-dark] .article-tags li {
+    border: 1px solid var(--card-border);
+    background: var(--surface-glass);
+}
+
+html[data-dark] .article-content-card {
+    background: var(--surface-glass);
+}
+
+html[data-dark] .article-side-card,
+html[data-dark] .article-toc {
+    background: var(--surface-glass);
+}
+
+html[data-dark] .prose h2 {
+    border-bottom: 1px solid var(--card-border);
+}
+
+html[data-dark] .prose a {
+    color: var(--prose-link);
+}
+
+html[data-dark] .prose code {
+    background: var(--surface-soft);
+    color: var(--stone-900);
+}
+
+html[data-dark] .prose table {
+    background: var(--surface-solid);
+}
+
+html[data-dark] .prose thead {
+    background: var(--surface-soft);
+}
+
+html[data-dark] .callout.info {
+    border-color: var(--stone-300);
+}
+
+/* components/faq.css */
+html[data-dark] .home-faq {
+    background: var(--surface-solid);
+}
+
+html[data-dark] .faq-card {
+    background: var(--surface-glass);
+}
+
+/* pages/about.css */
+html[data-dark] .about-page {
+    color: var(--stone-900);
+}
+
+html[data-dark] .about-hero {
+    background: var(--paper);
+}
+
+html[data-dark] .about-hero__orb--warm {
+    background: var(--peach);
+}
+
+html[data-dark] .about-hero__orb--cool {
+    background: var(--green);
+}
+
+html[data-dark] .about-eyebrow {
+    color: var(--stone-500);
+}
+
+html[data-dark] .about-eyebrow--hero {
+    color: var(--stone-600);
+}
+
+html[data-dark] #about-title,
+html[data-dark] .about-section h2 {
+    color: var(--stone-900);
+}
+
+html[data-dark] .about-hero__lead {
+    color: var(--stone-700);
+}
+
+html[data-dark] .about-hero__note {
+    color: var(--stone-600);
+}
+
+html[data-dark] .about-pill {
+    color: var(--stone-900);
+}
+
+html[data-dark] .about-pill--primary {
+    border: 1px solid var(--button-border);
+    background: var(--button-bg);
+}
+
+html[data-dark] .about-pill--primary:hover,
+html[data-dark] .about-pill--primary:focus {
+    border-color: var(--button-border-hover);
+    background: var(--button-bg-hover);
+}
+
+html[data-dark] .about-pill--secondary,
+html[data-dark] .about-pill--email {
+    border: 1px solid var(--stone-300);
+    background: var(--surface-glass);
+}
+
+html[data-dark] .about-pill--secondary:hover,
+html[data-dark] .about-pill--secondary:focus,
+html[data-dark] .about-pill--email:hover,
+html[data-dark] .about-pill--email:focus {
+    border-color: var(--stone-400);
+}
+
+html[data-dark] .about-pill--email {
+    background: var(--surface-solid);
+}
+
+html[data-dark] .about-profile-card {
+    border: 1px solid var(--card-border);
+    background: var(--surface-glass);
+}
+
+html[data-dark] .about-profile-card h2 {
+    color: var(--stone-900);
+}
+
+html[data-dark] .about-profile-card p {
+    color: var(--stone-600);
+}
+
+html[data-dark] .about-note-card {
+    border: 1px solid var(--card-border);
+    background: var(--surface-glass);
+}
+
+html[data-dark] .about-note-card p:not(.about-eyebrow) {
+    color: var(--stone-700);
+}
+
+html[data-dark] .about-section__header p:not(.about-eyebrow),
+html[data-dark] .about-ritual-card__copy p:not(.about-eyebrow),
+html[data-dark] .about-contact-card>p:not(.about-eyebrow) {
+    color: var(--stone-600);
+}
+
+html[data-dark] .about-section__link {
+    color: var(--stone-900);
+}
+
+html[data-dark] .about-pillar-card {
+    border: 1px solid var(--card-border);
+    background: var(--surface-glass);
+}
+
+html[data-dark] .about-pillar-card h3 {
+    color: var(--stone-900);
+}
+
+html[data-dark] .about-pillar-card p {
+    color: var(--stone-600);
+}
+
+html[data-dark] .about-ritual-card {
+    border: 1px solid var(--card-border);
+    background: var(--surface-glass);
+}
+
+html[data-dark] .about-ritual-list {
+    color: var(--stone-700);
+}
+
+html[data-dark] .about-contact-card {
+    border: 1px solid var(--card-border);
+    background: var(--surface-glass);
+}
+
+/* pages/curiosities.css */
+html[data-dark] .curiosity-hero {
+    background: var(--paper);
+}
+
+html[data-dark] .curiosity-hero__blob--warm {
+    background: var(--peach);
+}
+
+html[data-dark] .curiosity-hero__blob--cool {
+    background: var(--green);
+}
+
+html[data-dark] .curiosity-eyebrow {
+    color: var(--stone-500);
+}
+
+html[data-dark] .curiosity-eyebrow--hero {
+    color: var(--stone-600);
+}
+
+html[data-dark] #curiosity-title {
+    color: var(--stone-900);
+}
+
+html[data-dark] .curiosity-hero__lead {
+    color: var(--stone-700);
+}
+
+html[data-dark] .curiosity-tags {
+    color: var(--stone-600);
+}
+
+html[data-dark] .curiosity-tags li {
+    border: 1px solid var(--card-border);
+    background: var(--surface-glass);
+}
+
+html[data-dark] .curiosity-map-card {
+    border: 1px solid var(--card-border);
+    background: var(--surface-glass);
+}
+
+html[data-dark] .curiosity-map-card h2 {
+    color: var(--stone-900);
+}
+
+html[data-dark] .curiosity-map-card>p:not(.curiosity-eyebrow) {
+    color: var(--stone-600);
+}
+
+html[data-dark] .curiosity-map-card__item h3 {
+    color: var(--stone-900);
+}
+
+html[data-dark] .curiosity-map-card__item p {
+    color: var(--stone-600);
+}
+
+html[data-dark] .curiosity-map-card__item a,
+html[data-dark] .curiosity-small-card a,
+html[data-dark] .curiosity-section__link {
+    color: var(--stone-900);
+}
+
+html[data-dark] .curiosity-small-card {
+    border: 1px solid var(--card-border);
+    background: var(--surface-glass);
+}
+
+html[data-dark] .curiosity-small-card>p:not(.curiosity-eyebrow) {
+    color: var(--stone-700);
+}
+
+html[data-dark] .curiosity-section__header h2,
+html[data-dark] .curiosity-music__header h2 {
+    color: var(--stone-900);
+}
+
+html[data-dark] .curiosity-section__header p:not(.curiosity-eyebrow),
+html[data-dark] .curiosity-music__header p:not(.curiosity-eyebrow) {
+    color: var(--stone-600);
+}
+
+html[data-dark] .curiosity-shortcut-card {
+    border: 1px solid var(--card-border);
+    background: var(--surface-glass);
+}
+
+html[data-dark] .curiosity-shortcut-card:hover,
+html[data-dark] .curiosity-shortcut-card:focus {
+    border-color: var(--card-border-hover);
+}
+
+html[data-dark] .curiosity-shortcut-card h3 {
+    color: var(--stone-900);
+}
+
+html[data-dark] .curiosity-shortcut-card p {
+    color: var(--stone-600);
+}
+
+html[data-dark] .curiosity-shortcut-card>span {
+    color: var(--stone-900);
+}
+
+html[data-dark] .curiosity-api-card {
+    border: 1px solid var(--teal-border);
+    background: var(--surface-solid);
+}
+
+html[data-dark] .curiosity-api-card__copy .curiosity-eyebrow {
+    color: var(--teal-ink-soft);
+}
+
+html[data-dark] .curiosity-api-card h3 {
+    color: var(--teal-ink);
+}
+
+html[data-dark] .curiosity-api-card p:not(.curiosity-eyebrow) {
+    color: var(--stone-600);
+}
+
+html[data-dark] .curiosity-api-card code {
+    border: 1px solid var(--teal-border);
+    background: var(--surface-soft);
+    color: var(--teal-ink);
+}
+
+html[data-dark] .curiosity-api-card__meta li {
+    border: 1px solid var(--teal-border);
+    background: var(--surface-soft);
+    color: var(--teal-ink-soft);
+}
+
+html[data-dark] .curiosity-collection-card--filmes {
+    background: var(--surface-soft);
+}
+
+html[data-dark] .curiosity-collection-card--series {
+    background: var(--surface-soft);
+}
+
+html[data-dark] .curiosity-collection-card--jogos {
+    background: var(--surface-soft);
+}
+
+html[data-dark] .curiosity-collection-card--livros {
+    background: var(--surface-soft);
+}
+
+html[data-dark] .curiosity-collection-card--tecnologia {
+    background: var(--surface-soft);
+}
+
+html[data-dark] .curiosity-collection-card h3 {
+    color: var(--stone-900);
+}
+
+html[data-dark] .curiosity-collection-card>p {
+    color: var(--stone-600);
+}
+
+html[data-dark] .curiosity-collection-card ul {
+    color: var(--stone-700);
+}
+
+html[data-dark] .rick-api-page {
+    background: var(--paper);
+}
+
+html[data-dark] .rick-api-hero {
+    border-bottom: 1px solid var(--card-border);
+    background: var(--surface-soft);
+}
+
+html[data-dark] .rick-api-back {
+    color: var(--stone-600);
+}
+
+html[data-dark] #rick-api-title {
+    color: var(--stone-900);
+}
+
+html[data-dark] .rick-api-hero__lead {
+    color: var(--stone-700);
+}
+
+html[data-dark] .rick-api-hero__panel span {
+    background: var(--surface-soft);
+    color: var(--teal-ink);
+}
+
+html[data-dark] .curiosity-api__console {
+    background: var(--surface-soft);
+}
+
+html[data-dark] .curiosity-api__stats article {
+    border: 1px solid var(--card-border);
+    background: var(--paper);
+}
+
+html[data-dark] .curiosity-api__stats strong {
+    color: var(--teal-ink);
+}
+
+html[data-dark] .curiosity-api__stats span {
+    color: var(--stone-600);
+}
+
+html[data-dark] .rick-field span {
+    color: var(--stone-600);
+}
+
+html[data-dark] .rick-field input,
+html[data-dark] .rick-field select {
+    border: 1px solid var(--button-border);
+    background: var(--surface-solid);
+    color: var(--stone-900);
+}
+
+html[data-dark] .rick-button--ghost,
+html[data-dark] .rick-pagination button {
+    border-color: var(--button-border);
+    background: var(--button-bg);
+    color: var(--stone-900);
+}
+
+html[data-dark] .rick-button--ghost:hover,
+html[data-dark] .rick-button--ghost:focus,
+html[data-dark] .rick-pagination button:hover,
+html[data-dark] .rick-pagination button:focus {
+    border-color: var(--button-border-hover);
+    background: var(--button-bg-hover);
+}
+
+html[data-dark] .rick-pagination span {
+    color: var(--stone-600);
+}
+
+html[data-dark] .curiosity-api__message,
+html[data-dark] .curiosity-api__noscript {
+    color: var(--stone-600);
+}
+
+html[data-dark] .curiosity-api__message.is-error {
+    color: var(--danger-text);
+}
+
+html[data-dark] .curiosity-api__message.is-empty {
+    color: var(--warn-text);
+}
+
+html[data-dark] .rick-character,
+html[data-dark] .rick-empty {
+    border: 1px solid var(--card-border);
+    background: var(--surface-soft);
+}
+
+html[data-dark] .rick-character__media {
+    background: var(--surface-soft);
+}
+
+html[data-dark] .rick-status--alive {
+    background: var(--surface-soft);
+    color: var(--ok-text);
+}
+
+html[data-dark] .rick-status--dead {
+    background: var(--surface-soft);
+    color: var(--danger-text);
+}
+
+html[data-dark] .rick-status--unknown {
+    background: var(--paper);
+    color: var(--warn-text);
+}
+
+html[data-dark] .rick-character h3 {
+    color: var(--stone-900);
+}
+
+html[data-dark] .rick-character p {
+    color: var(--stone-600);
+}
+
+html[data-dark] .rick-character__meta dt {
+    color: var(--stone-500);
+}
+
+html[data-dark] .rick-character__meta dd {
+    color: var(--stone-800);
+}
+
+html[data-dark] .rick-character__link {
+    color: var(--teal-ink);
+}
+
+html[data-dark] .rick-empty {
+    color: var(--stone-600);
+}
+
+html[data-dark] .rick-app-root,
+html[data-dark] .rick-app {
+    color: var(--stone-900);
+}
+
+html[data-dark] .rick-boot h1 {
+    color: var(--teal-ink);
+}
+
+html[data-dark] .rick-boot p:not(.curiosity-eyebrow),
+html[data-dark] .rick-noscript {
+    color: var(--stone-600);
+}
+
+html[data-dark] .rick-noscript {
+    background: var(--surface-soft);
+}
+
+html[data-dark] .rick-hero {
+    border-bottom: 1px solid var(--teal-border);
+}
+
+html[data-dark] .rick-back {
+    color: var(--teal-ink-soft);
+}
+
+html[data-dark] .rick-back:hover,
+html[data-dark] .rick-back:focus {
+    color: var(--teal-ink);
+}
+
+html[data-dark] #rick-title,
+html[data-dark] .rick-detail-card h1 {
+    color: var(--teal-ink);
+}
+
+html[data-dark] .rick-hero__lead {
+    color: var(--stone-700);
+}
+
+html[data-dark] .rick-browser__header h2,
+html[data-dark] .rick-related-section__header h2 {
+    color: var(--teal-ink);
+}
+
+html[data-dark] .rick-browser__header p:not(.curiosity-eyebrow),
+html[data-dark] .rick-related-section__header p:not(.curiosity-eyebrow) {
+    color: var(--stone-600);
+}
+
+html[data-dark] .rick-doc-link {
+    border: 1px solid var(--teal-border);
+    background: var(--surface-solid);
+    color: var(--teal-ink);
+}
+
+html[data-dark] .rick-toolbar {
+    border: 1px solid var(--teal-border);
+    background: var(--surface-glass);
+}
+
+html[data-dark] .rick-resource-tabs button,
+html[data-dark] .rick-tabs button {
+    border: 1px solid var(--teal-border);
+    background: var(--surface-solid);
+    color: var(--teal-ink-soft);
+}
+
+html[data-dark] .rick-app .rick-field span {
+    color: var(--teal-ink-soft);
+}
+
+html[data-dark] .rick-app .rick-field input {
+    border-color: var(--teal-border);
+    background: var(--surface-solid);
+}
+
+html[data-dark] .rick-app .rick-button--ghost,
+html[data-dark] .rick-app .rick-pagination button {
+    border-color: var(--teal-border);
+    background: var(--surface-solid);
+    color: var(--teal-ink);
+}
+
+html[data-dark] .rick-app .rick-button--ghost:hover,
+html[data-dark] .rick-app .rick-button--ghost:focus,
+html[data-dark] .rick-app .rick-pagination button:hover,
+html[data-dark] .rick-app .rick-pagination button:focus {
+    background: var(--surface-soft);
+}
+
+html[data-dark] .rick-status-line {
+    color: var(--stone-600);
+}
+
+html[data-dark] .rick-result-card,
+html[data-dark] .rick-person-card {
+    border: 1px solid var(--teal-border);
+    background: var(--surface-solid);
+    color: var(--stone-900);
+}
+
+html[data-dark] .rick-result-card:hover,
+html[data-dark] .rick-result-card:focus,
+html[data-dark] .rick-person-card:hover,
+html[data-dark] .rick-person-card:focus {
+    color: var(--stone-900);
+}
+
+html[data-dark] .rick-result-card__media {
+    border-bottom: 1px solid var(--teal-border);
+}
+
+html[data-dark] .rick-result-card__type {
+    border: 1px solid var(--teal-border);
+    background: var(--surface-soft);
+    color: var(--teal-ink-soft);
+}
+
+html[data-dark] .rick-result-card h3,
+html[data-dark] .rick-person-card h3 {
+    color: var(--stone-900);
+}
+
+html[data-dark] .rick-result-card dt,
+html[data-dark] .rick-info-grid dt {
+    color: var(--stone-500);
+}
+
+html[data-dark] .rick-result-card dd {
+    color: var(--stone-800);
+}
+
+html[data-dark] .rick-info-grid dd {
+    color: var(--stone-800);
+}
+
+html[data-dark] .rick-state {
+    border: 1px solid var(--teal-border);
+    background: var(--surface-solid);
+}
+
+html[data-dark] .rick-state h2 {
+    color: var(--teal-ink);
+}
+
+html[data-dark] .rick-state p {
+    color: var(--stone-600);
+}
+
+html[data-dark] .rick-state--error {
+    border-color: var(--stone-300);
+    background: var(--surface-soft);
+}
+
+html[data-dark] .rick-state--error h1,
+html[data-dark] .rick-state--error h2,
+html[data-dark] .rick-state--error p {
+    color: var(--danger-text);
+}
+
+html[data-dark] .rick-detail-card {
+    border: 1px solid var(--teal-border);
+    background: var(--surface-solid);
+}
+
+html[data-dark] .rick-detail-card--loading {
+    color: var(--stone-600);
+}
+
+html[data-dark] .rick-character-detail__media {
+    background: var(--surface-soft);
+}
+
+html[data-dark] .rick-info-grid div {
+    border: 1px solid var(--teal-border);
+    background: var(--surface-soft);
+}
+
+html[data-dark] .rick-episode-list article {
+    border: 1px solid var(--teal-border);
+    background: var(--surface-soft);
+}
+
+html[data-dark] .rick-episode-list span {
+    color: var(--teal-ink-soft);
+}
+
+html[data-dark] .rick-episode-list h2 {
+    color: var(--stone-900);
+}
+
+html[data-dark] .rick-episode-list p,
+html[data-dark] .rick-related-status {
+    color: var(--stone-600);
+}
+
+html[data-dark] .rick-related-status--error {
+    color: var(--danger-text);
+}
+
+html[data-dark] .rick-wiki-panel {
+    border: 1px solid var(--teal-border);
+    background: var(--surface-soft);
+}
+
+html[data-dark] .rick-wiki-panel h2 {
+    color: var(--teal-ink);
+}
+
+html[data-dark] .rick-wiki-panel__translation {
+    color: var(--teal-ink-soft);
+}
+
+html[data-dark] .rick-wiki-panel__text {
+    color: var(--stone-700);
+}
+
+html[data-dark] .rick-wiki-panel__source {
+    color: var(--teal-ink);
+}
+
+html[data-dark] .rick-person-card p {
+    color: var(--stone-600);
+}
+
+html[data-dark] .curiosity-music__wrapper {
+    border: 1px solid var(--card-border);
+    background: var(--surface-glass);
+}
+
+html[data-dark] .curiosity-song-card {
+    border: 1px solid var(--card-border);
+    background: var(--surface-glass);
+}
+
+html[data-dark] .curiosity-song-card:hover {
+    border-color: var(--card-border);
+}
+
+html[data-dark] .curiosity-spotify-frame {
+    border: 1px solid var(--card-border);
+    background: var(--surface-solid);
+}
+
+html[data-dark] .curiosity-song-card h3 {
+    color: var(--stone-900);
+}
+
+html[data-dark] .curiosity-song-card__album {
+    color: var(--stone-500);
+}
+
+html[data-dark] .curiosity-song-card__description {
+    color: var(--stone-600);
+}
+
+html[data-dark] .curiosity-playlist-card {
+    border: 1px solid var(--card-border);
+    background: var(--surface-solid);
+}
+
+html[data-dark] .curiosity-music__fallback {
+    color: var(--stone-600);
+}
+
+/* pages/errors.css */
+html[data-dark] .not-found-page {
+    background: var(--paper);
+}
+
+html[data-dark] .error-page {
+    background: var(--paper);
+}
+
+html[data-dark] .not-found-hero__lead code {
+    background: var(--surface-glass);
+}
+
+html[data-dark] .not-found-gif__screen {
+    border: 1px solid var(--card-border);
+}
+
+html[data-dark] .not-found-gif__code {
+    color: var(--stone-900);
+}
+
+html[data-dark] .not-found-gif__line {
+    background: var(--stone-300);
+}
+
+html[data-dark] .error-console .not-found-gif__screen {
+    border-color: var(--teal-border);
+}
+
+/* components/consent.css */
+html[data-dark] .consent-panel {
+    background: var(--surface-solid);
+    color: var(--stone-800);
+}
+
+html[data-dark] .consent-actions button,
+html[data-dark] .external-media button {
+    background: var(--surface-solid);
+    color: var(--stone-800);
+}

@@ -1,0 +1,498 @@
+/*
+ * Temas do site.
+ *
+ * - light (padrao): nenhum token e sobrescrito; o visual original permanece.
+ * - gta:  paleta "por do sol de Vice City" (roxo profundo, rosa e laranja neon).
+ * - dark: paleta neutra escura, de baixo brilho, para leitura prolongada.
+ *
+ * O tema e escolhido por html[data-theme]; html[data-dark] marca os dois temas
+ * escuros e recebe os remapeamentos de themes-overrides.css.
+ * A escala --stone-* e invertida nos temas escuros: 900 = texto mais forte
+ * (claro), 200 = borda sutil (escura).
+ */
+
+/* ---------- Tokens compartilhados dos temas escuros ---------- */
+html[data-dark] {
+    color-scheme: dark;
+    --on-strong: var(--surface-solid);
+    --shadow-route: 0 14px 35px rgb(0 0 0 / 35%);
+    --shadow-map: 0 18px 45px rgb(0 0 0 / 40%);
+    --shadow-article-hover: 0 18px 40px rgb(0 0 0 / 45%);
+    --shadow-faq-open: 0 14px 35px rgb(0 0 0 / 45%);
+}
+
+/* ---------- Escuro ---------- */
+html[data-theme="dark"] {
+    --paper: #14161b;
+    --peach: #3b2f1f;
+    --green: #1d3a36;
+    --card-border: #2b303a;
+    --card-border-hover: #454c5b;
+    --button-bg: #232833;
+    --button-bg-hover: #2c3240;
+    --button-border: #3a4150;
+    --button-border-hover: #50596b;
+    --map-dot: #e0a46f;
+    --stone-900: #eceef2;
+    --stone-800: #dde0e6;
+    --stone-700: #c8ccd4;
+    --stone-600: #b0b6c1;
+    --stone-500: #98a0ad;
+    --stone-400: #7a8291;
+    --stone-300: #434a58;
+    --stone-200: #2b303a;
+    --neutral-500: #98a0ad;
+    --muted: #a3aab6;
+    --link: #8ab4f8;
+    --link-hover: #aecbfa;
+    --accent: #f0b429;
+    --surface-solid: #101216;
+    --surface-soft: #1a1d24;
+    --surface-glass: rgb(26 29 36 / 82%);
+    --teal-ink: #9fd8cc;
+    --teal-ink-soft: #84c4b7;
+    --teal-border: #2f4a45;
+    --danger-text: #ff9bb0;
+    --warn-text: #f5cf7a;
+    --ok-text: #86e0ab;
+    --prose-link: #8ab4f8;
+    --page-bg: #0c0d10;
+    --page-bg-soft: #14161b;
+    --nav-bg: rgb(16 18 22 / 88%);
+    --nav-border: #2b303a;
+    --nav-text: #b0b6c1;
+    --nav-active-bg: #3a2f16;
+    --nav-active-border: #f0b429;
+    --code-bg: #232833;
+    --shimmer: linear-gradient(90deg, rgb(255 255 255 / 4%) 25%, rgb(255 255 255 / 10%) 50%, rgb(255 255 255 / 4%) 75%);
+}
+
+/* ---------- GTA VI ---------- */
+html[data-theme="gta"] {
+    --paper: linear-gradient(180deg, #2a0f4d 0%, #4a145a 58%, #7b1f5c 100%);
+    --peach: #ff6a3d;
+    --green: #19d3da;
+    --card-border: #5b2a86;
+    --card-border-hover: #ff4fa3;
+    --button-bg: #ff3d97;
+    --button-bg-hover: #ff5fae;
+    --button-border: #ff7ab8;
+    --button-border-hover: #ffc2de;
+    --map-dot: #19d3da;
+    --stone-900: #fff3fb;
+    --stone-800: #ffe4f4;
+    --stone-700: #f3d2ea;
+    --stone-600: #e0b9d8;
+    --stone-500: #e0b9d8;
+    --stone-400: #b98cb6;
+    --stone-300: #6a3a96;
+    --stone-200: #4a2470;
+    --neutral-500: #e0b9d8;
+    --muted: #e0b9d8;
+    --link: #3fe0e6;
+    --link-hover: #8af2f5;
+    --accent: #ff8a3d;
+    --surface-solid: #1a0a33;
+    --surface-soft: #2a1049;
+    --surface-glass: rgb(36 14 66 / 80%);
+    --teal-ink: #7df0f3;
+    --teal-ink-soft: #52dde2;
+    --teal-border: #1f6f86;
+    --danger-text: #ff8fb7;
+    --warn-text: #ffc36b;
+    --ok-text: #7dffc0;
+    --prose-link: #3fe0e6;
+    --page-bg: linear-gradient(180deg, #14062b 0%, #240a45 45%, #3c0f52 78%, #5a1559 100%);
+    --page-bg-soft: #240a45;
+    --nav-bg: rgb(26 10 51 / 88%);
+    --nav-border: #5b2a86;
+    --nav-text: #e0b9d8;
+    --nav-active-bg: linear-gradient(90deg, #ff3d97, #ff8a3d);
+    --nav-active-border: #ffb36b;
+    --code-bg: #3a1666;
+    --shimmer: linear-gradient(90deg, rgb(255 79 163 / 6%) 25%, rgb(25 211 218 / 14%) 50%, rgb(255 79 163 / 6%) 75%);
+}
+
+/* ---------- Estrutura global ---------- */
+html[data-dark] body {
+    background: var(--page-bg);
+    background-attachment: fixed;
+    color: var(--stone-900);
+}
+
+html[data-dark] .site-nav {
+    border-bottom-color: var(--nav-border);
+    background: var(--nav-bg);
+    color: var(--nav-text);
+}
+
+html[data-dark] .site-brand,
+html[data-dark] .site-brand:hover {
+    color: var(--stone-900);
+}
+
+html[data-dark] .site-links a:hover {
+    border-color: var(--card-border-hover);
+    background-color: var(--surface-glass);
+    color: var(--stone-900);
+}
+
+html[data-dark] .site-links a.active {
+    border-color: var(--nav-active-border);
+    background: var(--nav-active-bg);
+    box-shadow: none;
+    color: var(--stone-900);
+}
+
+html[data-theme="gta"] .site-links a.active {
+    color: #14062b;
+    font-weight: 700;
+}
+
+html[data-dark] .skip-link {
+    background: var(--stone-900);
+    color: var(--on-strong);
+}
+
+html[data-dark] a:focus-visible,
+html[data-dark] button:focus-visible,
+html[data-dark] summary:focus-visible {
+    outline-color: var(--link);
+}
+
+html[data-dark] ::selection {
+    background: var(--card-border-hover);
+    color: var(--stone-900);
+}
+
+/* Botoes/estados "ativos" que usavam stone-900 como fundo e branco como texto. */
+html[data-dark] .blog-filter__button.is-active,
+html[data-dark] .notes-pin.is-active,
+html[data-dark] .notes-pagination button.is-active,
+html[data-dark] .projects-pagination button.is-active {
+    background: var(--stone-900);
+    border-color: var(--stone-900);
+}
+
+html[data-dark] .blog-search__form button:hover,
+html[data-dark] .blog-search__form button:focus,
+html[data-dark] .blog-filter__button.is-active,
+html[data-dark] .notes-pin.is-active,
+html[data-dark] .notes-pagination button.is-active,
+html[data-dark] .projects-pagination button.is-active {
+    color: var(--on-strong);
+}
+
+html[data-dark] .notes-pin.is-active span {
+    background: rgb(0 0 0 / 20%);
+}
+
+html[data-dark] .blog-search__form input:focus,
+html[data-dark] .blog-filter select:focus,
+html[data-dark] .projects-controls select:focus {
+    box-shadow: 0 0 0 3px rgb(138 180 248 / 35%);
+}
+
+html[data-theme="gta"] .blog-search__form input:focus,
+html[data-theme="gta"] .blog-filter select:focus,
+html[data-theme="gta"] .projects-controls select:focus {
+    box-shadow: 0 0 0 3px rgb(255 79 163 / 45%);
+}
+
+/* ---------- Botoes e pilulas ---------- */
+html[data-dark] .button,
+html[data-dark] .about-pill {
+    color: var(--stone-900);
+}
+
+html[data-theme="gta"] .button--primary,
+html[data-theme="gta"] .about-pill--primary {
+    color: #14062b;
+    box-shadow: 0 10px 28px rgb(255 61 151 / 35%);
+}
+
+/* ---------- Fundos em gradiente claro que precisam de versao escura ---------- */
+html[data-dark] .about-page {
+    background: var(--page-bg);
+    color: var(--stone-900);
+}
+
+html[data-dark] .about-hero,
+html[data-dark] .curiosity-hero,
+html[data-dark] .rick-api-page,
+html[data-dark] .not-found-page,
+html[data-dark] .error-page {
+    background: var(--paper);
+}
+
+html[data-dark] .about-hero__orb--warm,
+html[data-dark] .curiosity-hero__blob--warm {
+    background: var(--peach);
+}
+
+html[data-dark] .about-hero__orb--cool,
+html[data-dark] .curiosity-hero__blob--cool {
+    background: var(--green);
+}
+
+html[data-dark] .rick-api-hero,
+html[data-dark] .rick-hero,
+html[data-dark] .rick-app-root,
+html[data-dark] .rick-app,
+html[data-dark] .games-hero,
+html[data-dark] .game-hero {
+    background: var(--page-bg-soft);
+}
+
+html[data-theme="gta"] .games-hero,
+html[data-theme="gta"] .game-hero,
+html[data-theme="gta"] .rick-hero {
+    background: linear-gradient(135deg, #2a0f4d 0%, #4a145a 55%, #6d1c5f 100%);
+}
+
+html[data-dark] .notes-board {
+    background:
+        radial-gradient(circle at 1px 1px, rgb(255 255 255 / 9%) 1px, transparent 0) 0 0 / 24px 24px,
+        var(--page-bg-soft);
+}
+
+html[data-dark] .not-found-gif__screen,
+html[data-dark] .error-console .not-found-gif__screen {
+    border-color: var(--card-border);
+    background:
+        linear-gradient(180deg, var(--surface-soft), var(--surface-solid)),
+        repeating-linear-gradient(0deg, rgb(255 255 255 / 4%) 0 1px, transparent 1px 12px);
+}
+
+html[data-dark] .not-found-gif__code,
+html[data-dark] .error-console .not-found-gif__code {
+    color: var(--stone-900);
+}
+
+html[data-dark] .not-found-gif__line {
+    background: var(--stone-300);
+}
+
+html[data-dark] .not-found-gif__shadow {
+    background: rgb(0 0 0 / 35%);
+}
+
+/* ---------- Artigos (prose) ---------- */
+html[data-dark] .prose a {
+    color: var(--prose-link);
+}
+
+html[data-dark] .prose blockquote {
+    background: linear-gradient(90deg, var(--surface-soft), transparent);
+}
+
+html[data-dark] .prose blockquote::before {
+    color: var(--stone-400);
+}
+
+html[data-dark] .prose code {
+    background: var(--code-bg);
+    color: var(--stone-900);
+}
+
+html[data-dark] .prose pre code {
+    background: transparent;
+    color: inherit;
+}
+
+html[data-dark] .prose pre {
+    border-color: var(--card-border);
+}
+
+html[data-dark] .prose thead {
+    background: var(--surface-soft);
+}
+
+html[data-dark] .article-toc a.is-active,
+html[data-dark] .article-toc a:hover,
+html[data-dark] .article-toc a:focus,
+html[data-dark] .project-card__links a:hover,
+html[data-dark] .project-card__links a:focus {
+    background: var(--surface-soft);
+}
+
+html[data-dark] .project-card__language {
+    border-color: var(--card-border);
+    background: var(--surface-soft);
+}
+
+html[data-dark] .callout.info {
+    border-color: #27507f;
+    background: rgb(59 130 246 / 14%);
+    color: #bcd6ff;
+}
+
+html[data-dark] .callout.warn {
+    border-color: #7a5a14;
+    background: rgb(245 158 11 / 14%);
+    color: #f7d58a;
+}
+
+html[data-dark] .callout.success {
+    border-color: #226a4f;
+    background: rgb(16 185 129 / 14%);
+    color: #9be8c8;
+}
+
+/* ---------- Estados de carregamento (shimmer) ---------- */
+html[data-dark] .rick-character--skeleton,
+html[data-dark] .rick-result-card--skeleton,
+html[data-dark] .curiosity-spotify-frame [data-spotify-embed],
+html[data-dark] .curiosity-playlist-card [data-spotify-embed] {
+    background: var(--shimmer), var(--surface-soft);
+    background-size: 200% 100%, auto;
+}
+
+/* ---------- Painel de consentimento ---------- */
+html[data-dark] .consent-panel {
+    border-color: var(--card-border-hover);
+    background: var(--surface-solid);
+    color: var(--stone-800);
+    box-shadow: 0 4px 24px rgb(0 0 0 / 55%);
+}
+
+html[data-dark] .consent-panel a {
+    color: var(--link);
+}
+
+html[data-dark] .consent-actions button,
+html[data-dark] .external-media button {
+    border-color: var(--stone-500);
+    background: var(--surface-soft);
+    color: var(--stone-900);
+}
+
+/* ---------- Jogos: cartoes claros dentro da area de jogo ---------- */
+/*
+ * Estes contêineres têm fundo claro fixo e textos em var(--stone-*). Nos temas
+ * escuros restauramos a escala clara original só dentro deles, evitando
+ * texto claro sobre fundo claro.
+ */
+html[data-dark] .snake-start-panel>div,
+html[data-dark] .snake-panel,
+html[data-dark] .solitaire-overlay__card {
+    --stone-900: #1c1917;
+    --stone-800: #292524;
+    --stone-700: #44403c;
+    --stone-600: #57534e;
+    --stone-500: #78716c;
+    --stone-400: #a8a29e;
+    --stone-300: #d6d3d1;
+    --stone-200: #e7e5e4;
+}
+
+/* Cores de destaque dos cartoes de jogo ficam mais legiveis sobre fundo escuro. */
+html[data-dark] .game-card__status {
+    background: color-mix(in srgb, var(--game-accent) 22%, var(--surface-solid));
+    color: color-mix(in srgb, var(--game-accent-soft) 85%, white);
+}
+
+html[data-dark] .game-card {
+    border-color: var(--card-border);
+    border-top-color: var(--game-accent);
+}
+
+html[data-dark] .game-hero {
+    background: linear-gradient(135deg, color-mix(in srgb, var(--game-accent) 28%, var(--surface-solid)), var(--page-bg-soft));
+}
+
+/* ---------- Curiosidades: cartoes com tinta verde-azulada ---------- */
+html[data-dark] .curiosity-collection-card {
+    box-shadow: var(--shadow-route);
+}
+
+html[data-dark] .curiosity-api-card__link {
+    border-color: var(--teal-border);
+    background: var(--teal-ink-soft);
+    color: var(--surface-solid);
+}
+
+html[data-dark] .curiosity-api-card__link:hover,
+html[data-dark] .curiosity-api-card__link:focus {
+    background: var(--teal-ink);
+    color: var(--surface-solid);
+}
+
+html[data-dark] .rick-doc-link {
+    color: var(--stone-900);
+}
+
+html[data-dark] .rick-toolbar,
+html[data-dark] .rick-resource-tabs button,
+html[data-dark] .rick-tabs button {
+    border-color: var(--teal-border);
+}
+
+html[data-dark] .rick-app .rick-button--ghost,
+html[data-dark] .rick-app .rick-pagination button,
+html[data-dark] .rick-button--ghost,
+html[data-dark] .rick-pagination button {
+    border-color: var(--teal-border);
+    background: var(--surface-soft);
+    color: var(--stone-900);
+}
+
+html[data-dark] .rick-field input,
+html[data-dark] .rick-field select,
+html[data-dark] .rick-app .rick-field input {
+    border-color: var(--teal-border);
+    background: var(--surface-solid);
+    color: var(--stone-900);
+}
+
+html[data-dark] .rick-status--alive {
+    border-color: #2f7a57;
+    background: rgb(34 197 94 / 14%);
+    color: var(--ok-text);
+}
+
+html[data-dark] .rick-status--dead {
+    border-color: #8a3f4a;
+    background: rgb(244 63 94 / 14%);
+    color: var(--danger-text);
+}
+
+html[data-dark] .rick-status--unknown {
+    border-color: #8a6f2f;
+    background: rgb(245 158 11 / 14%);
+    color: var(--warn-text);
+}
+
+html[data-dark] .rick-state--error {
+    border-color: #8a3f4a;
+    background: rgb(244 63 94 / 10%);
+}
+
+/* ---------- Hub de jogos: painel arcade ---------- */
+html[data-dark] .games-arcade {
+    border-color: var(--card-border);
+    background: var(--surface-solid);
+}
+
+html[data-dark] .games-arcade__screen {
+    border-color: var(--card-border);
+    background: var(--surface-soft);
+}
+
+html[data-dark] .games-arcade__screen span:nth-child(2),
+html[data-dark] .games-arcade__screen span:nth-child(6) {
+    background: rgb(251 146 60 / 55%);
+}
+
+html[data-dark] .games-arcade__screen span:nth-child(4),
+html[data-dark] .games-arcade__screen span:nth-child(8) {
+    background: rgb(244 63 94 / 50%);
+}
+
+html[data-dark] .games-arcade__screen span {
+    background: rgb(20 184 166 / 45%);
+}
+
+html[data-theme="gta"] .games-arcade__screen {
+    box-shadow: 0 0 24px rgb(255 61 151 / 28%);
+}
