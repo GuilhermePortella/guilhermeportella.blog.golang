@@ -1,26 +1,31 @@
 /* CSS entry point. Keep this order aligned with the original cascade. */
-@import url("./globals.css?v=20261102-typography");
+@import url("./globals.css?v=20261107-themes");
 
 /* Pages */
-@import url("./pages/home.css?v=20261102-typography");
-@import url("./pages/blog.css?v=20261102-typography");
-@import url("./pages/projects.css?v=20261102-typography");
-@import url("./pages/games.css?v=20261102-typography");
-@import url("./pages/notes.css?v=20261102-typography");
-@import url("./pages/article.css?v=20261102-typography");
-@import url("./pages/astronomy.css?v=20261102-typography");
+@import url("./pages/home.css?v=20261107-themes");
+@import url("./pages/blog.css?v=20261107-themes");
+@import url("./pages/projects.css?v=20261107-themes");
+@import url("./pages/games.css?v=20261107-themes");
+@import url("./pages/notes.css?v=20261107-themes");
+@import url("./pages/article.css?v=20261107-themes");
+@import url("./pages/astronomy.css?v=20261107-themes");
 
 /* Shared components */
-@import url("./components/faq.css?v=20261102-typography");
+@import url("./components/faq.css?v=20261107-themes");
 
 /* More pages */
-@import url("./pages/about.css?v=20261102-typography");
-@import url("./pages/curiosities.css?v=20261102-typography");
-@import url("./pages/errors.css?v=20261102-typography");
+@import url("./pages/about.css?v=20261107-themes");
+@import url("./pages/curiosities.css?v=20261107-themes");
+@import url("./pages/errors.css?v=20261107-themes");
 
 /* Cross-page behavior and responsive overrides */
-@import url("./utilities/page-effects.css?v=20261102-typography");
-@import url("./components/footer.css?v=20261102-typography");
-@import url("./utilities/motion.css?v=20261102-typography");
-@import url("./utilities/keyframes.css?v=20261102-typography");
-@import url("./utilities/responsive.css?v=20261102-typography");
+@import url("./utilities/page-effects.css?v=20261107-themes");
+@import url("./components/footer.css?v=20261107-themes");
+@import url("./utilities/motion.css?v=20261107-themes");
+@import url("./utilities/keyframes.css?v=20261107-themes");
+@import url("./utilities/responsive.css?v=20261107-themes");
+
+/* Theme switch and dark themes (GTA VI, escuro). Must stay last. */
+@import url("./components/theme-switch.css?v=20261107-themes");
+@import url("./themes.css?v=20261107-themes");
+@import url("./themes-overrides.css?v=20261107-themes");

@@ -1,0 +1,125 @@
+.theme-switch {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 2px;
+    margin: 0;
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    background: rgb(255 255 255 / 70%);
+    padding: 3px;
+}
+
+.theme-switch[hidden] {
+    display: none;
+}
+
+.theme-switch__option {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--muted);
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.25rem;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.theme-switch__option:hover {
+    color: var(--stone-900);
+}
+
+.theme-switch__option[aria-pressed="true"] {
+    border-color: var(--stone-900);
+    background: var(--stone-900);
+    color: #ffffff;
+}
+
+html[data-dark] .theme-switch {
+    background: var(--surface-glass);
+}
+
+html[data-dark] .theme-switch__option[aria-pressed="true"] {
+    border-color: var(--link);
+    background: var(--surface-soft);
+    color: var(--stone-900);
+}
+
+html[data-theme="gta"] .theme-switch__option[aria-pressed="true"] {
+    border-color: #ff7ab8;
+    background: linear-gradient(90deg, #ff3d97, #ff8a3d);
+    color: #14062b;
+}
+
+.theme-switch__swatch {
+    width: 14px;
+    height: 14px;
+    border: 1px solid rgb(0 0 0 / 25%);
+    border-radius: 50%;
+}
+
+.theme-switch__swatch--light {
+    background: linear-gradient(135deg, #f8f1e7 50%, #f3c9a4 50%);
+}
+
+.theme-switch__swatch--gta {
+    background: linear-gradient(135deg, #ff3d97 0%, #ff8a3d 50%, #19d3da 100%);
+}
+
+.theme-switch__swatch--dark {
+    background: linear-gradient(135deg, #101216 50%, #3a4150 50%);
+}
+
+@media (max-width: 960px) {
+    .site-nav .inner {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .site-brand {
+        order: 1;
+    }
+
+    .theme-switch {
+        order: 2;
+        margin-left: auto;
+    }
+
+    .site-links {
+        order: 3;
+        width: 100%;
+        flex: 1 1 100%;
+        margin-top: 2px;
+        overflow-x: auto;
+        white-space: nowrap;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .site-links::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+@media (max-width: 420px) {
+    .theme-switch__option {
+        min-width: 32px;
+        min-height: 32px;
+        justify-content: center;
+        padding: 6px 9px;
+    }
+
+    .theme-switch__label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+}

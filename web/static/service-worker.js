@@ -1,7 +1,7 @@
 const CACHE_PREFIX = "guilherme-portella-site-";
-const CACHE_NAME = `${CACHE_PREFIX}v20261102-consent-scroll`;
+const CACHE_NAME = `${CACHE_PREFIX}v20261107-themes`;
 const OFFLINE_PATH = "./erro/";
-const CSS_VERSION = "20261102-typography";
+const CSS_VERSION = "20261107-themes";
 const CSS_PATHS = [
   "./static/css/main.css",
   "./static/css/globals.css",
@@ -21,6 +21,9 @@ const CSS_PATHS = [
   "./static/css/utilities/motion.css",
   "./static/css/utilities/keyframes.css",
   "./static/css/utilities/responsive.css",
+  "./static/css/components/theme-switch.css",
+  "./static/css/themes.css",
+  "./static/css/themes-overrides.css",
 ];
 const PRECACHE_PATHS = [
   OFFLINE_PATH,
@@ -28,6 +31,7 @@ const PRECACHE_PATHS = [
   "./static/css/components/consent.css?v=20261012",
   ...CSS_PATHS.map((path) => `${path}?v=${CSS_VERSION}`),
   "./static/js/site.js?v=20261011-consent",
+  "./static/js/theme.js?v=20261107-themes",
 ];
 
 function scopedURL(path) {

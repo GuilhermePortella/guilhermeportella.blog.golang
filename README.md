@@ -220,3 +220,22 @@ permite alterar a escolha; revogar remove os players ativos e sincroniza outras 
 Sem JavaScript, o Spotify fica disponivel apenas por links externos. Essa escolha
 nao controla as APIs, imagens externas ou o armazenamento funcional de jogos e cache.
 Execute `make test-consent` para verificar o comportamento do controle.
+
+## Temas visuais
+
+O seletor no cabecalho alterna entre tres temas: **Claro** (padrao, visual original),
+**GTA VI** (roxo, rosa e laranja neon) e **Escuro** (neutro, baixo brilho). A escolha
+fica em `localStorage` (`gp:theme:v1`, apenas o nome do tema) e sincroniza entre abas.
+`web/static/js/theme.js` e carregado sem `defer` antes do CSS para evitar flash do tema
+errado e valida o valor salvo contra uma lista fixa.
+
+- `web/static/css/themes.css`: tokens de cada tema escuro (`html[data-theme]`).
+- `web/static/css/themes-overrides.css`: troca de cores literais por tokens, escopada em
+  `html[data-dark]`. O tema claro nao e afetado.
+- `web/static/css/components/theme-switch.css`: estilo do seletor.
+
+Para adicionar um tema, inclua o nome em `THEMES` (`theme.js`), um botao em
+`site_header.html` e um bloco `html[data-theme="..."]` em `themes.css`. Em componentes
+novos, prefira tokens (`var(--stone-900)`, `var(--surface-solid)`) a cores fixas.
+Execute `node --test scripts/tests/theme.test.cjs` para verificar o comportamento.
+
