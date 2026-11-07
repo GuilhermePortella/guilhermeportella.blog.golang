@@ -1,5 +1,5 @@
 .article-page {
-  background: #ffffff;
+  background: var(--page-surface);
 }
 
 .article-shell {
@@ -302,8 +302,8 @@
   font-weight: 600;
 }
 
-.prose h2 > a.heading-anchor,
-.prose h3 > a.heading-anchor {
+.prose h2>a.heading-anchor,
+.prose h3>a.heading-anchor {
   color: inherit;
   text-decoration: none;
 }
@@ -324,7 +324,7 @@
   padding-left: 1.35rem;
 }
 
-.prose li + li {
+.prose li+li {
   margin-top: 0.35rem;
 }
 
@@ -448,7 +448,7 @@
 }
 
 .prose .task-list-item input,
-.prose li > input[type="checkbox"] {
+.prose li>input[type="checkbox"] {
   margin-right: 0.5rem;
 }
 
@@ -557,4 +557,3 @@ img.emoji {
 .prose .katex .mspace {
   margin-right: 0.1em;
 }
-

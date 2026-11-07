@@ -7,9 +7,10 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 	"testing"
+
+	nethtml "golang.org/x/net/html"
 )
 
 func TestNewRouterHome(t *testing.T) {
@@ -45,7 +46,7 @@ func TestNewRouterHome(t *testing.T) {
 		}
 	}
 
-	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20261107-themes">`) {
+	if !strings.Contains(body, `<link rel="stylesheet" href="/static/css/main.css?v=20261107-warm">`) {
 		t.Fatalf("body does not contain stylesheet")
 	}
 
@@ -96,14 +97,7 @@ func TestStaticCSPMatchesStaticPolicy(t *testing.T) {
 		t.Fatalf("read base template: %v", err)
 	}
 
-	matches := regexp.MustCompile(`<meta http-equiv="Content-Security-Policy" content="([^"]+)">`).FindSubmatch(raw)
-	if len(matches) != 2 {
-		t.Fatalf("base template does not contain CSP meta tag")
-	}
-
-	if got := string(matches[1]); got != staticContentSecurityPolicy {
-		t.Fatalf("static CSP differs from static policy\nstatic: %s\npolicy: %s", got, staticContentSecurityPolicy)
-	}
+	assertMetaContent(t, string(raw), "http-equiv", "Content-Security-Policy", staticContentSecurityPolicy)
 }
 
 func TestNewSiteNavigationActiveRoutes(t *testing.T) {
@@ -759,6 +753,7 @@ func TestNewRouterAbout(t *testing.T) {
 	}
 
 	body := recorder.Body.String()
+	assertMetaContent(t, body, "property", "og:image:secure_url", "https://guilhermeportella.github.io/static/images/social-default.png?v=20260518")
 	for _, expected := range []string{
 		`<div class="about-page" aria-label="Sobre">`,
 		`<title>Sobre | Guilherme Portella</title>`,
@@ -767,7 +762,6 @@ func TestNewRouterAbout(t *testing.T) {
 		`<meta property="og:type" content="website">`,
 		`<meta property="og:locale" content="pt_BR">`,
 		`<meta property="og:image" content="https://guilhermeportella.github.io/static/images/social-default.png?v=20260518">`,
-		`<meta property="og:image:secure_url" content="https://guilhermeportella.github.io/static/images/social-default.png?v=20260518">`,
 		`<meta property="og:image:type" content="image/png">`,
 		`<meta property="og:image:width" content="1200">`,
 		`<meta property="og:image:height" content="630">`,
@@ -1378,4 +1372,35 @@ func writeRouterTestFile(t *testing.T, path string, content string) {
 
 func testLogger() *slog.Logger {
 	return slog.New(slog.NewTextHandler(io.Discard, nil))
+}
+
+// assertMetaContent checks attribute values independently of HTML formatting.
+func assertMetaContent(t *testing.T, markup, attribute, value, want string) {
+	t.Helper()
+	tokenizer := nethtml.NewTokenizer(strings.NewReader(markup))
+	for {
+		switch tokenizer.Next() {
+		case nethtml.ErrorToken:
+			if err := tokenizer.Err(); err != io.EOF {
+				t.Fatalf("parse HTML: %v", err)
+			}
+			t.Fatalf("missing meta tag with %s=%q", attribute, value)
+		case nethtml.StartTagToken, nethtml.SelfClosingTagToken:
+			token := tokenizer.Token()
+			if token.Data != "meta" {
+				continue
+			}
+			attrs := make(map[string]string, len(token.Attr))
+			for _, attr := range token.Attr {
+				attrs[attr.Key] = attr.Val
+			}
+			if attrs[attribute] == value {
+				got, present := attrs["content"]
+				if !present || got != want {
+					t.Fatalf("meta %s=%q content = %q (present=%t), want %q", attribute, value, got, present, want)
+				}
+				return
+			}
+		}
+	}
 }

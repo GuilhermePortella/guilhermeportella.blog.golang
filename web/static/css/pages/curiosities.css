@@ -5,7 +5,7 @@
 .curiosity-hero {
   position: relative;
   overflow: hidden;
-  background: #f8f1e7;
+  background: var(--paper);
 }
 
 .curiosity-hero__blob {
@@ -22,7 +22,7 @@
   right: 0;
   width: 288px;
   height: 288px;
-  background: #f3c9a4;
+  background: var(--peach);
 }
 
 .curiosity-hero__blob--cool {
@@ -30,7 +30,7 @@
   left: 0;
   width: 320px;
   height: 320px;
-  background: #b7d5cf;
+  background: var(--green);
 }
 
 .curiosity-hero .container {
@@ -125,7 +125,7 @@
   line-height: 28px;
 }
 
-.curiosity-map-card > p:not(.curiosity-eyebrow) {
+.curiosity-map-card>p:not(.curiosity-eyebrow) {
   margin-top: 8px;
   color: #57534e;
   font-size: 0.8125rem;
@@ -144,8 +144,8 @@
   gap: 12px;
 }
 
-.curiosity-map-card__item > span:first-child,
-.curiosity-collection-card li > span:first-child {
+.curiosity-map-card__item>span:first-child,
+.curiosity-collection-card li>span:first-child {
   flex: none;
   width: 8px;
   height: 8px;
@@ -195,7 +195,7 @@
   padding: 20px;
 }
 
-.curiosity-small-card > p:not(.curiosity-eyebrow) {
+.curiosity-small-card>p:not(.curiosity-eyebrow) {
   margin-top: 12px;
   color: #44403c;
   font-size: 0.8125rem;
@@ -300,7 +300,7 @@
   line-height: 1.5;
 }
 
-.curiosity-shortcut-card > span {
+.curiosity-shortcut-card>span {
   display: inline-flex;
   align-items: center;
   margin-top: 16px;
@@ -461,7 +461,7 @@
   line-height: 28px;
 }
 
-.curiosity-collection-card > p {
+.curiosity-collection-card>p {
   margin-top: 8px;
   color: #57534e;
   font-size: 14px;
@@ -486,7 +486,7 @@
 }
 
 .rick-api-page {
-  background: #f8f1e7;
+  background: var(--paper);
 }
 
 .rick-api-hero {
@@ -621,7 +621,7 @@
   gap: 20px;
 }
 
-.curiosity-api__header > div {
+.curiosity-api__header>div {
   display: grid;
   gap: 10px;
   max-width: 672px;
@@ -1177,7 +1177,7 @@
   margin-bottom: 20px;
 }
 
-.rick-browser__header > div {
+.rick-browser__header>div {
   display: grid;
   gap: 8px;
   min-width: 0;
@@ -1667,7 +1667,7 @@
   object-fit: cover;
 }
 
-.rick-person-card > div {
+.rick-person-card>div {
   display: grid;
   align-content: center;
   gap: 8px;
@@ -1856,4 +1856,3 @@
   outline: 2px solid rgb(37 99 235 / 30%);
   outline-offset: 4px;
 }
-

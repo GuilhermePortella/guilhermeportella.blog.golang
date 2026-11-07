@@ -1,7 +1,7 @@
 const CACHE_PREFIX = "guilherme-portella-site-";
-const CACHE_NAME = `${CACHE_PREFIX}v20261107-themes`;
+const CACHE_NAME = `${CACHE_PREFIX}v20261107-warm`;
 const OFFLINE_PATH = "./erro/";
-const CSS_VERSION = "20261107-themes";
+const CSS_VERSION = "20261107-warm";
 const CSS_PATHS = [
   "./static/css/main.css",
   "./static/css/globals.css",
@@ -31,7 +31,7 @@ const PRECACHE_PATHS = [
   "./static/css/components/consent.css?v=20261012",
   ...CSS_PATHS.map((path) => `${path}?v=${CSS_VERSION}`),
   "./static/js/site.js?v=20261011-consent",
-  "./static/js/theme.js?v=20261107-themes",
+  "./static/js/theme.js?v=20261107-warm",
 ];
 
 function scopedURL(path) {
