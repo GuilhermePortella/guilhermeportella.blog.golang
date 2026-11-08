@@ -663,7 +663,7 @@ func TestNewRouterRickAndMorty(t *testing.T) {
 		`https://rickandmortyapi.com`,
 		`https://rickandmorty.fandom.com`,
 		`<a href="/curiosidades" class="active" aria-current="page">Curiosidades</a>`,
-		`/static/js/rick-and-morty-app.js?v=20260522-go-static`,
+		`/static/js/rick-and-morty-app.js?v=20261108-inert-html`,
 		`Rick and Morty API`,
 		`Carregando o portal.`,
 	} {
