@@ -463,9 +463,15 @@
     };
   }
 
+  // O HTML da wiki e parseado em um documento inerte (DOMParser): imagens nao
+  // sao carregadas e handlers como onerror nao executam, ao contrario de
+  // atribuir innerHTML a um elemento criado no documento da pagina.
+  function parseInertHTML(html) {
+    return new DOMParser().parseFromString(String(html || ""), "text/html").body;
+  }
+
   function wikiSectionsFromHTML(html) {
-    const container = document.createElement("div");
-    container.innerHTML = html;
+    const container = parseInertHTML(html);
 
     container.querySelectorAll("aside, table, sup, style, script, nav, .portable-infobox, .reference, .mw-editsection, .toc").forEach((node) => {
       node.remove();
@@ -524,9 +530,7 @@
   }
 
   function wikiTitleText(value) {
-    const container = document.createElement("div");
-    container.innerHTML = String(value || "");
-    return cleanWikiText(container.textContent || value);
+    return cleanWikiText(parseInertHTML(value).textContent || value);
   }
 
   function limitText(value, maxLength) {
@@ -720,7 +724,7 @@
     const config = RESOURCE_CONFIG[resource];
     const href = item.id ? siteURL(`${config.pathPrefix}/${item.id}`) : "#";
     const media = resource === "character" && item.image
-      ? `<img src="${item.image}" alt="" loading="lazy" width="300" height="300">`
+      ? `<img src="${escapeHTML(item.image)}" alt="" loading="lazy" width="300" height="300">`
       : `<span>${escapeHTML(config.singular)}</span>`;
 
     return `
@@ -1252,8 +1256,8 @@
     return `
       <div class="rick-person-grid">
         ${people.map((person) => {
-          const id = safeResourceID(person.id);
-          return `
+      const id = safeResourceID(person.id);
+      return `
           <a class="rick-person-card" href="${id ? siteURL(`/rick-morty/personagem/${id}`) : "#"}" data-app-link>
             ${person.image ? `<img src="${safeRickURL(person.image)}" alt="" loading="lazy" width="160" height="160">` : ""}
             <div>
@@ -1263,7 +1267,7 @@
             </div>
           </a>
         `;
-        }).join("")}
+    }).join("")}
       </div>
     `;
   }
@@ -1332,3 +1336,4 @@
 
   route();
 })();
+
