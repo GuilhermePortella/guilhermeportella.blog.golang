@@ -1,0 +1,66 @@
+{{define "game-chess"}}
+<div class="chess-game" data-chess-game data-chess-worker-url="/static/games/chess/worker.js?v=20261108-chess">
+  <div class="chess-toolbar" aria-label="Controles da partida">
+    <div class="chess-stats" aria-live="polite">
+      <p><span>Turno</span><strong data-chess-turn>Brancas</strong></p>
+      <p class="chess-stats__record"><span>Placar</span><strong data-chess-record>Você 0 · Máquina 0 · Empates 0</strong></p>
+    </div>
+
+    <div class="chess-controls">
+      <label>
+        <span>Modo</span>
+        <select data-chess-mode aria-label="Selecionar modo de jogo">
+          <option value="machine">Contra a máquina</option>
+          <option value="local">Dois jogadores</option>
+        </select>
+      </label>
+      <label>
+        <span>Seu lado</span>
+        <select data-chess-side aria-label="Selecionar o lado das peças">
+          <option value="w">Brancas</option>
+          <option value="b">Pretas</option>
+        </select>
+      </label>
+      <label>
+        <span>Dificuldade</span>
+        <select data-chess-level aria-label="Selecionar dificuldade da máquina">
+          <option value="easy">Fácil</option>
+          <option value="medium">Médio</option>
+          <option value="hard">Difícil</option>
+        </select>
+      </label>
+      <button type="button" data-chess-new>Novo jogo</button>
+      <button type="button" data-chess-undo disabled>Desfazer</button>
+      <button type="button" data-chess-flip>Girar tabuleiro</button>
+    </div>
+  </div>
+
+  <div class="chess-arena">
+    <div class="chess-board-shell">
+      <div class="chess-board" data-chess-board aria-label="Tabuleiro de xadrez" aria-busy="false"></div>
+
+      <div class="chess-promotion" data-chess-promotion role="dialog" aria-modal="true" aria-labelledby="chess-promotion-title" hidden>
+        <div class="chess-promotion__card">
+          <p id="chess-promotion-title">Promover o peão para:</p>
+          <div class="chess-promotion__options">
+            <button type="button" data-chess-promote="q" aria-label="Dama"><span aria-hidden="true">&#9819;&#xFE0E;</span></button>
+            <button type="button" data-chess-promote="r" aria-label="Torre"><span aria-hidden="true">&#9820;&#xFE0E;</span></button>
+            <button type="button" data-chess-promote="b" aria-label="Bispo"><span aria-hidden="true">&#9821;&#xFE0E;</span></button>
+            <button type="button" data-chess-promote="n" aria-label="Cavalo"><span aria-hidden="true">&#9822;&#xFE0E;</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="chess-panel" aria-label="Estado da partida">
+      <section>
+        <h3>Jogadas</h3>
+        <ol class="chess-moves" data-chess-moves aria-label="Lista de jogadas"></ol>
+      </section>
+
+      <p class="game-status chess-status" data-chess-message role="status">Sua vez (brancas).</p>
+    </aside>
+  </div>
+</div>
+{{end}}
+

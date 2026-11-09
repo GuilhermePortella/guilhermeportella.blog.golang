@@ -288,6 +288,8 @@ func TestNewRouterJogos(t *testing.T) {
 		`href="/jogos/paciencia-klondike"`,
 		`Dama Brasileira`,
 		`href="/jogos/dama-brasileira"`,
+		`Xadrez`,
+		`href="/jogos/xadrez"`,
 		`Snake Classic`,
 		`href="/jogos/snake"`,
 		`Jogar agora`,
@@ -473,6 +475,83 @@ func TestNewRouterJogoCheckers(t *testing.T) {
 	}
 }
 
+func TestNewRouterJogoChess(t *testing.T) {
+	handler := newTestRouter(t)
+	request := httptest.NewRequest(http.MethodGet, "/jogos/xadrez", nil)
+	recorder := httptest.NewRecorder()
+
+	handler.ServeHTTP(recorder, request)
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+
+	body := recorder.Body.String()
+	for _, expected := range []string{
+		`<div class="game-page game-page--amber" aria-label="Xadrez">`,
+		`<title>Xadrez | Jogos | Guilherme Portella</title>`,
+		`<link rel="canonical" href="https://guilhermeportella.github.io/jogos/xadrez/">`,
+		`<h1 id="game-title">Xadrez</h1>`,
+		`data-game="xadrez"`,
+		`data-chess-game`,
+		`data-chess-board`,
+		`data-chess-level`,
+		`data-chess-promotion`,
+		`data-chess-worker-url="/static/games/chess/worker.js?v=20261108-chess"`,
+		`<link rel="stylesheet" href="/static/games/chess/chess.css?v=20261108-chess">`,
+		`<script src="/static/games/chess/engine.js?v=20261108-chess" defer></script>`,
+		`<script src="/static/games/chess/ai.js?v=20261108-chess" defer></script>`,
+		`<script src="/static/games/chess/ui.js?v=20261108-chess" defer></script>`,
+	} {
+		if !strings.Contains(body, expected) {
+			t.Fatalf("body does not contain %q", expected)
+		}
+	}
+}
+
+func TestNewRouterChessAssetsOnlyOnChessPage(t *testing.T) {
+	handler := newTestRouter(t)
+
+	for _, path := range []string{"/jogos", "/jogos/dama-brasileira", "/jogos/snake", "/"} {
+		request := httptest.NewRequest(http.MethodGet, path, nil)
+		recorder := httptest.NewRecorder()
+
+		handler.ServeHTTP(recorder, request)
+
+		if recorder.Code != http.StatusOK {
+			t.Fatalf("%s status = %d, want %d", path, recorder.Code, http.StatusOK)
+		}
+		for _, unexpected := range []string{`/static/games/chess/`, `data-chess-game`} {
+			if strings.Contains(recorder.Body.String(), unexpected) {
+				t.Fatalf("%s must not load chess assets, found %q", path, unexpected)
+			}
+		}
+	}
+}
+
+func TestNewRouterChessStaticAssets(t *testing.T) {
+	handler := newTestRouter(t)
+
+	for _, path := range []string{
+		"/static/games/chess/engine.js",
+		"/static/games/chess/ai.js",
+		"/static/games/chess/ui.js",
+		"/static/games/chess/worker.js",
+		"/static/games/chess/chess.css",
+	} {
+		request := httptest.NewRequest(http.MethodGet, path, nil)
+		recorder := httptest.NewRecorder()
+
+		handler.ServeHTTP(recorder, request)
+
+		if recorder.Code != http.StatusOK {
+			t.Fatalf("%s status = %d, want %d", path, recorder.Code, http.StatusOK)
+		}
+		if recorder.Body.Len() == 0 {
+			t.Fatalf("%s returned an empty body", path)
+		}
+	}
+}
 func TestNewRouterJogoNotFound(t *testing.T) {
 	handler := newTestRouter(t)
 	request := httptest.NewRequest(http.MethodGet, "/jogos/nao-existe", nil)
