@@ -80,6 +80,7 @@ func TestShouldExportRoute(t *testing.T) {
 		{route: "/jogos/dama-brasileira", want: true},
 		{route: "/jogos/snake", want: true},
 		{route: "/jogos/soma-rapida", want: true},
+		{route: "/jogos/xadrez", want: true},
 		{route: "/games", want: true},
 		{route: "/projetos", want: true},
 		{route: "/projects", want: true},
@@ -118,6 +119,7 @@ func TestRouteOutputPath(t *testing.T) {
 		{route: "/jogos/snake", want: filepath.Join("dist", "jogos", "snake", "index.html")},
 		{route: "/jogos/soma-rapida", want: filepath.Join("dist", "jogos", "soma-rapida", "index.html")},
 		{route: "/projetos", want: filepath.Join("dist", "projetos", "index.html")},
+		{route: "/jogos/xadrez", want: filepath.Join("dist", "jogos", "xadrez", "index.html")},
 		{route: "/projects", want: filepath.Join("dist", "projects", "index.html")},
 		{route: "/rick-morty", want: filepath.Join("dist", "rick-morty", "index.html")},
 	}

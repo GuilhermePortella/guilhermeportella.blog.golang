@@ -1,11 +1,16 @@
 {{define "jogo"}}{{template "base" .}}{{end}}
 
+{{define "head-extra"}}
+{{if eq .Game.Slug "xadrez"}}{{template "game-head-chess" .}}{{end}}
+{{end}}
+
 {{define "content"}}
 <div class="game-page game-page--{{.Game.Accent}}" aria-label="{{.Game.Title}}">
   <section class="game-hero" aria-labelledby="game-title">
     <div class="blog-shell game-hero__grid">
       <div class="game-hero__intro">
-        <a class="game-back arrow-shift" href="/jogos">Voltar para jogos <span class="link-arrow" aria-hidden="true">-&gt;</span></a>
+        <a class="game-back arrow-shift" href="/jogos">Voltar para jogos <span class="link-arrow"
+            aria-hidden="true">-&gt;</span></a>
         <p class="eyebrow eyebrow--wide">{{.Game.Status}}</p>
         <h1 id="game-title">{{.Game.Title}}</h1>
         <p class="game-hero__text">{{.Game.Intro}}</p>
@@ -40,7 +45,8 @@
         <p class="eyebrow eyebrow--spaced">jogar</p>
         <h2 id="game-play-title">{{.Game.ShortTitle}}</h2>
       </div>
-      <a class="game-stage__link arrow-shift" href="/jogos">Trocar jogo <span class="link-arrow" aria-hidden="true">-&gt;</span></a>
+      <a class="game-stage__link arrow-shift" href="/jogos">Trocar jogo <span class="link-arrow"
+          aria-hidden="true">-&gt;</span></a>
     </div>
 
     <div class="game-frame" data-game="{{.Game.Slug}}">
@@ -101,7 +107,8 @@
           <strong class="math-card__question" data-math-question>?</strong>
           <form class="math-answer" data-math-form>
             <label for="math-answer-input">Resposta</label>
-            <input id="math-answer-input" type="number" inputmode="numeric" autocomplete="off" data-math-answer disabled>
+            <input id="math-answer-input" type="number" inputmode="numeric" autocomplete="off" data-math-answer
+              disabled>
             <button type="submit" data-math-submit disabled>Enviar</button>
           </form>
         </div>
@@ -135,31 +142,46 @@
 
         <div class="solitaire-board" aria-label="Tabuleiro de paciência">
           <div class="solitaire-row solitaire-row--top">
-            <div class="solitaire-pile solitaire-stock" data-solitaire-pile="stock" data-label="Monte" aria-label="Monte" role="button" tabindex="0"></div>
-            <div class="solitaire-pile solitaire-waste" data-solitaire-pile="waste" data-label="Descarte" aria-label="Descarte" tabindex="0"></div>
+            <div class="solitaire-pile solitaire-stock" data-solitaire-pile="stock" data-label="Monte"
+              aria-label="Monte" role="button" tabindex="0"></div>
+            <div class="solitaire-pile solitaire-waste" data-solitaire-pile="waste" data-label="Descarte"
+              aria-label="Descarte" tabindex="0"></div>
             <div class="solitaire-top-spacer" aria-hidden="true"></div>
             <div class="solitaire-foundations" aria-label="Fundações">
-              <div class="solitaire-pile solitaire-foundation" data-solitaire-pile="foundation" data-suit="hearts" aria-label="Fundação de copas" tabindex="0"></div>
-              <div class="solitaire-pile solitaire-foundation" data-solitaire-pile="foundation" data-suit="clubs" aria-label="Fundação de paus" tabindex="0"></div>
-              <div class="solitaire-pile solitaire-foundation" data-solitaire-pile="foundation" data-suit="diamonds" aria-label="Fundação de ouros" tabindex="0"></div>
-              <div class="solitaire-pile solitaire-foundation" data-solitaire-pile="foundation" data-suit="spades" aria-label="Fundação de espadas" tabindex="0"></div>
+              <div class="solitaire-pile solitaire-foundation" data-solitaire-pile="foundation" data-suit="hearts"
+                aria-label="Fundação de copas" tabindex="0"></div>
+              <div class="solitaire-pile solitaire-foundation" data-solitaire-pile="foundation" data-suit="clubs"
+                aria-label="Fundação de paus" tabindex="0"></div>
+              <div class="solitaire-pile solitaire-foundation" data-solitaire-pile="foundation" data-suit="diamonds"
+                aria-label="Fundação de ouros" tabindex="0"></div>
+              <div class="solitaire-pile solitaire-foundation" data-solitaire-pile="foundation" data-suit="spades"
+                aria-label="Fundação de espadas" tabindex="0"></div>
             </div>
           </div>
 
           <div class="solitaire-row solitaire-tableau" aria-label="Tableau">
-            <div class="solitaire-pile solitaire-tableau-pile" data-solitaire-pile="tableau" data-index="0" data-label="K" aria-label="Coluna 1" tabindex="0"></div>
-            <div class="solitaire-pile solitaire-tableau-pile" data-solitaire-pile="tableau" data-index="1" data-label="K" aria-label="Coluna 2" tabindex="0"></div>
-            <div class="solitaire-pile solitaire-tableau-pile" data-solitaire-pile="tableau" data-index="2" data-label="K" aria-label="Coluna 3" tabindex="0"></div>
-            <div class="solitaire-pile solitaire-tableau-pile" data-solitaire-pile="tableau" data-index="3" data-label="K" aria-label="Coluna 4" tabindex="0"></div>
-            <div class="solitaire-pile solitaire-tableau-pile" data-solitaire-pile="tableau" data-index="4" data-label="K" aria-label="Coluna 5" tabindex="0"></div>
-            <div class="solitaire-pile solitaire-tableau-pile" data-solitaire-pile="tableau" data-index="5" data-label="K" aria-label="Coluna 6" tabindex="0"></div>
-            <div class="solitaire-pile solitaire-tableau-pile" data-solitaire-pile="tableau" data-index="6" data-label="K" aria-label="Coluna 7" tabindex="0"></div>
+            <div class="solitaire-pile solitaire-tableau-pile" data-solitaire-pile="tableau" data-index="0"
+              data-label="K" aria-label="Coluna 1" tabindex="0"></div>
+            <div class="solitaire-pile solitaire-tableau-pile" data-solitaire-pile="tableau" data-index="1"
+              data-label="K" aria-label="Coluna 2" tabindex="0"></div>
+            <div class="solitaire-pile solitaire-tableau-pile" data-solitaire-pile="tableau" data-index="2"
+              data-label="K" aria-label="Coluna 3" tabindex="0"></div>
+            <div class="solitaire-pile solitaire-tableau-pile" data-solitaire-pile="tableau" data-index="3"
+              data-label="K" aria-label="Coluna 4" tabindex="0"></div>
+            <div class="solitaire-pile solitaire-tableau-pile" data-solitaire-pile="tableau" data-index="4"
+              data-label="K" aria-label="Coluna 5" tabindex="0"></div>
+            <div class="solitaire-pile solitaire-tableau-pile" data-solitaire-pile="tableau" data-index="5"
+              data-label="K" aria-label="Coluna 6" tabindex="0"></div>
+            <div class="solitaire-pile solitaire-tableau-pile" data-solitaire-pile="tableau" data-index="6"
+              data-label="K" aria-label="Coluna 7" tabindex="0"></div>
           </div>
         </div>
 
-        <p class="game-status" data-solitaire-status role="status">Clique no monte para comprar ou selecione uma carta aberta para mover.</p>
+        <p class="game-status" data-solitaire-status role="status">Clique no monte para comprar ou selecione uma carta
+          aberta para mover.</p>
 
-        <div class="solitaire-overlay" data-solitaire-overlay aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="solitaire-win-title">
+        <div class="solitaire-overlay" data-solitaire-overlay aria-hidden="true" role="dialog" aria-modal="true"
+          aria-labelledby="solitaire-win-title">
           <div class="solitaire-overlay__card">
             <p class="eyebrow eyebrow--spaced">vitória</p>
             <h3 id="solitaire-win-title">Paciência resolvida.</h3>
@@ -214,6 +236,10 @@
       </div>
       {{end}}
 
+      {{if eq .Game.Slug "xadrez"}}
+      {{template "game-chess" .}}
+      {{end}}
+
       {{if eq .Game.Slug "snake"}}
       <div class="snake-game" data-snake-game>
         <div class="snake-toolbar" aria-label="Placar da partida">
@@ -230,12 +256,14 @@
           <div class="snake-board-shell" data-snake-board-shell tabindex="0" aria-label="Tabuleiro do Snake">
             <canvas class="snake-board" data-snake-canvas width="500" height="500"></canvas>
 
-            <div class="snake-start-panel" data-snake-start-panel role="dialog" aria-modal="true" aria-labelledby="snake-start-title">
+            <div class="snake-start-panel" data-snake-start-panel role="dialog" aria-modal="true"
+              aria-labelledby="snake-start-title">
               <div>
                 <p class="eyebrow eyebrow--spaced">nova partida</p>
                 <h3 id="snake-start-title">Snake Classic</h3>
                 <label for="snake-player-name">Nome do jogador</label>
-                <input id="snake-player-name" type="text" maxlength="12" autocomplete="nickname" placeholder="Seu nome" data-snake-name>
+                <input id="snake-player-name" type="text" maxlength="12" autocomplete="nickname" placeholder="Seu nome"
+                  data-snake-name>
                 <button type="button" data-snake-start>Iniciar jogo</button>
               </div>
             </div>
