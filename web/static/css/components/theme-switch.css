@@ -11,7 +11,9 @@
 }
 
 .theme-switch[hidden] {
-    display: none;
+    /* Reserve the controls' space before JS mounts them to avoid moving the nav. */
+    display: inline-flex !important;
+    visibility: hidden;
 }
 
 .theme-switch__option {
