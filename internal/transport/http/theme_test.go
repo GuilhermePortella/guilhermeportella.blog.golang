@@ -28,6 +28,7 @@ func TestThemeSwitchContract(t *testing.T) {
 			}
 
 			for _, expected := range []string{
+				`<link rel="stylesheet" href="/static/css/main.css?v=20261113-cls">`,
 				`data-theme-switch hidden`,
 				`aria-label="Tema do site"`,
 				`data-theme-option="light"`,
@@ -40,6 +41,40 @@ func TestThemeSwitchContract(t *testing.T) {
 			}
 			if strings.Count(body, `data-theme-switch`) != 1 {
 				t.Errorf("esperava exatamente um seletor de tema")
+			}
+		})
+	}
+}
+
+func TestThemeStylesheetServesLayoutReservation(t *testing.T) {
+	handler := newTestRouter(t)
+	for _, asset := range []struct {
+		url      string
+		expected []string
+	}{
+		{
+			url:      "/static/css/main.css?v=20261113-cls",
+			expected: []string{`@import url("./components/theme-switch.css?v=20261113-cls")`},
+		},
+		{
+			url: "/static/css/components/theme-switch.css?v=20261113-cls",
+			expected: []string{
+				".theme-switch[hidden] {",
+				"display: inline-flex !important;",
+				"visibility: hidden;",
+			},
+		},
+	} {
+		t.Run(asset.url, func(t *testing.T) {
+			response := httptest.NewRecorder()
+			handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, asset.url, nil))
+			if response.Code != http.StatusOK {
+				t.Fatalf("status = %d, want 200", response.Code)
+			}
+			for _, expected := range asset.expected {
+				if !strings.Contains(response.Body.String(), expected) {
+					t.Errorf("CSS servido sem %q", expected)
+				}
 			}
 		})
 	}
