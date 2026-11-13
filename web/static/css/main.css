@@ -26,6 +26,6 @@
 @import url("./utilities/responsive.css?v=20261107-warm");
 
 /* Theme switch and dark themes (GTA VI, escuro). Must stay last. */
-@import url("./components/theme-switch.css?v=20261107-warm");
+@import url("./components/theme-switch.css?v=20261113-cls");
 @import url("./themes.css?v=20261107-warm");
 @import url("./themes-overrides.css?v=20261107-warm");

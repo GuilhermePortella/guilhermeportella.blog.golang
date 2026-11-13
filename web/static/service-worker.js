@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "guilherme-portella-site-";
-const CACHE_NAME = `${CACHE_PREFIX}v20261107-warm`;
+const CACHE_NAME = `${CACHE_PREFIX}v20261113-cls`;
 const OFFLINE_PATH = "./erro/";
 const CSS_VERSION = "20261107-warm";
 const CSS_PATHS = [
@@ -29,7 +29,12 @@ const PRECACHE_PATHS = [
   OFFLINE_PATH,
   "./static/js/consent.js?v=20261102-consent-scroll",
   "./static/css/components/consent.css?v=20261012",
-  ...CSS_PATHS.map((path) => `${path}?v=${CSS_VERSION}`),
+  ...CSS_PATHS.map((path) => {
+    const version = path === "./static/css/main.css" || path === "./static/css/components/theme-switch.css"
+      ? "20261113-cls"
+      : CSS_VERSION;
+    return `${path}?v=${version}`;
+  }),
   "./static/js/site.js?v=20261011-consent",
   "./static/js/theme.js?v=20261107-warm",
 ];
