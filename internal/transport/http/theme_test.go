@@ -31,8 +31,8 @@ func TestThemeSwitchContract(t *testing.T) {
 				`<link rel="stylesheet" href="/static/css/main.css?v=20261113-cls">`,
 				`data-theme-switch hidden`,
 				`aria-label="Tema do site"`,
-				`data-theme-option="light"`,
-				`data-theme-option="gta"`,
+				`data-theme-option="light" aria-pressed="false"`,
+				`data-theme-option="gta" aria-pressed="true"`,
 				`data-theme-option="dark"`,
 			} {
 				if !strings.Contains(body, expected) {

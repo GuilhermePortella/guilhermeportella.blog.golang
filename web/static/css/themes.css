@@ -1,8 +1,8 @@
 /*
  * Temas do site.
  *
- * - light (padrao): nenhum token e sobrescrito; o visual original permanece.
- * - gta:  paleta "por do sol de Vice City" (roxo profundo, rosa e laranja neon).
+ * - light: nenhum token e sobrescrito; o visual original permanece.
+ * - gta (padrao): paleta "por do sol de Vice City" (roxo profundo, rosa e laranja neon).
  * - dark: paleta neutra escura, de baixo brilho, para leitura prolongada.
  *
  * O tema e escolhido por html[data-theme]; html[data-dark] marca os dois temas

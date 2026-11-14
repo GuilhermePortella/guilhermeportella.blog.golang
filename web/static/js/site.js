@@ -5083,39 +5083,95 @@
       return;
     }
 
+    const canvas = avatarButton.querySelector("canvas");
+    const ctx = canvas && canvas.getContext("2d");
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const spinClasses = ["is-spinning-to-mirrored", "is-spinning-to-normal"];
+    let step = 0;
+    let frame = 0;
+    let lastTime = 0;
+    let A = 1;
+    let B = 1;
+
+    // ASCII projection and lighting adapted from Andy Sloane's donut.c:
+    // https://www.a1k0n.net/2011/07/20/donut-math.html
+    function drawDonut() {
+      const chars = new Array(80 * 40).fill(" ");
+      const depth = new Float32Array(chars.length);
+      const cA = Math.cos(A), sA = Math.sin(A);
+      const cB = Math.cos(B), sB = Math.sin(B);
+      for (let theta = 0; theta < Math.PI * 2; theta += 0.07) {
+        const ct = Math.cos(theta), st = Math.sin(theta);
+        for (let phi = 0; phi < Math.PI * 2; phi += 0.02) {
+          const sp = Math.sin(phi), cp = Math.cos(phi);
+          const h = ct + 2;
+          const D = 1 / (sp * h * sA + st * cA + 5);
+          const t = sp * h * cA - st * sA;
+          const x = Math.floor(40 + 30 * D * (cp * h * cB - t * sB));
+          const y = Math.floor(20 + 15 * D * (cp * h * sB + t * cB));
+          const offset = x + 80 * y;
+          const light = Math.floor(8 * ((st * sA - sp * ct * cA) * cB - sp * ct * sA - st * cA - cp * ct * sB));
+          if (x >= 0 && x < 80 && y >= 0 && y < 40 && D > depth[offset]) {
+            depth[offset] = D;
+            chars[offset] = ".,-~:;=!*#$@"[Math.max(0, Math.min(11, light))];
+          }
+        }
+      }
+      ctx.fillStyle = "#080b10";
+      ctx.fillRect(0, 0, 440, 440);
+      ctx.fillStyle = "#f4e7da";
+      ctx.font = "9px monospace";
+      ctx.textBaseline = "top";
+      for (let i = 0; i < chars.length; i++) {
+        if (chars[i] !== " ") ctx.fillText(chars[i], (i % 80) * 5.5, Math.floor(i / 80) * 11);
+      }
+    }
+
+    function animate(time) {
+      if (time - lastTime >= 50) {
+        A += 0.07;
+        B += 0.03;
+        drawDonut();
+        lastTime = time;
+      }
+      frame = window.requestAnimationFrame(animate);
+    }
+
+    function syncAnimation() {
+      window.cancelAnimationFrame(frame);
+      if (step === 3 && ctx) {
+        drawDonut();
+        if (!motion.matches && !document.hidden) {
+          lastTime = 0;
+          frame = window.requestAnimationFrame(animate);
+        }
+      }
+    }
 
     avatarButton.addEventListener("click", () => {
-      const shouldMirror = !avatarButton.classList.contains("is-mirrored");
-      const spinClass = shouldMirror ? "is-spinning-to-mirrored" : "is-spinning-to-normal";
-
+      step = (step + 1) % 4;
       avatarButton.classList.remove(...spinClasses);
-      avatarButton.dataset.avatarSpinTarget = shouldMirror ? "mirrored" : "normal";
-
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        avatarButton.classList.toggle("is-mirrored", shouldMirror);
-        avatarButton.classList.add(spinClass);
-        window.setTimeout(() => {
-          avatarButton.classList.remove(spinClass);
-          delete avatarButton.dataset.avatarSpinTarget;
-        }, 420);
-        return;
+      avatarButton.classList.toggle("is-mirrored", step === 1);
+      avatarButton.classList.toggle("is-donut", step === 3 && !!ctx);
+      if (canvas) canvas.hidden = step !== 3 || !ctx;
+      avatarButton.setAttribute("aria-label", step === 3 && ctx
+        ? "Rosquinha ASCII. Clique para voltar à foto de Guilherme Portella"
+        : "Girar foto de Guilherme Portella");
+      if ((step === 1 || step === 2) && !motion.matches) {
+        // Restart immediately so rapid clicks cannot enqueue stale animation states.
+        void avatarButton.offsetWidth;
+        avatarButton.classList.add(step === 1 ? spinClasses[0] : spinClasses[1]);
       }
-
-      window.requestAnimationFrame(() => {
-        avatarButton.classList.add(spinClass);
-      });
+      syncAnimation();
     });
 
     avatarButton.addEventListener("animationend", (event) => {
-      if (event.animationName !== "aboutAvatarCarouselToMirrored" && event.animationName !== "aboutAvatarCarouselToNormal") {
-        return;
+      if (event.animationName === "aboutAvatarCarouselToMirrored" || event.animationName === "aboutAvatarCarouselToNormal") {
+        avatarButton.classList.remove(...spinClasses);
       }
-
-      avatarButton.classList.remove(...spinClasses);
-      avatarButton.classList.toggle("is-mirrored", avatarButton.dataset.avatarSpinTarget === "mirrored");
-      delete avatarButton.dataset.avatarSpinTarget;
     });
+    document.addEventListener("visibilitychange", syncAnimation);
+    motion.addEventListener("change", syncAnimation);
   }
 
   setupNotFoundPath();
