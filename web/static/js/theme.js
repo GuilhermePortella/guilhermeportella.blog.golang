@@ -1,6 +1,6 @@
 (() => {
     const KEY = "gp:theme:v1";
-    const DEFAULT_THEME = "light";
+    const DEFAULT_THEME = "gta";
     // Allowlist: qualquer valor fora desta lista (armazenamento adulterado) cai no padrão.
     const THEMES = ["light", "gta", "dark"];
     const DARK_THEMES = ["gta", "dark"];

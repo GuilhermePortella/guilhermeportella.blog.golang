@@ -39,11 +39,12 @@ function setup({ stored = null, broken = false, readyState = 'complete', withSwi
     return { attrs, buttons, group, window, events, docEvents, stored: () => value, setStored: v => { value = v; } };
 }
 
-test('sem preferência salva usa o tema claro e não marca tema escuro', () => {
+test('sem preferência salva usa Vice City e marca tema escuro', () => {
     const s = setup();
-    assert.equal(s.attrs['data-theme'], 'light');
-    assert.equal('data-dark' in s.attrs, false);
-    assert.equal(s.window.siteTheme.get(), 'light');
+    assert.equal(s.attrs['data-theme'], 'gta');
+    assert.equal('data-dark' in s.attrs, true);
+    assert.equal(s.window.siteTheme.get(), 'gta');
+    assert.deepEqual(s.buttons.map(b => b.pressed), ['false', 'true', 'false']);
 });
 
 test('restaura tema salvo e marca data-dark apenas nos temas escuros', () => {
@@ -56,14 +57,14 @@ test('restaura tema salvo e marca data-dark apenas nos temas escuros', () => {
 test('valor adulterado ou desconhecido no armazenamento cai no tema padrão', () => {
     for (const bad of ['', 'neon', '"><script>', 'DARK', '__proto__', 'light ']) {
         const s = setup({ stored: bad });
-        assert.equal(s.attrs['data-theme'], 'light', bad);
-        assert.equal('data-dark' in s.attrs, false, bad);
+        assert.equal(s.attrs['data-theme'], 'gta', bad);
+        assert.equal('data-dark' in s.attrs, true, bad);
     }
 });
 
 test('armazenamento indisponível não quebra: usa o padrão e a escolha vale na página', () => {
     const s = setup({ broken: true });
-    assert.equal(s.attrs['data-theme'], 'light');
+    assert.equal(s.attrs['data-theme'], 'gta');
     assert.equal(s.window.siteTheme.set('dark'), true);
     assert.equal(s.attrs['data-theme'], 'dark');
     assert.equal(s.window.siteTheme.get(), 'dark');
@@ -97,7 +98,7 @@ test('clicar em um botão aplica o tema, persiste e atualiza aria-pressed', () =
 });
 
 test('no head (documento carregando) aplica o tema imediatamente e monta o switch depois', () => {
-    const s = setup({ stored: 'gta', readyState: 'loading' });
+    const s = setup({ readyState: 'loading' });
     assert.equal(s.attrs['data-theme'], 'gta');
     assert.equal(s.group.hidden, true);
     s.docEvents.DOMContentLoaded();
@@ -127,7 +128,7 @@ test('os temas expostos correspondem às opções do template do header', () => 
     assert.deepEqual(options, [...s.window.siteTheme.themes]);
 });
 
-test('todo tema declarado tem um bloco de tokens em themes.css (exceto o padrão)', () => {
+test('todo tema declarado tem um bloco de tokens em themes.css (exceto o claro)', () => {
     const s = setup();
     const css = readFileSync('web/static/css/themes.css', 'utf8');
     for (const theme of s.window.siteTheme.themes.filter(t => t !== 'light')) {
