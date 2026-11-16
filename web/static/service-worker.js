@@ -1,5 +1,5 @@
 const CACHE_PREFIX = "guilherme-portella-site-";
-const CACHE_NAME = `${CACHE_PREFIX}v20261114-vice-city`;
+const CACHE_NAME = `${CACHE_PREFIX}v20261116-theme-gallery`;
 const OFFLINE_PATH = "./erro/";
 const CSS_VERSION = "20261107-warm";
 const CSS_PATHS = [
@@ -31,12 +31,12 @@ const PRECACHE_PATHS = [
   "./static/css/components/consent.css?v=20261012",
   ...CSS_PATHS.map((path) => {
     const version = path === "./static/css/main.css" || path === "./static/css/components/theme-switch.css"
-      ? "20261113-cls"
+      ? "20261116-theme-gallery"
       : CSS_VERSION;
     return `${path}?v=${version}`;
   }),
   "./static/js/site.js?v=20261011-consent",
-  "./static/js/theme.js?v=20261114-vice-city",
+  "./static/js/theme.js?v=20261116-theme-gallery",
 ];
 
 function scopedURL(path) {

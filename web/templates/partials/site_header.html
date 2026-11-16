@@ -13,19 +13,92 @@
     </ul>
     {{end}}
 
-    <div class="theme-switch" role="group" aria-label="Tema do site" data-theme-switch hidden>
-      <button class="theme-switch__option" type="button" data-theme-option="light" aria-pressed="false">
-        <span class="theme-switch__swatch theme-switch__swatch--light" aria-hidden="true"></span>
-        <span class="theme-switch__label">Claro</span>
+    <div class="theme-switch" data-theme-switch hidden>
+      <button class="theme-switch__trigger" type="button" data-theme-open aria-haspopup="dialog" aria-expanded="false"
+        aria-label="Escolher tema do site">
+        <span class="theme-switch__swatch" aria-hidden="true"></span>
+        <span class="theme-switch__trigger-text">
+          <span class="theme-switch__trigger-hint">Tema</span>
+          <span class="theme-switch__trigger-name" data-theme-current-label>Vice City</span>
+        </span>
+        <svg class="theme-switch__chevron" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false">
+          <path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
       </button>
-      <button class="theme-switch__option" type="button" data-theme-option="gta" aria-pressed="true">
-        <span class="theme-switch__swatch theme-switch__swatch--gta" aria-hidden="true"></span>
-        <span class="theme-switch__label">Vice City</span>
-      </button>
-      <button class="theme-switch__option" type="button" data-theme-option="dark" aria-pressed="false">
-        <span class="theme-switch__swatch theme-switch__swatch--dark" aria-hidden="true"></span>
-        <span class="theme-switch__label">Escuro</span>
-      </button>
+
+      <dialog class="theme-gallery" data-theme-dialog aria-labelledby="theme-gallery-title"
+        aria-describedby="theme-gallery-desc">
+        <div class="theme-gallery__panel">
+          <header class="theme-gallery__header">
+            <div>
+              <h2 class="theme-gallery__title" id="theme-gallery-title">Escolha o clima do site</h2>
+              <p class="theme-gallery__desc" id="theme-gallery-desc">Passe o mouse ou use as setas para ver uma prévia ao vivo. Clique para aplicar.</p>
+            </div>
+            <button class="theme-gallery__close" type="button" data-theme-close aria-label="Fechar seletor de temas">
+              <svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false">
+                <path d="M2.5 2.5 9.5 9.5M9.5 2.5 2.5 9.5" fill="none" stroke="currentColor" stroke-width="1.6"
+                  stroke-linecap="round" />
+              </svg>
+            </button>
+          </header>
+
+          <div class="theme-gallery__grid" role="group" aria-label="Tema do site">
+            <button class="theme-card theme-card--light" type="button" data-theme-option="light" aria-pressed="false" data-theme-name="Claro">
+              <span class="theme-card__preview" aria-hidden="true">
+                <span class="theme-card__bar"><i></i><i></i><i></i></span>
+                <span class="theme-card__body">
+                  <span class="theme-card__line theme-card__line--title"></span>
+                  <span class="theme-card__line"></span>
+                  <span class="theme-card__line theme-card__line--short"></span>
+                  <span class="theme-card__chip"></span>
+                </span>
+              </span>
+              <span class="theme-card__meta">
+                <span class="theme-card__name">Claro</span>
+                <span class="theme-card__tagline">Papel quente, leitura leve de dia</span>
+              </span>
+              <span class="theme-card__check" aria-hidden="true">Ativo</span>
+            </button>
+
+            <button class="theme-card theme-card--gta" type="button" data-theme-option="gta" aria-pressed="true" data-theme-name="Vice City">
+              <span class="theme-card__preview" aria-hidden="true">
+                <span class="theme-card__bar"><i></i><i></i><i></i></span>
+                <span class="theme-card__body">
+                  <span class="theme-card__line theme-card__line--title"></span>
+                  <span class="theme-card__line"></span>
+                  <span class="theme-card__line theme-card__line--short"></span>
+                  <span class="theme-card__chip"></span>
+                </span>
+              </span>
+              <span class="theme-card__meta">
+                <span class="theme-card__name">Vice City</span>
+                <span class="theme-card__tagline">Pôr do sol neon em rosa, laranja e ciano</span>
+              </span>
+              <span class="theme-card__check" aria-hidden="true">Ativo</span>
+            </button>
+
+            <button class="theme-card theme-card--dark" type="button" data-theme-option="dark" aria-pressed="false" data-theme-name="Escuro">
+              <span class="theme-card__preview" aria-hidden="true">
+                <span class="theme-card__bar"><i></i><i></i><i></i></span>
+                <span class="theme-card__body">
+                  <span class="theme-card__line theme-card__line--title"></span>
+                  <span class="theme-card__line"></span>
+                  <span class="theme-card__line theme-card__line--short"></span>
+                  <span class="theme-card__chip"></span>
+                </span>
+              </span>
+              <span class="theme-card__meta">
+                <span class="theme-card__name">Escuro</span>
+                <span class="theme-card__tagline">Baixo brilho para ler à noite</span>
+              </span>
+              <span class="theme-card__check" aria-hidden="true">Ativo</span>
+            </button>
+          </div>
+
+          <p class="theme-gallery__hint">Sua escolha fica salva neste navegador.</p>
+        </div>
+      </dialog>
     </div>
   </div>
 </nav>

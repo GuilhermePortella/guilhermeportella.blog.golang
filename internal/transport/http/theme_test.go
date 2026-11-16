@@ -28,12 +28,14 @@ func TestThemeSwitchContract(t *testing.T) {
 			}
 
 			for _, expected := range []string{
-				`<link rel="stylesheet" href="/static/css/main.css?v=20261113-cls">`,
+				`<link rel="stylesheet" href="/static/css/main.css?v=20261116-theme-gallery">`,
 				`data-theme-switch hidden`,
+				`data-theme-open`,
+				`data-theme-dialog`,
 				`aria-label="Tema do site"`,
 				`data-theme-option="light" aria-pressed="false"`,
 				`data-theme-option="gta" aria-pressed="true"`,
-				`data-theme-option="dark"`,
+				`data-theme-option="dark" aria-pressed="false"`,
 			} {
 				if !strings.Contains(body, expected) {
 					t.Errorf("página sem %q", expected)
@@ -53,15 +55,17 @@ func TestThemeStylesheetServesLayoutReservation(t *testing.T) {
 		expected []string
 	}{
 		{
-			url:      "/static/css/main.css?v=20261113-cls",
-			expected: []string{`@import url("./components/theme-switch.css?v=20261113-cls")`},
+			url:      "/static/css/main.css?v=20261116-theme-gallery",
+			expected: []string{`@import url("./components/theme-switch.css?v=20261116-theme-gallery")`},
 		},
 		{
-			url: "/static/css/components/theme-switch.css?v=20261113-cls",
+			url: "/static/css/components/theme-switch.css?v=20261116-theme-gallery",
 			expected: []string{
 				".theme-switch[hidden] {",
 				"display: inline-flex !important;",
 				"visibility: hidden;",
+				".theme-gallery {",
+				".theme-card {",
 			},
 		},
 	} {
