@@ -223,19 +223,23 @@ Execute `make test-consent` para verificar o comportamento do controle.
 
 ## Temas visuais
 
-O seletor no cabecalho alterna entre tres temas: **Claro** (padrao, visual original),
-**GTA VI** (roxo, rosa e laranja neon) e **Escuro** (neutro, baixo brilho). A escolha
-fica em `localStorage` (`gp:theme:v1`, apenas o nome do tema) e sincroniza entre abas.
-`web/static/js/theme.js` e carregado sem `defer` antes do CSS para evitar flash do tema
-errado e valida o valor salvo contra uma lista fixa.
+O cabecalho tem um botao com o tema atual que abre uma **galeria de temas** (`<dialog>`
+modal) com um cartao por tema: **Claro** (visual original), **Vice City** (padrao; roxo,
+rosa e laranja neon) e **Escuro** (neutro, baixo brilho). Cada cartao traz um mini-mockup
+de pagina; passar o mouse ou focar (setas do teclado) aplica uma **previa ao vivo** na
+pagina, e clicar confirma e fecha. Fechar sem escolher (Esc, fundo ou botao) descarta a
+previa. A escolha fica em `localStorage` (`gp:theme:v1`, apenas o nome do tema) e
+sincroniza entre abas. `web/static/js/theme.js` e carregado sem `defer` antes do CSS para
+evitar flash do tema errado e valida o valor salvo contra uma lista fixa.
 
 - `web/static/css/themes.css`: tokens de cada tema escuro (`html[data-theme]`).
 - `web/static/css/themes-overrides.css`: troca de cores literais por tokens, escopada em
   `html[data-dark]`. O tema claro nao e afetado.
-- `web/static/css/components/theme-switch.css`: estilo do seletor.
+- `web/static/css/components/theme-switch.css`: estilo do gatilho, da galeria e dos
+  cartoes (os mockups usam cores fixas para continuarem fieis durante a previa).
 
-Para adicionar um tema, inclua o nome em `THEMES` (`theme.js`), um botao em
-`site_header.html` e um bloco `html[data-theme="..."]` em `themes.css`. Em componentes
+Para adicionar um tema, inclua o nome em `THEMES` (`theme.js`), um cartao
+(`data-theme-option` e `data-theme-name`) em `site_header.html`, as variaveis do mockup
+em `theme-switch.css` e um bloco `html[data-theme="..."]` em `themes.css`. Em componentes
 novos, prefira tokens (`var(--stone-900)`, `var(--surface-solid)`) a cores fixas.
 Execute `node --test scripts/tests/theme.test.cjs` para verificar o comportamento.
-

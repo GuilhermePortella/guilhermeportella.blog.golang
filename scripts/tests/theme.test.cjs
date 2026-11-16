@@ -5,20 +5,50 @@ const vm = require('node:vm');
 const source = readFileSync('web/static/js/theme.js', 'utf8');
 const KEY = 'gp:theme:v1';
 
-function setup({ stored = null, broken = false, readyState = 'complete', withSwitch = true } = {}) {
+const NAMES = { light: 'Claro', gta: 'Vice City', dark: 'Escuro' };
+
+function setup({ stored = null, broken = false, readyState = 'complete', withSwitch = true, withDialog = true } = {}) {
     let value = stored;
     const attrs = {};
     const events = {};
     const docEvents = {};
     class Button {
-        constructor(theme) { this.theme = theme; this.pressed = null; this.handlers = {}; }
-        getAttribute(name) { return name === 'data-theme-option' ? this.theme : null; }
+        constructor(theme) { this.theme = theme; this.pressed = null; this.handlers = {}; this.focused = 0; }
+        getAttribute(name) {
+            if (name === 'data-theme-option') return this.theme;
+            if (name === 'data-theme-name') return NAMES[this.theme];
+            return null;
+        }
         setAttribute(name, val) { if (name === 'aria-pressed') this.pressed = val; }
         addEventListener(name, fn) { this.handlers[name] = fn; }
         click() { this.handlers.click(); }
+        focus() { this.focused += 1; }
+        fire(name, event = {}) { this.handlers[name](event); }
     }
     const buttons = ['light', 'gta', 'dark'].map(theme => new Button(theme));
-    const group = { hidden: true, querySelectorAll: () => buttons };
+    const opener = {
+        expanded: 'false', handlers: {},
+        setAttribute(name, val) { if (name === 'aria-expanded') this.expanded = val; },
+        addEventListener(name, fn) { this.handlers[name] = fn; },
+    };
+    const label = { textContent: '' };
+    const dialog = {
+        open: false, handlers: {},
+        showModal() { this.open = true; },
+        close() { this.open = false; this.handlers.close?.(); },
+        addEventListener(name, fn) { this.handlers[name] = fn; },
+        querySelectorAll: () => [],
+    };
+    const group = {
+        hidden: true,
+        querySelectorAll: () => buttons,
+        querySelector(key) {
+            if (key === '[data-theme-open]') return opener;
+            if (key === '[data-theme-dialog]') return withDialog ? dialog : null;
+            if (key === '[data-theme-current-label]') return label;
+            return null;
+        },
+    };
     const root = {
         setAttribute: (name, val) => { attrs[name] = val; },
         toggleAttribute: (name, force) => { if (force) attrs[name] = ''; else delete attrs[name]; },
@@ -36,7 +66,7 @@ function setup({ stored = null, broken = false, readyState = 'complete', withSwi
         setItem(key, val) { if (broken) throw Error('unavailable'); if (key === KEY) value = val; },
     };
     vm.runInNewContext(source, { window, document, localStorage });
-    return { attrs, buttons, group, window, events, docEvents, stored: () => value, setStored: v => { value = v; } };
+    return { attrs, buttons, group, opener, dialog, label, window, events, docEvents, stored: () => value, setStored: v => { value = v; } };
 }
 
 test('sem preferência salva usa Vice City e marca tema escuro', () => {
@@ -86,15 +116,98 @@ test('com o documento pronto, o switch é exibido e os botões refletem aria-pre
     assert.deepEqual(s.buttons.map(b => b.pressed), ['false', 'false', 'true']);
 });
 
-test('clicar em um botão aplica o tema, persiste e atualiza aria-pressed', () => {
+test('clicar em um cartão aplica o tema, persiste, atualiza aria-pressed e fecha a galeria', () => {
     const s = setup();
+    s.opener.handlers.click();
+    assert.equal(s.dialog.open, true);
     s.buttons[1].click();
     assert.equal(s.attrs['data-theme'], 'gta');
     assert.equal(s.stored(), 'gta');
     assert.deepEqual(s.buttons.map(b => b.pressed), ['false', 'true', 'false']);
+    s.opener.handlers.click();
     s.buttons[0].click();
     assert.equal(s.attrs['data-theme'], 'light');
     assert.equal('data-dark' in s.attrs, false);
+    assert.equal(s.dialog.open, false);
+});
+
+test('o gatilho exibe o nome do tema atual e acompanha as mudanças', () => {
+    const s = setup({ stored: 'dark' });
+    assert.equal(s.label.textContent, 'Escuro');
+    s.buttons[0].click();
+    assert.equal(s.label.textContent, 'Claro');
+});
+
+test('abrir a galeria usa showModal, marca aria-expanded e foca o tema ativo', () => {
+    const s = setup({ stored: 'dark' });
+    assert.equal(s.opener.expanded, 'false');
+    s.opener.handlers.click();
+    assert.equal(s.dialog.open, true);
+    assert.equal(s.opener.expanded, 'true');
+    assert.equal(s.buttons[2].focused, 1);
+    s.dialog.close();
+    assert.equal(s.opener.expanded, 'false');
+});
+
+test('hover e foco mostram uma prévia sem persistir; sair restaura o tema escolhido', () => {
+    const s = setup({ stored: 'light' });
+    s.buttons[2].fire('pointerenter', { pointerType: 'mouse' });
+    assert.equal(s.attrs['data-theme'], 'dark');
+    assert.equal(s.window.siteTheme.get(), 'light');
+    assert.equal(s.stored(), 'light');
+    s.buttons[2].fire('pointerleave');
+    assert.equal(s.attrs['data-theme'], 'light');
+    assert.equal('data-dark' in s.attrs, false);
+    s.buttons[1].fire('focus');
+    assert.equal(s.attrs['data-theme'], 'gta');
+    s.buttons[1].fire('blur');
+    assert.equal(s.attrs['data-theme'], 'light');
+});
+
+test('toque (pointerType touch) não dispara prévia', () => {
+    const s = setup({ stored: 'light' });
+    s.buttons[2].fire('pointerenter', { pointerType: 'touch' });
+    assert.equal(s.attrs['data-theme'], 'light');
+});
+
+test('fechar a galeria sem escolher descarta a prévia', () => {
+    const s = setup({ stored: 'light' });
+    s.opener.handlers.click();
+    s.buttons[1].fire('focus');
+    assert.equal(s.attrs['data-theme'], 'gta');
+    s.dialog.close();
+    assert.equal(s.attrs['data-theme'], 'light');
+    assert.equal(s.stored(), 'light');
+});
+
+test('setas navegam entre os cartões de forma circular', () => {
+    const s = setup();
+    let prevented = 0;
+    const key = k => ({ key: k, preventDefault: () => { prevented += 1; } });
+    s.buttons[2].fire('keydown', key('ArrowRight'));
+    assert.equal(s.buttons[0].focused, 1);
+    s.buttons[0].fire('keydown', key('ArrowLeft'));
+    assert.equal(s.buttons[2].focused, 1);
+    s.buttons[0].fire('keydown', key('ArrowDown'));
+    assert.equal(s.buttons[1].focused, 1);
+    s.buttons[1].fire('keydown', key('Enter'));
+    assert.equal(prevented, 3);
+});
+
+test('clique no fundo da galeria fecha; clique em conteúdo interno não', () => {
+    const s = setup();
+    s.opener.handlers.click();
+    s.dialog.handlers.click({ target: {} });
+    assert.equal(s.dialog.open, true);
+    s.dialog.handlers.click({ target: s.dialog });
+    assert.equal(s.dialog.open, false);
+});
+
+test('sem o elemento dialog o seletor ainda aplica temas sem erro', () => {
+    const s = setup({ withDialog: false });
+    s.buttons[2].click();
+    assert.equal(s.attrs['data-theme'], 'dark');
+    assert.equal(s.stored(), 'dark');
 });
 
 test('no head (documento carregando) aplica o tema imediatamente e monta o switch depois', () => {
@@ -135,4 +248,3 @@ test('todo tema declarado tem um bloco de tokens em themes.css (exceto o claro)'
         assert.ok(css.includes(`html[data-theme="${theme}"] {`), theme);
     }
 });
-
