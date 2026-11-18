@@ -81,7 +81,7 @@
       <div>
         <p class="curiosity-eyebrow">apis</p>
         <h2 id="curiosity-apis-title">Exploradores de dados</h2>
-        <p>Pequenas interfaces para brincar com APIs publicas sem sair do site.</p>
+        <p>Pequenas interfaces para explorar dados, APIs públicas e regras que criam padrões.</p>
       </div>
     </div>
 
@@ -89,13 +89,13 @@
       {{range .APIs}}
       <article class="curiosity-api-card">
         <div class="curiosity-api-card__copy">
-          <p class="curiosity-eyebrow">api publica</p>
+          <p class="curiosity-eyebrow">explorador</p>
           <h3>{{.Title}}</h3>
           <p>{{.Description}}</p>
           <code>{{.Source}}</code>
         </div>
         <div class="curiosity-api-card__meta">
-          <ul aria-label="Recursos da API {{.Title}}">
+          <ul aria-label="Recursos de {{.Title}}">
             {{range .Tags}}
             <li>{{.}}</li>
             {{end}}

@@ -106,7 +106,7 @@ func (exporter exporter) absoluteURL(route string) string {
 func canonicalSitemapRoute(route string) string {
 	cleanRoute := path.Clean("/" + strings.TrimPrefix(route, "/"))
 	switch cleanRoute {
-	case "/", "/cookies", "/privacidade", "/about", "/astronomia", "/curiosidades", "/jogos", "/projetos", "/rick-morty":
+	case "/curiosidades/formiga-de-langton", "/", "/cookies", "/privacidade", "/about", "/astronomia", "/curiosidades", "/jogos", "/projetos", "/rick-morty":
 		return trailingSlash(cleanRoute)
 	default:
 		if strings.HasPrefix(cleanRoute, "/jogos/") {

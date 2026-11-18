@@ -1,0 +1,47 @@
+{{define "langton"}}{{template "base" .}}{{end}}
+{{define "head-extra"}}
+<link rel="stylesheet" href="/static/css/pages/langton.css?v=2">
+<script src="/static/js/langton-engine.js?v=4" defer></script>
+<script src="/static/js/langton.js?v=2" defer></script>
+{{end}}
+{{define "content"}}
+<article class="langton container">
+  <a href="/curiosidades/#apis">← Exploradores de dados</a>
+  <header class="langton-intro">
+    <p class="curiosity-eyebrow">um experimento com o tempo</p>
+    <h1>Uma formiga.<br>Duas regras. Infinitos caminhos.</h1>
+    <p>Criada por Chris Langton em 1986, a Formiga de Langton é um modelo matemático em que um agente percorre uma grade, alterando cada casa por onde passa. Com apenas duas regras, ela transforma movimentos simples em desenhos surpreendentemente complexos.</p>
+  </header>
+  <div class="langton-stats">
+    <div><span>Passos percorridos</span><strong id="ant-steps">0</strong></div>
+    <div><span>Jornada iniciada em</span><strong id="ant-start">Agora</strong></div>
+    <div><span>Coordenadas da formiga</span><strong id="ant-position">0, 0</strong></div>
+  </div>
+  <section class="langton-stage" aria-label="Simulação da formiga">
+    <div class="langton-toolbar"><span>● <span id="ant-phase">Explorando</span> · 5 passos/s</span><button id="ant-view" type="button">Congelar visualização</button></div>
+    <canvas id="ant-canvas" role="img" aria-label="Grade de luzes com a formiga em coral. A câmera acompanha sua posição.">A simulação precisa de um navegador com suporte a canvas.</canvas>
+    <p class="langton-caption">A câmera acompanha a formiga · <span class="ant-light">■</span> ligada · ■ apagada · <span class="ant-marker">▲</span> formiga</p>
+  </section>
+  <p id="ant-storage" role="status">A jornada fica salva apenas neste navegador. Apagar os dados do site ou encerrar uma sessão privada pode iniciar uma nova jornada.</p>
+  <div class="langton-rules">
+    <section><h2>💡 Luz ligada</h2><p>Gira à direita, apaga a luz e avança uma casa.</p></section>
+    <section><h2>■ Luz apagada</h2><p>Gira à esquerda, acende a luz e avança uma casa.</p></section>
+    <section><h2>O tempo faz parte</h2><p>Todas as luzes começam apagadas. Ao voltar, você encontra o estado correspondente ao tempo desde sua primeira visita. A página fechada não executa código: o caminho é calculado na volta.</p></section>
+  </div>
+  <section class="langton-explanation" aria-labelledby="langton-about">
+    <h2 id="langton-about">Como duas regras desenham um caminho</h2>
+    <p>A “formiga” não escolhe um destino nem planeja o próximo movimento. Ela consulta o estado da casa onde está, gira 90 graus, inverte esse estado e avança. Cada passagem modifica a grade e, portanto, as condições que encontrará ao retornar.</p>
+    <p>No modelo clássico, as casas são brancas ou pretas. Aqui, são luzes ligadas ou apagadas. Começamos com todas apagadas: mantendo as regras acima, o percurso espelha o exemplo que começa inteiramente branco.</p>
+
+    <h2>Do emaranhado à estrada</h2>
+    <p>Na grade uniforme, os primeiros movimentos produzem pequenos padrões, por vezes simétricos. Depois, o trajeto parece desordenado, embora nenhum passo seja sorteado. Por volta de dez mil passos, surge uma estrada: uma sequência de 104 movimentos que se repete, deslocando a formiga pela grade.</p>
+    <p>Esse é um exemplo de <strong>comportamento emergente</strong>: uma estrutura ampla nasce da repetição de regras locais. A estrada não foi incluída nas instruções de movimento.</p>
+
+    <h2>Uma jornada para revisitar</h2>
+    <p>Nesta página, a formiga percorre cinco casas por segundo. Nesse ritmo, dez mil passos levam cerca de 33 minutos e 20 segundos. Você pode observar o começo e voltar mais tarde para encontrar outra paisagem.</p>
+    <p>O navegador guarda a data de início. Ao reabrir a página, calculamos o estado correspondente ao tempo decorrido. Congelar a visualização permite examinar o desenho sem interromper esse relógio; ao retomar, a câmera acompanha a posição atual.</p>
+    <p class="langton-reference">Leitura de referência: <a href="https://www.agal-gz.org/blogues/media/blogs/madialeva/formiga_de_langton.pdf">Formiga de Langton (PDF, 5 páginas)</a>.</p>
+  </section>
+  <noscript><p>Ative o JavaScript para iniciar e acompanhar sua formiga.</p></noscript>
+</article>
+{{end}}
