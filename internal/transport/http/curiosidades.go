@@ -170,6 +170,13 @@ func newCuriosidadesPageData(now time.Time, currentPath string) curiosidadesPage
 		},
 		APIs: []curiosidadesAPICard{
 			{
+				Title:       "Formiga de Langton",
+				Description: "Uma jornada de luzes que acompanha o tempo, mesmo quando você sai. Volte para descobrir por onde ela anda.",
+				URL:         "/curiosidades/formiga-de-langton/",
+				Source:      "Simulação local · sem API externa",
+				Tags:        []string{"autômato celular", "luzes", "jornada contínua"},
+			},
+			{
 				Title:       "NASA APOD",
 				Description: "Uma janela para fotos, videos e explicacoes astronomicas da Astronomy Picture of the Day.",
 				URL:         "/astronomia",
@@ -351,5 +358,19 @@ func newRickAndMortyPageData(now time.Time, currentPath string) rickAndMortyPage
 		SiteName:      "Guilherme Portella",
 		CurrentYear:   now.Year(),
 		Navigation:    newSiteNavigation(currentPath),
+	}
+}
+
+func langtonHandler(renderer *Renderer, logger *slog.Logger) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		data := newRickAndMortyPageData(time.Now(), r.URL.Path)
+		data.Title = "Formiga de Langton"
+		data.Description = "Uma formiga, duas regras e uma jornada de luzes que continua com o tempo neste navegador."
+		data.CanonicalURL = publicSiteURL + "/curiosidades/formiga-de-langton/"
+		data.Keywords = "formiga de Langton, autômato celular, luzes, simulação"
+		if err := renderer.Render(w, "langton", data); err != nil {
+			logger.Error("render langton page", "error", err)
+			renderUnexpectedErrorPage(w, r, renderer, logger, http.StatusInternalServerError)
+		}
 	}
 }

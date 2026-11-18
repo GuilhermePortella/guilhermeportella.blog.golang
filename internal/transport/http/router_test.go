@@ -597,7 +597,7 @@ func TestNewRouterCuriosidades(t *testing.T) {
 		`Ver a coleção completa`,
 		`id="apis"`,
 		`Exploradores de dados`,
-		`Pequenas interfaces para brincar com APIs publicas sem sair do site.`,
+		`Pequenas interfaces para explorar dados, APIs públicas e regras que criam padrões.`,
 		`NASA APOD`,
 		`href="/astronomia" target="_blank" rel="noopener noreferrer"`,
 		`https://api.nasa.gov/planetary/apod`,
@@ -1479,6 +1479,22 @@ func assertMetaContent(t *testing.T, markup, attribute, value, want string) {
 					t.Fatalf("meta %s=%q content = %q (present=%t), want %q", attribute, value, got, present, want)
 				}
 				return
+			}
+		}
+	}
+}
+
+func TestLangtonPage(t *testing.T) {
+	handler := newTestRouter(t)
+	for _, route := range []string{"/curiosidades/formiga-de-langton", "/curiosidades/formiga-de-langton/"} {
+		recorder := httptest.NewRecorder()
+		handler.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, route, nil))
+		if recorder.Code != http.StatusOK {
+			t.Fatalf("%s: status %d", route, recorder.Code)
+		}
+		for _, expected := range []string{`id="ant-canvas"`, `/static/js/langton-engine.js`, `/static/js/langton.js`, `https://guilhermeportella.github.io/curiosidades/formiga-de-langton/`} {
+			if !strings.Contains(recorder.Body.String(), expected) {
+				t.Errorf("%s missing %s", route, expected)
 			}
 		}
 	}

@@ -1,0 +1,34 @@
+{{define "langton"}}{{template "base" .}}{{end}}
+{{define "head-extra"}}
+<link rel="stylesheet" href="/static/css/pages/langton.css?v=1">
+<script src="/static/js/langton-engine.js?v=4" defer></script>
+<script src="/static/js/langton.js?v=2" defer></script>
+{{end}}
+{{define "content"}}
+<article class="langton container">
+  <a href="/curiosidades/#apis">← Exploradores de dados</a>
+  <header class="langton-intro">
+    <p class="curiosity-eyebrow">um experimento com o tempo</p>
+    <h1>Uma formiga.<br>Duas regras. Infinitos caminhos.</h1>
+    <p>A Formiga de Langton transforma luzes em caminhos. Sua jornada começa nesta visita e acompanha o tempo deste navegador, mesmo enquanto você está longe.</p>
+  </header>
+  <div class="langton-stats">
+    <div><span>Passos percorridos</span><strong id="ant-steps">0</strong></div>
+    <div><span>Jornada iniciada em</span><strong id="ant-start">Agora</strong></div>
+    <div><span>Coordenadas da formiga</span><strong id="ant-position">0, 0</strong></div>
+  </div>
+  <section class="langton-stage" aria-label="Simulação da formiga">
+    <div class="langton-toolbar"><span>● <span id="ant-phase">Explorando</span> · 5 passos/s</span><button id="ant-view" type="button">Congelar visualização</button></div>
+    <canvas id="ant-canvas" role="img" aria-label="Grade de luzes com a formiga em coral. A câmera acompanha sua posição.">A simulação precisa de um navegador com suporte a canvas.</canvas>
+    <p class="langton-caption">A câmera acompanha a formiga · <span class="ant-light">■</span> ligada · ■ apagada · <span class="ant-marker">▲</span> formiga</p>
+  </section>
+  <p id="ant-storage" role="status">A jornada fica salva apenas neste navegador. Apagar os dados do site ou encerrar uma sessão privada pode iniciar uma nova jornada.</p>
+  <div class="langton-rules">
+    <section><h2>💡 Luz ligada</h2><p>Gira à direita, apaga a luz e avança uma casa.</p></section>
+    <section><h2>■ Luz apagada</h2><p>Gira à esquerda, acende a luz e avança uma casa.</p></section>
+    <section><h2>O tempo faz parte</h2><p>Todas as luzes começam apagadas. Ao voltar, você encontra o estado correspondente ao tempo desde sua primeira visita. A página fechada não executa código: o caminho é calculado na volta.</p></section>
+  </div>
+  <p>Primeiro surgem pequenos desenhos, depois um emaranhado. Mais adiante, uma estrada repete seu movimento a cada 104 passos. Congelar a visualização permite observar as luzes; o relógio da jornada continua.</p>
+  <noscript><p>Ative o JavaScript para iniciar e acompanhar sua formiga.</p></noscript>
+</article>
+{{end}}
