@@ -1,6 +1,7 @@
 (() => {
   'use strict';
-  const KEY = 'gp:langton:start:v1';
+  const KEY = 'gp:langton:start:v1', CLOCK_KEY = 'gp:langton:clock:v1';
+  const rates = [1, 5, 25, 100, 1000];
   const canvas = document.getElementById('ant-canvas'), ctx = canvas.getContext('2d');
   const status = document.getElementById('ant-storage');
   let start = Date.now();
@@ -17,15 +18,57 @@
   if (!ctx) { status.textContent = 'Este navegador não disponibilizou o canvas para desenhar a simulação.'; return; }
   const at = Langton.engine(), format = new Intl.NumberFormat('pt-BR');
   const button = document.getElementById('ant-view');
+  const speed = document.getElementById('ant-speed');
+  const speedDefault = document.getElementById('ant-speed-default');
+  const speedDown = document.getElementById('ant-speed-down'), speedUp = document.getElementById('ant-speed-up');
+  let clock = { start, at: start, steps: 0, rate: 5 };
+  function speedLabel() {
+    speed.textContent = `${format.format(clock.rate)} ${clock.rate === 1 ? 'passo/s' : 'passos/s'}`;
+    speedDefault.setAttribute('aria-pressed', String(clock.rate === 5));
+    speedDown.disabled = clock.rate === rates[0];
+    speedUp.disabled = clock.rate === rates[rates.length - 1];
+  }
+  function readClock() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(CLOCK_KEY));
+      if (saved && saved.start === start && Number.isSafeInteger(saved.at) && saved.at >= start && saved.at <= Date.now()
+          && Number.isFinite(saved.steps) && saved.steps >= 0 && saved.steps <= Number.MAX_SAFE_INTEGER
+          && rates.includes(saved.rate)) clock = saved;
+    } catch { /* Keep the current clock when storage is unavailable or malformed. */ }
+    speedLabel();
+  }
+  function progress(now) {
+    return Math.min(Number.MAX_SAFE_INTEGER, clock.steps + Math.max(0, now - clock.at) * clock.rate / 1000);
+  }
+  readClock();
+  function changeSpeed(rate) {
+    if (!rates.includes(rate)) return;
+    const now = Date.now();
+    clock = { start, at: now, steps: progress(now), rate };
+    speedLabel();
+    try { localStorage.setItem(CLOCK_KEY, JSON.stringify(clock)); }
+    catch { status.textContent = 'A velocidade vale nesta visita, mas o navegador não permitiu salvar a mudança.'; }
+    render(true);
+  }
+  speedDefault.addEventListener('click', () => { readClock(); changeSpeed(5); });
+  function adjustSpeed(delta) {
+    readClock();
+    changeSpeed(rates[rates.indexOf(clock.rate) + delta]);
+  }
+  speedDown.addEventListener('click', () => adjustSpeed(-1));
+  speedUp.addEventListener('click', () => adjustSpeed(1));
   let frozen = matchMedia('(prefers-reduced-motion: reduce)').matches, last = -1, state;
   function buttonLabel() { button.textContent = frozen ? 'Acompanhar agora' : 'Congelar visualização'; button.setAttribute('aria-pressed', String(frozen)); }
   buttonLabel();
   button.addEventListener('click', () => { frozen = !frozen; buttonLabel(); render(true); });
   window.addEventListener('storage', event => {
+    if (event.key === CLOCK_KEY) { readClock(); render(true); return; }
     if (event.key !== KEY && event.key !== null) return;
     const value = readStart(event.newValue);
-    if (value !== null) { start = value; last = -1; render(true); }
-    else status.textContent = 'O registro da jornada foi removido. Esta visita continua; uma nova visita iniciará outra jornada.';
+    if (value !== null) {
+      start = value; clock = { start, at: start, steps: 0, rate: 5 };
+      readClock(); last = -1; state = null; render(true);
+    } else status.textContent = 'O registro da jornada foi removido. Esta visita continua; uma nova visita iniciará outra jornada.';
   });
   const camera = { x: 0, y: 0, size: 12, follow: true };
   const follow = document.getElementById('ant-follow');
@@ -103,7 +146,7 @@
   }
   function render(force = false) {
     if (document.hidden && !force) return;
-    const n = Math.max(last, Langton.target(start, Date.now()));
+    const n = Math.max(last, Math.floor(progress(Date.now())));
     if ((!frozen || !state) && (n !== last || force)) {
       state = at(n); last = n;
       document.getElementById('ant-steps').textContent = format.format(n);

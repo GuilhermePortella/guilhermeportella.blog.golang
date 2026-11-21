@@ -3,3 +3,5 @@
 .langton-explanation{max-width:760px;margin-top:3rem}.langton-explanation h2{font-size:clamp(1.3rem,3vw,1.7rem);margin-top:2rem}.langton-explanation p{line-height:1.85}.langton-reference{font-size:.9rem;margin-top:2rem}
 
 .langton-navigation{justify-content:flex-start;flex-wrap:wrap;padding-top:0}.langton-zoom{display:flex;align-items:center;gap:.6rem}.langton-zoom output{min-width:4ch;text-align:center;font-variant-numeric:tabular-nums}.langton-toolbar button{min-height:44px}.langton-toolbar button:disabled{opacity:.45;cursor:default}.langton-toolbar button[aria-pressed="true"]{border-color:#f6d986}#ant-canvas{touch-action:none;cursor:grab}#ant-canvas:active{cursor:grabbing}#ant-canvas:focus-visible{outline:3px solid #ff927e;outline-offset:-3px}
+
+.langton-toolbar{flex-wrap:wrap}.langton-speed{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap}.langton-speed output{min-width:10ch}

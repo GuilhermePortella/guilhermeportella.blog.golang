@@ -1,8 +1,8 @@
 {{define "langton"}}{{template "base" .}}{{end}}
 {{define "head-extra"}}
-<link rel="stylesheet" href="/static/css/pages/langton.css?v=3">
+<link rel="stylesheet" href="/static/css/pages/langton.css?v=5">
 <script src="/static/js/langton-engine.js?v=4" defer></script>
-<script src="/static/js/langton.js?v=3" defer></script>
+<script src="/static/js/langton.js?v=5" defer></script>
 {{end}}
 {{define "content"}}
 <article class="langton container">
@@ -18,7 +18,15 @@
     <div><span>Coordenadas da formiga</span><strong id="ant-position">0, 0</strong></div>
   </div>
   <section class="langton-stage" aria-label="Simulação da formiga">
-    <div class="langton-toolbar"><span>● <span id="ant-phase">Explorando</span> · 5 passos/s</span><button id="ant-view" type="button">Congelar visualização</button></div>
+    <div class="langton-toolbar"><span>● <span id="ant-phase">Explorando</span></span>
+      <div class="langton-speed" role="group" aria-label="Velocidade da formiga">
+        <button id="ant-speed-default" type="button" aria-pressed="true">Velocidade padrão</button>
+        <div class="langton-zoom">
+          <button id="ant-speed-down" type="button" aria-label="Diminuir velocidade">−</button>
+          <output id="ant-speed" aria-live="polite" aria-label="Velocidade atual">5 passos/s</output>
+          <button id="ant-speed-up" type="button" aria-label="Aumentar velocidade">+</button>
+        </div>
+      </div><button id="ant-view" type="button">Congelar visualização</button></div>
     <div class="langton-toolbar langton-navigation" role="group" aria-label="Controles da câmera">
       <div class="langton-zoom"><button id="ant-zoom-out" type="button" aria-label="Diminuir zoom">−</button><output id="ant-zoom" aria-label="Zoom atual">100%</output><button id="ant-zoom-in" type="button" aria-label="Aumentar zoom">+</button></div>
       <button id="ant-origin" type="button">Ir ao início do caminho</button>
@@ -44,8 +52,8 @@
     <p>Esse é um exemplo de <strong>comportamento emergente</strong>: uma estrutura ampla nasce da repetição de regras locais. A estrada não foi incluída nas instruções de movimento.</p>
 
     <h2>Uma jornada para revisitar</h2>
-    <p>Nesta página, a formiga percorre cinco casas por segundo. Nesse ritmo, dez mil passos levam cerca de 33 minutos e 20 segundos. Você pode observar o começo e voltar mais tarde para encontrar outra paisagem.</p>
-    <p>O navegador guarda a data de início. Ao reabrir a página, calculamos o estado correspondente ao tempo decorrido. Congelar a visualização permite examinar o desenho sem interromper esse relógio; ao retomar, o desenho é atualizado. Arraste a grade para revisitar os caminhos ou vá direto ao início. Use “Seguir formiga” para voltar a acompanhar sua posição.</p>
+    <p>Por padrão, a formiga percorre cinco casas por segundo. O seletor de velocidade permite reduzir ou acelerar esse ritmo sem reiniciar o caminho. No ritmo padrão, dez mil passos levam cerca de 33 minutos e 20 segundos. Você pode observar o começo e voltar mais tarde para encontrar outra paisagem.</p>
+    <p>O navegador guarda a data de início, o progresso na troca de velocidade e o ritmo escolhido, que também vale para o tempo fora da página. Ao reabrir a página, calculamos o estado correspondente ao tempo decorrido. Congelar a visualização permite examinar o desenho sem interromper esse relógio; ao retomar, o desenho é atualizado. Arraste a grade para revisitar os caminhos ou vá direto ao início. Use “Seguir formiga” para voltar a acompanhar sua posição.</p>
     <p class="langton-reference">Leitura de referência: <a href="https://www.agal-gz.org/blogues/media/blogs/madialeva/formiga_de_langton.pdf">Formiga de Langton (PDF, 5 páginas)</a>.</p>
   </section>
   <noscript><p>Ative o JavaScript para iniciar e acompanhar sua formiga.</p></noscript>

@@ -8,7 +8,7 @@ function boot(storage, now, options = {}) {
   const events = {}, elements = {};
   const translations = [];
   const context = new Proxy({}, { get: (_, name) => name === 'translate' ? (x, y) => translations.push([x, y]) : () => {} });
-  for (const id of ['ant-canvas', 'ant-storage', 'ant-view', 'ant-steps', 'ant-position', 'ant-phase', 'ant-start', 'ant-follow', 'ant-origin', 'ant-zoom-out', 'ant-zoom-in', 'ant-zoom', 'ant-camera']) {
+  for (const id of ['ant-canvas', 'ant-storage', 'ant-view', 'ant-steps', 'ant-position', 'ant-phase', 'ant-start', 'ant-follow', 'ant-origin', 'ant-zoom-out', 'ant-zoom-in', 'ant-zoom', 'ant-camera', 'ant-speed', 'ant-speed-default', 'ant-speed-down', 'ant-speed-up']) {
     elements[id] = { textContent: '', clientWidth: 120, clientHeight: 120, getContext: () => context,
       focus() {}, setPointerCapture() {}, getBoundingClientRect: () => ({ left: 0, top: 0 }),
       setAttribute() {}, addEventListener(name, fn) { this[name] = fn; } };
@@ -103,4 +103,64 @@ test('cancelar o toque encerra o arraste', () => {
   canvas.pointercancel({ pointerId: 1 });
   canvas.pointermove({ pointerId: 1, clientX: 90, clientY: 90 });
   assert.deepEqual(ui.translations.at(-1), [60, 60]);
+});
+
+
+test('velocidade preserva progresso e frações ao acelerar, desacelerar e recarregar', () => {
+  const store = new Map(), now = { value: 1700000000000 }, ui = boot(store, now);
+  const up = ui.elements['ant-speed-up'], down = ui.elements['ant-speed-down'];
+  now.value += 1100;
+  up.click(); up.click();
+  assert.equal(ui.elements['ant-steps'].textContent, '5');
+  now.value += 1000; ui.tick();
+  assert.equal(ui.elements['ant-steps'].textContent, '105');
+  down.click(); down.click(); down.click();
+  now.value += 500; ui.tick();
+  assert.equal(ui.elements['ant-steps'].textContent, '106');
+  now.value += 10000;
+  const restored = boot(store, now);
+  assert.equal(restored.elements['ant-speed'].textContent, '1 passo/s');
+  assert.equal(restored.elements['ant-steps'].textContent, '116');
+});
+
+test('velocidade sincroniza entre abas e mantém congelamento apenas visual', () => {
+  const store = new Map(), now = { value: 1700000000000 };
+  const first = boot(store, now), second = boot(store, now, { reduced: true });
+  now.value += 1000;
+  for (let i = 0; i < 3; i++) first.elements['ant-speed-up'].click();
+  second.events.storage({ key: 'gp:langton:clock:v1' });
+  assert.equal(second.elements['ant-speed'].textContent, '1.000 passos/s');
+  now.value += 1000; second.tick();
+  assert.equal(second.elements['ant-steps'].textContent, '0');
+  second.elements['ant-view'].click();
+  assert.equal(second.elements['ant-steps'].textContent, '1.005');
+});
+
+test('relógios inválidos ou de outra jornada não alteram o ritmo padrão', () => {
+  const start = 1700000000000, now = { value: start + 1000 };
+  for (const saved of ['{', 'null', JSON.stringify({ start, at: start, steps: -5, rate: 100 }),
+    JSON.stringify({ start, at: start, steps: 0, rate: 999 }),
+    JSON.stringify({ start: start - 1, at: start, steps: 500, rate: 100 })]) {
+    const ui = boot(new Map([['gp:langton:start:v1', String(start)], ['gp:langton:clock:v1', saved]]), now);
+    assert.equal(ui.elements['ant-speed'].textContent, '5 passos/s');
+    assert.equal(ui.elements['ant-steps'].textContent, '5');
+  }
+});
+
+
+test('botões de velocidade respeitam limites e padrão permanece disponível', () => {
+  const ui = boot(new Map(), { value: 1700000000000 });
+  const el = ui.elements;
+  for (let i = 0; i < 8; i++) el['ant-speed-up'].click();
+  assert.equal(el['ant-speed'].textContent, '1.000 passos/s');
+  assert.equal(el['ant-speed-up'].disabled, true);
+  assert.notEqual(el['ant-speed-default'].disabled, true);
+  el['ant-speed-default'].click();
+  assert.equal(el['ant-speed'].textContent, '5 passos/s');
+  for (let i = 0; i < 8; i++) el['ant-speed-down'].click();
+  assert.equal(el['ant-speed'].textContent, '1 passo/s');
+  assert.equal(el['ant-speed-down'].disabled, true);
+  el['ant-speed-default'].click();
+  assert.equal(el['ant-speed'].textContent, '5 passos/s');
+  assert.equal(el['ant-speed-down'].disabled, false);
 });
