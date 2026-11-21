@@ -112,7 +112,7 @@ func TestThemeScriptCompliesWithContentSecurityPolicy(t *testing.T) {
 	body := response.Body.String()
 
 	// A CSP só permite script-src 'self': o tema não pode depender de script inline.
-	if !strings.Contains(body, "script-src 'self';") {
+	if !strings.Contains(body, "script-src 'self' 'wasm-unsafe-eval';") {
 		t.Fatal("CSP deveria restringir scripts à própria origem")
 	}
 	if strings.Contains(body, "unsafe-inline'") && strings.Contains(body, "script-src 'self' 'unsafe-inline'") {

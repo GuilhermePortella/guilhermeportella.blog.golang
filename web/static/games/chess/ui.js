@@ -64,7 +64,7 @@
   "use strict";
 
   const STORAGE_KEY = "chess_v1";
-  const LEVELS = ["easy", "medium", "hard"];
+  const LEVELS = ["easy", "medium", "hard", "extreme"];
   const MODES = ["machine", "local"];
   const MIN_MACHINE_DELAY_MS = 450;
   const GLYPHS = { k: "\u265A", q: "\u265B", r: "\u265C", b: "\u265D", n: "\u265E", p: "\u265F" };
@@ -87,7 +87,7 @@
   };
 
   function defaultPrefs() {
-    return { level: "medium", mode: "machine", side: "w", record: { wins: 0, losses: 0, draws: 0 } };
+    return { level: "extreme", mode: "machine", side: "w", record: { wins: 0, losses: 0, draws: 0 } };
   }
 
   function count(value) {
@@ -138,6 +138,7 @@
     const cancel = deps.clearTimeout || ((id) => clearTimeout(id));
     const now = deps.now || (() => Date.now());
     const minDelay = typeof deps.minDelay === "number" ? deps.minDelay : MIN_MACHINE_DELAY_MS;
+    const stockfishUrl = rootEl.getAttribute("data-chess-stockfish-url") || "";
     const workerUrl = rootEl.getAttribute("data-chess-worker-url") || "";
 
     const el = {
@@ -175,6 +176,8 @@
       timer: 0,
       worker: null,
       workerFailed: false,
+      stockfish: null,
+      engineTimer: 0,
       record: prefs.record,
       recorded: false,
       focus: 52,
@@ -386,6 +389,10 @@
 
     function stopThinking() {
       state.requestId += 1;
+      if (state.engineTimer) cancel(state.engineTimer);
+      state.engineTimer = 0;
+      if (state.stockfish) state.stockfish.terminate();
+      state.stockfish = null;
       state.thinking = false;
       if (state.timer) {
         cancel(state.timer);
@@ -445,6 +452,55 @@
       }, 20);
     }
 
+    // Each search owns its worker; cancellation cannot leak a stale UCI reply.
+    function runStockfish(id) {
+      let phase = "uci";
+      let worker;
+      const fail = () => {
+        if (id !== state.requestId) return;
+        stopThinking();
+        state.notice = "Stockfish indisponível. Tente Novo jogo ou escolha outra dificuldade.";
+        render();
+      };
+      try {
+        if (!deps.createWorker || !stockfishUrl) return fail();
+        worker = deps.createWorker(stockfishUrl);
+        state.stockfish = worker;
+        state.engineTimer = schedule(fail, 45000);
+        worker.onerror = fail;
+        worker.onmessageerror = fail;
+        worker.onmessage = (event) => {
+          if (id !== state.requestId || !state.thinking) return;
+          for (const line of String(event.data).split("\n")) {
+            if (line.trim() === "uciok" && phase === "uci") {
+              phase = "ready";
+              worker.postMessage("setoption name Hash value 32");
+              worker.postMessage("setoption name Skill Level value 20");
+              worker.postMessage("setoption name UCI_LimitStrength value false");
+              worker.postMessage("ucinewgame");
+              worker.postMessage("isready");
+            } else if (line.trim() === "readyok" && phase === "ready") {
+              phase = "search";
+              worker.postMessage(state.game.uciPosition());
+              worker.postMessage("go movetime 8000");
+            } else if (line.startsWith("bestmove ") && phase === "search") {
+              const match = /^bestmove ([a-h][1-8])([a-h][1-8])([qrbn])?(?:\s|$)/.exec(line);
+              if (!match) return fail();
+              phase = "done";
+              cancel(state.engineTimer);
+              state.engineTimer = 0;
+              worker.terminate();
+              state.stockfish = null;
+              deliver(id, { from: E.parseSquare(match[1]), to: E.parseSquare(match[2]), promotion: match[3] });
+            }
+          }
+        };
+        worker.postMessage("uci");
+      } catch {
+        fail();
+      }
+    }
+
     function queueMachine() {
       const status = state.game.status();
       if (state.mode !== "machine" || status.over || state.game.turn === state.human) {
@@ -457,6 +513,10 @@
       state.startedAt = now();
       render();
 
+      if (state.level === "extreme") {
+        runStockfish(id);
+        return;
+      }
       const worker = ensureWorker();
       if (worker) {
         worker.postMessage({ id, fen: state.game.fen(), level: state.level });
@@ -501,7 +561,7 @@
         return "Escolha a peça para a promoção (Esc cancela).";
       }
       if (state.thinking) {
-        return "A máquina está pensando…";
+        return state.level === "extreme" ? "Stockfish está analisando… até 8 s por lance; o primeiro pode demorar para carregar." : "A máquina está pensando…";
       }
 
       const turn = state.game.turn;
@@ -645,8 +705,12 @@
       render();
     });
     el.level.addEventListener("change", () => {
-      state.level = LEVELS.includes(el.level.value) ? el.level.value : "medium";
+      stopThinking();
+      state.notice = "";
+      state.level = LEVELS.includes(el.level.value) ? el.level.value : "extreme";
       save();
+      render();
+      queueMachine();
     });
     el.mode.addEventListener("change", settingsChanged);
     el.side.addEventListener("change", settingsChanged);
