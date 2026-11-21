@@ -58,13 +58,14 @@ function build() {
         '[data-chess-promotion]': new Element(),
     };
     const root = new Element();
+    root.attrs['data-chess-stockfish-url'] = '/static/games/chess/stockfish/stockfish-17.1-lite-single-03e3232.js';
     root.attrs['data-chess-worker-url'] = '/static/games/chess/worker.js?v=test';
     root.querySelector = selector => parts[selector] || null;
     root.querySelectorAll = selector => (selector === '[data-chess-promote]' ? promoteButtons : []);
     return { root, parts, promoteButtons };
 }
 
-function setup({ stored = null, worker = false, level } = {}) {
+function setup({ stored = JSON.stringify({ level: 'medium' }), worker = false, level } = {}) {
     const { root, parts, promoteButtons } = build();
     const store = new Map(stored === null ? [] : [[UI.STORAGE_KEY, stored]]);
     const storage = {
@@ -230,7 +231,7 @@ test('empate por afogamento conta como empate', () => {
 });
 
 test('novo jogo reinicia a partida, usa as escolhas do formulario e persiste', () => {
-    const { app, parts, flush, store } = setup({ stored: JSON.stringify({ mode: 'local' }) });
+    const { app, parts, flush, store } = setup({ stored: JSON.stringify({ mode: 'local', level: 'easy' }) });
     app.click(at('e2')); app.click(at('e4'));
     parts['[data-chess-mode]'].value = 'machine';
     parts['[data-chess-side]'].value = 'b';
@@ -245,7 +246,7 @@ test('novo jogo reinicia a partida, usa as escolhas do formulario e persiste', (
 });
 
 test('trocar modo no meio da partida so vale no proximo jogo', () => {
-    const { app, parts } = setup({ stored: JSON.stringify({ mode: 'local' }) });
+    const { app, parts } = setup({ stored: JSON.stringify({ mode: 'local', level: 'easy' }) });
     app.click(at('e2')); app.click(at('e4'));
     parts['[data-chess-mode]'].value = 'machine';
     parts['[data-chess-mode]'].emit('change');
@@ -282,7 +283,7 @@ test('navegacao por teclado move o foco entre casas e respeita as bordas', () =>
 test('preferencias corrompidas ou fora da lista caem no padrao', () => {
     for (const bad of ['', 'nao-json', '{"level":"god","mode":"x","side":"z","record":{"wins":-1,"losses":"1","draws":1e99}}', '[]', 'null']) {
         const prefs = UI.loadPrefs({ getItem: () => bad });
-        assert.deepEqual(prefs, { level: 'medium', mode: 'machine', side: 'w', record: { wins: 0, losses: 0, draws: 0 } }, bad);
+        assert.deepEqual(prefs, { level: 'extreme', mode: 'machine', side: 'w', record: { wins: 0, losses: 0, draws: 0 } }, bad);
     }
     const prefs = UI.loadPrefs({ getItem: () => JSON.stringify({ level: 'hard', record: { wins: 3, losses: 2, draws: 1 } }) });
     assert.equal(prefs.level, 'hard');
@@ -366,3 +367,61 @@ test('o codigo da interface nunca usa innerHTML', () => {
     assert.doesNotMatch(source, /innerHTML|outerHTML|insertAdjacentHTML|document\.write|eval\(/);
 });
 
+
+
+test('extremo negocia UCI, usa força máxima e aplica o lance legal', () => {
+    const { app, workers, flush } = setup({ worker: true, stored: null });
+    app.click(at('e2')); app.click(at('e4'));
+    const w = workers[0];
+    assert.match(w.url, /stockfish/);
+    assert.deepEqual(w.posted, ['uci']);
+    w.onmessage({ data: 'uciok' });
+    assert.ok(w.posted.includes('setoption name Skill Level value 20'));
+    assert.ok(w.posted.includes('setoption name UCI_LimitStrength value false'));
+    w.onmessage({ data: 'readyok' });
+    assert.ok(w.posted.includes('position fen ' + E.START_FEN + ' moves e2e4'));
+    assert.equal(w.posted.at(-1), 'go movetime 8000');
+    w.onmessage({ data: 'bestmove e7e5 ponder g1f3' });
+    flush();
+    assert.equal(app.state.game.history()[1], 'e5');
+    assert.equal(w.terminated, true);
+});
+
+test('extremo falha ou expira sem substituir silenciosamente por IA fraca', () => {
+    for (const kind of ['error', 'timeout', 'invalid', 'missing']) {
+        const { app, workers, flush, message } = setup({ worker: kind !== 'missing', stored: null });
+        app.click(at('e2')); app.click(at('e4'));
+        if (kind === 'error') workers[0].onerror({});
+        if (kind === 'invalid') {
+            for (const data of ['uciok', 'readyok', 'bestmove (none)']) workers[0].onmessage({ data });
+        }
+        flush();
+        assert.equal(app.state.game.history().length, 1);
+        assert.equal(app.state.thinking, false);
+        assert.match(message(), /Stockfish indisponível/);
+    }
+});
+
+test('extremo cancela ao desfazer e ignora respostas antigas', () => {
+    const { app, workers, flush } = setup({ worker: true, stored: null });
+    app.click(at('e2')); app.click(at('e4'));
+    const w = workers[0];
+    w.onmessage({ data: 'uciok' }); w.onmessage({ data: 'readyok' });
+    app.undo();
+    w.onmessage({ data: 'bestmove e7e5' });
+    flush();
+    assert.equal(w.terminated, true);
+    assert.equal(app.state.game.fen(), E.START_FEN);
+});
+
+test('trocar dificuldade durante análise cancela Stockfish e refaz a busca', () => {
+    const { app, workers, parts, flush } = setup({ worker: true, stored: null });
+    app.click(at('e2')); app.click(at('e4'));
+    parts['[data-chess-level]'].value = 'easy';
+    parts['[data-chess-level]'].emit('change');
+    assert.equal(workers[0].terminated, true);
+    const request = workers[1].posted[0];
+    workers[1].onmessage({ data: { id: request.id, move: { from: sq('e7'), to: sq('e5') } } });
+    flush();
+    assert.equal(app.state.game.history().length, 2);
+});

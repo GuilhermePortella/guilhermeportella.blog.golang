@@ -496,12 +496,14 @@ func TestNewRouterJogoChess(t *testing.T) {
 		`data-chess-game`,
 		`data-chess-board`,
 		`data-chess-level`,
+		`<option value="extreme" selected>Extremo · Stockfish</option>`,
+		`data-chess-stockfish-url="/static/games/chess/stockfish/stockfish-17.1-lite-single-03e3232.js"`,
 		`data-chess-promotion`,
-		`data-chess-worker-url="/static/games/chess/worker.js?v=20261108-chess"`,
-		`<link rel="stylesheet" href="/static/games/chess/chess.css?v=20261108-chess">`,
-		`<script src="/static/games/chess/engine.js?v=20261108-chess" defer></script>`,
-		`<script src="/static/games/chess/ai.js?v=20261108-chess" defer></script>`,
-		`<script src="/static/games/chess/ui.js?v=20261108-chess" defer></script>`,
+		`data-chess-worker-url="/static/games/chess/worker.js?v=20261120-stockfish"`,
+		`<link rel="stylesheet" href="/static/games/chess/chess.css?v=20261120-stockfish">`,
+		`<script src="/static/games/chess/engine.js?v=20261120-stockfish" defer></script>`,
+		`<script src="/static/games/chess/ai.js?v=20261120-stockfish" defer></script>`,
+		`<script src="/static/games/chess/ui.js?v=20261120-stockfish" defer></script>`,
 	} {
 		if !strings.Contains(body, expected) {
 			t.Fatalf("body does not contain %q", expected)
@@ -630,11 +632,11 @@ func TestNewRouterCuriosidades(t *testing.T) {
 		t.Fatalf("Content-Security-Policy = %q, want Spotify frame-src", got)
 	}
 
-	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "script-src 'self';") {
+	if got := recorder.Header().Get("Content-Security-Policy"); !strings.Contains(got, "script-src 'self' 'wasm-unsafe-eval';") {
 		t.Fatalf("Content-Security-Policy = %q, want self-only script-src", got)
 	}
 
-	if got := recorder.Header().Get("Content-Security-Policy"); strings.Contains(got, "unsafe-eval") || strings.Contains(got, "embed-cdn.spotifycdn.com") {
+	if got := recorder.Header().Get("Content-Security-Policy"); strings.Contains(got, "'unsafe-eval'") || strings.Contains(got, "embed-cdn.spotifycdn.com") {
 		t.Fatalf("Content-Security-Policy = %q, should not relax script-src for Spotify iframe API", got)
 	}
 

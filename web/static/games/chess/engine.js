@@ -670,6 +670,10 @@
         return stack.length > 1;
       },
       status,
+      uciPosition() {
+        const moves = stack.slice(1).map(({ move }) => squareName(move.from) + squareName(move.to) + (move.promotion || ""));
+        return "position fen " + toFEN(stack[0].pos) + (moves.length ? " moves " + moves.join(" ") : "");
+      },
       history() {
         return stack.slice(1).map((node) => node.san);
       },

@@ -1,0 +1,18 @@
+Stockfish.js 17.1 Lite single-threaded — GPL-3.0
+Copyright Stockfish contributors and Chess.com, LLC. See AUTHORS and Copying.txt.
+Unmodified files from npm stockfish@17.1.0:
+https://registry.npmjs.org/stockfish/-/stockfish-17.1.0.tgz
+Exact corresponding source and build scripts:
+https://github.com/nmrugg/stockfish.js/tree/602fd7e1a571a2be71f242942db90483731f2a1f
+Build: Emscripten, ./build.js --single-threaded --lite
+Upstream: https://github.com/official-stockfish/Stockfish
+License: /static/games/chess/stockfish/Copying.txt
+
+The Lite network trades playing strength for a smaller browser download (~7 MB).
+This integration uses Skill Level 20, UCI_LimitStrength false, Hash 32 MB,
+and go movetime 8000 in a dedicated Worker. No Elo rating is claimed.
+The engine loads only when an Extreme computer move is needed.
+
+SHA-256 (distributed files):
+1c8265e52fdaef797684b4979b42c5dcfe0350df3e11a87e48e4ec5f86e0ca5c  stockfish-17.1-lite-single-03e3232.js
+7ca31bedd166148931a1cc84dbd8dd9cf001744e9994caf23a3c6ff4988d7086  stockfish-17.1-lite-single-03e3232.wasm

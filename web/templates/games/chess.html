@@ -1,5 +1,5 @@
 {{define "game-chess"}}
-<div class="chess-game" data-chess-game data-chess-worker-url="/static/games/chess/worker.js?v=20261108-chess">
+<div class="chess-game" data-chess-game data-chess-stockfish-url="/static/games/chess/stockfish/stockfish-17.1-lite-single-03e3232.js" data-chess-worker-url="/static/games/chess/worker.js?v=20261120-stockfish">
   <div class="chess-toolbar" aria-label="Controles da partida">
     <div class="chess-stats" aria-live="polite">
       <p><span>Turno</span><strong data-chess-turn>Brancas</strong></p>
@@ -27,6 +27,7 @@
           <option value="easy">Fácil</option>
           <option value="medium">Médio</option>
           <option value="hard">Difícil</option>
+          <option value="extreme" selected>Extremo · Stockfish</option>
         </select>
       </label>
       <button type="button" data-chess-new>Novo jogo</button>
@@ -54,6 +55,8 @@
 
     <aside class="chess-panel" aria-label="Estado da partida">
       <section>
+        <p>Extremo: Stockfish 17.1 Lite, força máxima e até 8 segundos por lance.</p>
+        <p><a href="/static/games/chess/stockfish/NOTICE.txt">Créditos, código-fonte e licença</a></p>
         <h3>Jogadas</h3>
         <ol class="chess-moves" data-chess-moves aria-label="Lista de jogadas"></ol>
       </section>
