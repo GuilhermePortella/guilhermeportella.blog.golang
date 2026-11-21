@@ -1501,3 +1501,75 @@ func TestLangtonPage(t *testing.T) {
 		}
 	}
 }
+
+// The UI tests use a simulated DOM; this contract verifies that the real template
+// serves the controls and accessible labels needed by the simulation.
+func TestLangtonNavigationAndSpeedControls(t *testing.T) {
+	handler := newTestRouter(t)
+	recorder := httptest.NewRecorder()
+	handler.ServeHTTP(recorder, httptest.NewRequest(http.MethodGet, "/curiosidades/formiga-de-langton/", nil))
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("status = %d, want %d", recorder.Code, http.StatusOK)
+	}
+	doc, err := nethtml.Parse(strings.NewReader(recorder.Body.String()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	controls := map[string]*nethtml.Node{}
+	var visit func(*nethtml.Node)
+	visit = func(node *nethtml.Node) {
+		for _, attr := range node.Attr {
+			if attr.Key == "id" && strings.HasPrefix(attr.Val, "ant-") {
+				if controls[attr.Val] != nil {
+					t.Errorf("duplicate control %q", attr.Val)
+				}
+				controls[attr.Val] = node
+			}
+		}
+		for child := node.FirstChild; child != nil; child = child.NextSibling {
+			visit(child)
+		}
+	}
+	visit(doc)
+	for id, want := range map[string]struct {
+		tag   string
+		attrs map[string]string
+	}{
+		"ant-speed-default":   {"button", map[string]string{"type": "button", "aria-pressed": "true"}},
+		"ant-speed-down":      {"button", map[string]string{"type": "button", "aria-label": "Diminuir velocidade"}},
+		"ant-speed-up":        {"button", map[string]string{"type": "button", "aria-label": "Aumentar velocidade"}},
+		"ant-speed":           {"output", map[string]string{"aria-live": "polite", "aria-label": "Velocidade atual"}},
+		"ant-zoom-out":        {"button", map[string]string{"aria-label": "Diminuir zoom"}},
+		"ant-zoom-in":         {"button", map[string]string{"aria-label": "Aumentar zoom"}},
+		"ant-origin":          {"button", map[string]string{"type": "button"}},
+		"ant-follow":          {"button", map[string]string{"aria-pressed": "true"}},
+		"ant-canvas":          {"canvas", map[string]string{"tabindex": "0", "aria-describedby": "ant-navigation-help"}},
+		"ant-navigation-help": {"p", nil},
+	} {
+		node := controls[id]
+		if node == nil {
+			t.Errorf("missing control %q", id)
+			continue
+		}
+		if node.Data != want.tag {
+			t.Errorf("%s: tag = %q, want %q", id, node.Data, want.tag)
+		}
+		attrs := map[string]string{}
+		for _, attr := range node.Attr {
+			attrs[attr.Key] = attr.Val
+		}
+		for key, value := range want.attrs {
+			if attrs[key] != value {
+				t.Errorf("%s: %s = %q, want %q", id, key, attrs[key], value)
+			}
+		}
+		if id == "ant-speed-default" {
+			if _, disabled := attrs["disabled"]; disabled {
+				t.Error("default speed button must remain enabled")
+			}
+		}
+		if id == "ant-speed" && (node.FirstChild == nil || node.FirstChild.Data != "5 passos/s") {
+			t.Error("initial speed must be 5 passos/s")
+		}
+	}
+}
