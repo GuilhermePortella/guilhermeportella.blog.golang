@@ -201,25 +201,28 @@
 
 .chess-piece {
   position: relative;
+  display: block;
   z-index: 1;
-  font-family: "Segoe UI Symbol", "Noto Sans Symbols 2", "Apple Symbols", "DejaVu Sans", system-ui, sans-serif;
-  font-size: clamp(1.5rem, 7vw, 3.1rem);
-  line-height: 1;
+  width: 82%;
+  height: 82%;
+  background-color: currentColor;
+  -webkit-mask: var(--chess-silhouette) center / contain no-repeat;
+  mask: var(--chess-silhouette) center / contain no-repeat;
   pointer-events: none;
   user-select: none;
 }
 
-.chess-piece.is-white {
-  color: #ffffff;
-  -webkit-text-stroke: 1.5px #1c1917;
-  paint-order: stroke fill;
-  text-shadow: 0 2px 3px rgb(0 0 0 / 45%);
-}
+.chess-piece.is-white { color: #ffffff; }
+.chess-piece.is-black { color: #18232d; }
+.chess-piece[data-piece=""] { visibility: hidden; }
 
-.chess-piece.is-black {
-  color: #1c1917;
-  text-shadow: 0 1px 1px rgb(255 255 255 / 35%);
-}
+/* Solid vector silhouettes keep the pieces consistent across devices. */
+.chess-piece[data-piece="p"] { --chess-silhouette: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cpath%20d%3D%22M24%208a7%207%200%201%201%200%2014a7%207%200%201%201%200-14M20%2021h8l2%2013%206%204v4H12v-4l6-4z%22/%3E%3C/svg%3E"); }
+.chess-piece[data-piece="r"] { --chess-silhouette: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cpath%20d%3D%22M11%208h6v6h4V8h6v6h4V8h6v13l-6%204v10l5%204v3H12v-3l5-4V25l-6-4z%22/%3E%3C/svg%3E"); }
+.chess-piece[data-piece="n"] { --chess-silhouette: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cpath%20d%3D%22M13%2042v-5l7-10-8%202-5-6%2010-12%201-6%208%205c10%201%2013%2011%2010%2022l-4%205%204%202v3z%22/%3E%3C/svg%3E"); }
+.chess-piece[data-piece="b"] { --chess-silhouette: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cpath%20d%3D%22M24%205C18%2011%2012%2017%2016%2023l5%204-3%209-6%203v3h24v-3l-6-3-3-9%205-4c4-6-2-12-8-18z%22/%3E%3C/svg%3E"); }
+.chess-piece[data-piece="q"] { --chess-silhouette: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cpath%20d%3D%22M8%2012l8%207%208-11%208%2011%208-7-6%2020H14zM16%2034h16l4%205v3H12v-3z%22/%3E%3C/svg%3E"); }
+.chess-piece[data-piece="k"] { --chess-silhouette: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2048%2048%22%3E%3Cpath%20d%3D%22M21%205h6v5h5v5h-5v6h7l3%205-6%2010%205%203v3H12v-3l5-3-6-10%203-5h7v-6h-5v-5h5z%22/%3E%3C/svg%3E"); }
 
 .chess-dot {
   position: absolute;
@@ -269,6 +272,8 @@
 }
 
 .chess-promotion__options button {
+  display: grid;
+  place-items: center;
   width: 3.5rem;
   height: 3.5rem;
   border: 1px solid rgb(255 255 255 / 20%);

@@ -500,10 +500,10 @@ func TestNewRouterJogoChess(t *testing.T) {
 		`data-chess-stockfish-url="/static/games/chess/stockfish/stockfish-17.1-lite-single-03e3232.js"`,
 		`data-chess-promotion`,
 		`data-chess-worker-url="/static/games/chess/worker.js?v=20261120-stockfish"`,
-		`<link rel="stylesheet" href="/static/games/chess/chess.css?v=20261120-stockfish">`,
+		`<link rel="stylesheet" href="/static/games/chess/chess.css?v=20261122-solid">`,
 		`<script src="/static/games/chess/engine.js?v=20261120-stockfish" defer></script>`,
 		`<script src="/static/games/chess/ai.js?v=20261120-stockfish" defer></script>`,
-		`<script src="/static/games/chess/ui.js?v=20261120-stockfish" defer></script>`,
+		`<script src="/static/games/chess/ui.js?v=20261122-solid" defer></script>`,
 	} {
 		if !strings.Contains(body, expected) {
 			t.Fatalf("body does not contain %q", expected)

@@ -67,9 +67,6 @@
   const LEVELS = ["easy", "medium", "hard", "extreme"];
   const MODES = ["machine", "local"];
   const MIN_MACHINE_DELAY_MS = 450;
-  const GLYPHS = { k: "\u265A", q: "\u265B", r: "\u265C", b: "\u265D", n: "\u265E", p: "\u265F" };
-  // U+FE0E pede a apresentacao em texto: sem ela alguns sistemas desenham o peao como emoji.
-  const TEXT_PRESENTATION = "\uFE0E";
   const PIECE_NAMES = {
     k: { name: "rei", feminine: false },
     q: { name: "dama", feminine: true },
@@ -618,7 +615,7 @@
         }
 
         pieceEl.className = piece ? `chess-piece is-${piece < "a" ? "white" : "black"}` : "chess-piece";
-        pieceEl.textContent = piece ? GLYPHS[piece.toLowerCase()] + TEXT_PRESENTATION : "";
+        pieceEl.setAttribute("data-piece", piece ? piece.toLowerCase() : "");
       }
     }
 
